@@ -1035,22 +1035,235 @@ const AdminPanel = () => {
       </header>
 
       <main className="container mx-auto px-4 py-6">
-        <Tabs defaultValue="events">
+        <Tabs defaultValue="contracts">
           <TabsList className="bg-slate-800 border border-white/10">
-            <TabsTrigger value="events" className="data-[state=active]:bg-purple-500">📸 Eventos ({events.length})</TabsTrigger>
-            <TabsTrigger value="live" className="data-[state=active]:bg-purple-500">🔴 Live ({liveSessions.length})</TabsTrigger>
-            <TabsTrigger value="cloudinary" className="data-[state=active]:bg-purple-500">☁️ Cloudinary</TabsTrigger>
+            <TabsTrigger value="contracts" className="data-[state=active]:bg-green-500">📄 Contratos ({contracts.length})</TabsTrigger>
+            <TabsTrigger value="events" className="data-[state=active]:bg-purple-500">📸 Galería Pro ({events.length})</TabsTrigger>
+            <TabsTrigger value="live" className="data-[state=active]:bg-cyan-500">🔴 PicPartyLive ({liveSessions.length})</TabsTrigger>
+            <TabsTrigger value="cloudinary" className="data-[state=active]:bg-orange-500">☁️ Cloudinary</TabsTrigger>
           </TabsList>
 
+          {/* ============ PESTAÑA DE CONTRATOS ============ */}
+          <TabsContent value="contracts" className="space-y-4 mt-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-white text-xl font-bold">Centro de Contratos</h2>
+                <p className="text-gray-400 text-sm">Gestiona contratos independientes con precios netos</p>
+              </div>
+              <Button onClick={() => setShowContractForm(true)} className="bg-green-500 hover:bg-green-600">
+                📄 Crear Contrato
+              </Button>
+            </div>
+
+            {/* Formulario de Contrato */}
+            {showContractForm && (
+              <Card className="bg-slate-800 border-green-500/30">
+                <CardHeader>
+                  <CardTitle className="text-white flex justify-between items-center">
+                    <span>Nuevo Contrato</span>
+                    <Button variant="ghost" size="sm" onClick={() => setShowContractForm(false)} className="text-gray-400">✕</Button>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Tipo de Contrato */}
+                  <div className="flex gap-4 p-3 bg-slate-700 rounded">
+                    <div className="flex items-center gap-2">
+                      <input type="radio" name="contract_type" checked={contractForm.contract_type === "public"} 
+                        onChange={() => setContractForm({...contractForm, contract_type: "public", special_price: null})} />
+                      <Label className="text-white">📋 Contrato Público (Precios Netos)</Label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input type="radio" name="contract_type" checked={contractForm.contract_type === "special"} 
+                        onChange={() => setContractForm({...contractForm, contract_type: "special"})} />
+                      <Label className="text-orange-400">🤝 Contrato Proveedor/Especial</Label>
+                    </div>
+                  </div>
+
+                  {/* Datos del Cliente */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <Label className="text-white">Nombre Cliente *</Label>
+                      <Input value={contractForm.client_name} onChange={(e) => setContractForm({...contractForm, client_name: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
+                    </div>
+                    <div>
+                      <Label className="text-white">Teléfono *</Label>
+                      <Input value={contractForm.client_phone} onChange={(e) => setContractForm({...contractForm, client_phone: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
+                    </div>
+                    <div>
+                      <Label className="text-white">Email</Label>
+                      <Input value={contractForm.client_email} onChange={(e) => setContractForm({...contractForm, client_email: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
+                    </div>
+                  </div>
+
+                  {/* Datos del Evento */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <Label className="text-white">Nombre Evento *</Label>
+                      <Input value={contractForm.event_name} onChange={(e) => setContractForm({...contractForm, event_name: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
+                    </div>
+                    <div>
+                      <Label className="text-white">Salón *</Label>
+                      <Input value={contractForm.salon} onChange={(e) => setContractForm({...contractForm, salon: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
+                    </div>
+                    <div>
+                      <Label className="text-white">Fecha Evento *</Label>
+                      <Input type="date" value={contractForm.event_date} onChange={(e) => setContractForm({...contractForm, event_date: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
+                    </div>
+                  </div>
+
+                  {/* Horarios */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <Label className="text-white">Horario Evento</Label>
+                      <Input placeholder="ej: 6:00 PM" value={contractForm.event_time} onChange={(e) => setContractForm({...contractForm, event_time: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
+                    </div>
+                    <div>
+                      <Label className="text-white">Horario Servicio</Label>
+                      <Input placeholder="ej: 7:00 PM - 11:00 PM" value={contractForm.service_time} onChange={(e) => setContractForm({...contractForm, service_time: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
+                    </div>
+                    <div>
+                      <Label className="text-white">Duración (horas)</Label>
+                      <Select value={contractForm.duration_hours.toString()} onValueChange={(v) => setContractForm({...contractForm, duration_hours: parseInt(v)})}>
+                        <SelectTrigger className="bg-slate-700 border-white/10 text-white"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {[2,3,4,5,6,8,10].map(h => <SelectItem key={h} value={h.toString()}>{h} horas</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Paquete y Precio */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <Label className="text-white">Paquete Base</Label>
+                      <Select value={contractForm.base_price.toString()} onValueChange={(v) => setContractForm({...contractForm, base_price: parseInt(v)})}>
+                        <SelectTrigger className="bg-slate-700 border-white/10 text-white"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="3000">Básico - $3,000/hr</SelectItem>
+                          <SelectItem value="5000">Estándar - $5,000/hr</SelectItem>
+                          <SelectItem value="8000">Premium - $8,000/hr</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex items-center gap-4 pt-6">
+                      <div className="flex items-center gap-2">
+                        <Checkbox checked={contractForm.include_video360} onCheckedChange={(c) => setContractForm({...contractForm, include_video360: c})} />
+                        <Label className="text-cyan-400">🎥 Video 360° (+$3,000)</Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Checkbox checked={contractForm.include_live} onCheckedChange={(c) => setContractForm({...contractForm, include_live: c})} />
+                        <Label className="text-pink-400">🔴 Live (+$2,000)</Label>
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="text-orange-400">🏷️ Descuento (%)</Label>
+                      <Input type="number" min="0" max="50" value={contractForm.discount_percent} onChange={(e) => setContractForm({...contractForm, discount_percent: parseInt(e.target.value) || 0})} className="bg-slate-700 border-orange-500/30 text-orange-400" />
+                    </div>
+                  </div>
+
+                  {/* Precio Especial (solo si es contrato especial) */}
+                  {contractForm.contract_type === "special" && (
+                    <div className="p-3 bg-orange-500/10 border border-orange-500/30 rounded">
+                      <Label className="text-orange-400 font-bold">💰 Precio Especial (Convenio)</Label>
+                      <Input type="number" placeholder="Ingresa el precio final acordado" value={contractForm.special_price || ""} onChange={(e) => setContractForm({...contractForm, special_price: parseInt(e.target.value) || null})} className="bg-slate-700 border-orange-500/30 text-orange-300 mt-2" />
+                    </div>
+                  )}
+
+                  {/* Notas */}
+                  <div>
+                    <Label className="text-white">Notas adicionales</Label>
+                    <Textarea value={contractForm.notes} onChange={(e) => setContractForm({...contractForm, notes: e.target.value})} className="bg-slate-700 border-white/10 text-white" rows={2} />
+                  </div>
+
+                  {/* Botones */}
+                  <div className="flex gap-3">
+                    <Button onClick={calculateContractPreview} variant="outline" className="border-white/20 text-white">
+                      🧮 Calcular
+                    </Button>
+                    <Button onClick={createContract} className="bg-green-500 hover:bg-green-600">
+                      ✓ Crear Contrato
+                    </Button>
+                  </div>
+
+                  {/* Preview del cálculo */}
+                  {contractPreview && (
+                    <div className="p-4 bg-green-500/10 border border-green-500/30 rounded">
+                      <div className="flex justify-between text-white">
+                        <span>Subtotal:</span>
+                        <span>${contractPreview.subtotal.toLocaleString()}</span>
+                      </div>
+                      {contractForm.discount_percent > 0 && (
+                        <div className="flex justify-between text-orange-400">
+                          <span>Descuento ({contractForm.discount_percent}%):</span>
+                          <span>-${contractPreview.discountAmount.toLocaleString()}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between text-green-400 font-bold text-xl mt-2 pt-2 border-t border-green-500/30">
+                        <span>PRECIO NETO:</span>
+                        <span>${contractPreview.netPrice.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Lista de Contratos */}
+            {contracts.length === 0 ? (
+              <Card className="bg-slate-800/50 border-white/10 border-dashed">
+                <CardContent className="p-8 text-center">
+                  <span className="text-5xl block mb-4">📄</span>
+                  <p className="text-gray-400">No hay contratos creados</p>
+                  <p className="text-gray-500 text-sm">Crea tu primer contrato con el botón de arriba</p>
+                </CardContent>
+              </Card>
+            ) : (
+              contracts.map(contract => (
+                <Card key={contract.id} className="bg-slate-800 border-white/10">
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="text-white font-bold">{contract.event_name}</h3>
+                          <Badge className={contract.contract_type === "special" ? "bg-orange-500/20 text-orange-400" : "bg-green-500/20 text-green-400"}>
+                            {contract.contract_type === "special" ? "🤝 Especial" : "📋 Público"}
+                          </Badge>
+                          <Badge className="bg-purple-500/20 text-purple-400">{contract.status}</Badge>
+                        </div>
+                        <p className="text-gray-400 text-sm">{contract.client_name} • {contract.client_phone}</p>
+                        <p className="text-gray-500 text-sm">{contract.salon} • {contract.event_date}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-green-400 font-bold text-2xl">${contract.net_price?.toLocaleString()}</p>
+                        <p className="text-gray-500 text-sm">Precio Neto</p>
+                        <div className="flex gap-2 mt-2">
+                          <Button size="sm" className="bg-blue-500" onClick={() => printContractPDF(contract)}>📄 PDF</Button>
+                          <Button size="sm" variant="destructive" onClick={() => deleteContract(contract.id)}>Eliminar</Button>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </TabsContent>
+
+          {/* ============ PESTAÑA GALERÍA PRO ============ */}
           <TabsContent value="events" className="space-y-4 mt-4">
+            <Card className="bg-purple-500/10 border-purple-500/30">
+              <CardContent className="p-4">
+                <p className="text-purple-300 font-semibold">📸 Galería Pro - Solo Visualización</p>
+                <p className="text-gray-400 text-sm">Estos eventos son para mostrar en IFRAME. NO generan carpetas en Cloudinary.</p>
+              </CardContent>
+            </Card>
             <Card className="bg-slate-800 border-white/10">
-              <CardHeader><CardTitle className="text-white">Crear Evento</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-white">Crear Evento de Galería</CardTitle></CardHeader>
               <CardContent>
                 <div className="grid grid-cols-3 gap-3">
                   <Input placeholder="NOMBRE" value={newEvent.name} onChange={(e) => setNewEvent({...newEvent, name: e.target.value.toUpperCase()})} className="bg-slate-700 border-white/10 text-white" />
                   <Input type="date" value={newEvent.date} onChange={(e) => setNewEvent({...newEvent, date: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
                   <Input placeholder="Ubicación" value={newEvent.location} onChange={(e) => setNewEvent({...newEvent, location: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
-                  <Input placeholder="URL Fotoshare" value={newEvent.fotoshare_url} onChange={(e) => setNewEvent({...newEvent, fotoshare_url: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
+                  <Input placeholder="URL Fotoshare (IFRAME)" value={newEvent.fotoshare_url} onChange={(e) => setNewEvent({...newEvent, fotoshare_url: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
                   <Input placeholder="URL Video 360" value={newEvent.video360_url} onChange={(e) => setNewEvent({...newEvent, video360_url: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
                   <Button onClick={createEvent} className="bg-purple-500">✓ Crear</Button>
                 </div>
@@ -1064,6 +1277,7 @@ const AdminPanel = () => {
                     <div>
                       <h3 className="text-white font-bold">{event.name}</h3>
                       <p className="text-gray-400 text-sm">{event.date} • {event.location}</p>
+                      <Badge className="bg-purple-500/20 text-purple-400 text-xs mt-1">Solo visualización IFRAME</Badge>
                     </div>
                   </div>
                   <Button variant="destructive" size="sm" onClick={() => deleteEvent(event.id)}>Eliminar</Button>
@@ -1072,11 +1286,18 @@ const AdminPanel = () => {
             ))}
           </TabsContent>
 
+          {/* ============ PESTAÑA PICPARTY LIVE ============ */}
           <TabsContent value="live" className="space-y-4 mt-4">
+            <Card className="bg-cyan-500/10 border-cyan-500/30">
+              <CardContent className="p-4">
+                <p className="text-cyan-300 font-semibold">🔴 PicParty Live - Social</p>
+                <p className="text-gray-400 text-sm">Estos eventos generan carpeta automática en Cloudinary y código QR para invitados.</p>
+              </CardContent>
+            </Card>
             <Card className="bg-slate-800 border-white/10">
               <CardHeader>
                 <CardTitle className="text-white">Crear Sesión Live</CardTitle>
-                <CardDescription className="text-gray-400">Genera QR automático para cada evento</CardDescription>
+                <CardDescription className="text-gray-400">Genera: QR + Carpeta Cloudinary [Nombre]_[Fecha]</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex gap-3">
