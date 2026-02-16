@@ -406,6 +406,148 @@ async def get_dates_with_events():
     dates = list(set(e["date"] for e in events))
     return {"dates": dates}
 
+# ============ CONTRATOS ENDPOINTS ============
+
+@api_router.get("/contracts")
+async def get_contracts():
+    """Obtener todos los contratos"""
+    contracts = await db.contracts.find({}, {"_id": 0}).to_list(100)
+    return contracts
+
+@api_router.get("/contracts/{contract_id}")
+async def get_contract(contract_id: str):
+    """Obtener un contrato específico"""
+    contract = await db.contracts.find_one({"id": contract_id}, {"_id": 0})
+    if not contract:
+        raise HTTPException(status_code=404, detail="Contrato no encontrado")
+    return contract
+
+@api_router.post("/contracts")
+async def create_contract(contract_data: ContractCreate):
+    """Crear nuevo contrato - Público o Especial"""
+    # Calcular precios
+    subtotal = contract_data.base_price * contract_data.duration_hours
+    
+    # Extras
+    extras_cost = len(contract_data.extras) * 500
+    subtotal += extras_cost
+    
+    # Video 360
+    if contract_data.include_video360:
+        subtotal += 3000
+    
+    # PicParty Live
+    if contract_data.include_live:
+        subtotal += 2000
+    
+    # Descuento
+    discount_amount = subtotal * (contract_data.discount_percent / 100)
+    
+    # Precio final
+    if contract_data.contract_type == "special" and contract_data.special_price is not None:
+        net_price = contract_data.special_price
+    else:
+        net_price = subtotal - discount_amount
+    
+    contract = Contract(
+        **contract_data.model_dump(),
+        subtotal=subtotal,
+        discount_amount=discount_amount,
+        net_price=net_price
+    )
+    
+    doc = contract.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.contracts.insert_one(doc)
+    
+    return contract
+
+@api_router.put("/contracts/{contract_id}")
+async def update_contract(contract_id: str, contract_data: ContractCreate):
+    """Actualizar contrato existente"""
+    # Recalcular precios
+    subtotal = contract_data.base_price * contract_data.duration_hours
+    extras_cost = len(contract_data.extras) * 500
+    subtotal += extras_cost
+    if contract_data.include_video360:
+        subtotal += 3000
+    if contract_data.include_live:
+        subtotal += 2000
+    
+    discount_amount = subtotal * (contract_data.discount_percent / 100)
+    
+    if contract_data.contract_type == "special" and contract_data.special_price is not None:
+        net_price = contract_data.special_price
+    else:
+        net_price = subtotal - discount_amount
+    
+    update_data = contract_data.model_dump()
+    update_data['subtotal'] = subtotal
+    update_data['discount_amount'] = discount_amount
+    update_data['net_price'] = net_price
+    
+    result = await db.contracts.update_one(
+        {"id": contract_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Contrato no encontrado")
+    
+    return {"message": "Contrato actualizado", "id": contract_id}
+
+@api_router.put("/contracts/{contract_id}/status")
+async def update_contract_status(contract_id: str, status: str):
+    """Cambiar estado del contrato"""
+    valid_statuses = ["draft", "confirmed", "completed", "cancelled"]
+    if status not in valid_statuses:
+        raise HTTPException(status_code=400, detail=f"Estado inválido. Use: {valid_statuses}")
+    
+    result = await db.contracts.update_one(
+        {"id": contract_id},
+        {"$set": {"status": status}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Contrato no encontrado")
+    
+    return {"message": f"Estado actualizado a {status}"}
+
+@api_router.delete("/contracts/{contract_id}")
+async def delete_contract(contract_id: str):
+    """Eliminar contrato"""
+    result = await db.contracts.delete_one({"id": contract_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Contrato no encontrado")
+    return {"message": "Contrato eliminado"}
+
+# ============ LIVE SESSIONS CON CLOUDINARY ============
+
+@api_router.post("/live/sessions/create")
+async def create_live_session_with_cloudinary(code: str, event_name: str, is_vip: bool = False, vip_pass: str = None):
+    """Crear sesión Live con carpeta Cloudinary automática"""
+    existing = await db.live_sessions.find_one({"code": code})
+    if existing:
+        raise HTTPException(status_code=400, detail="Código ya existe")
+    
+    # Generar nombre de carpeta Cloudinary: [Nombre]_[Fecha]
+    today = datetime.now().strftime("%Y-%m-%d")
+    cloudinary_folder = f"{event_name.replace(' ', '_')}_{today}"
+    
+    session = LiveSession(
+        code=code,
+        event_name=event_name,
+        is_vip=is_vip,
+        vip_pass=vip_pass if is_vip else None,
+        cloudinary_folder=cloudinary_folder
+    )
+    
+    doc = session.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.live_sessions.insert_one(doc)
+    
+    return session
+
 app.include_router(api_router)
 
 app.add_middleware(
