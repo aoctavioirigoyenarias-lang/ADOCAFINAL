@@ -77,12 +77,70 @@ class QuoteResponse(BaseModel):
     show_net_price: bool
 
 class LiveSession(BaseModel):
+    """Sesiones PICPARTY LIVE - Genera carpetas Cloudinary y QR"""
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     code: str
     event_name: str
     is_active: bool = True
+    is_vip: bool = False
+    vip_pass: Optional[str] = None
+    cloudinary_folder: Optional[str] = None  # Carpeta automática [Nombre]_[Fecha]
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class Contract(BaseModel):
+    """Modelo de Contrato Empresarial"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    # Datos del cliente
+    client_name: str
+    client_phone: str
+    client_email: Optional[str] = None
+    # Datos del evento
+    event_name: str
+    salon: str
+    event_date: str
+    event_time: str  # Horario del evento
+    service_time: str  # Horario del servicio
+    duration_hours: int
+    # Tipo de contrato
+    contract_type: str = "public"  # "public" = Precio Neto, "special" = Precio Especial
+    # Servicios
+    base_package: str = "standard"
+    base_price: float
+    include_video360: bool = False
+    include_live: bool = False
+    extras: List[str] = []
+    # Precios
+    subtotal: float
+    discount_percent: float = 0
+    discount_amount: float = 0
+    special_price: Optional[float] = None  # Solo para contratos especiales
+    net_price: float
+    # Estado
+    status: str = "draft"  # draft, confirmed, completed, cancelled
+    notes: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ContractCreate(BaseModel):
+    client_name: str
+    client_phone: str
+    client_email: Optional[str] = None
+    event_name: str
+    salon: str
+    event_date: str
+    event_time: str
+    service_time: str
+    duration_hours: int
+    contract_type: str = "public"
+    base_package: str = "standard"
+    base_price: float
+    include_video360: bool = False
+    include_live: bool = False
+    extras: List[str] = []
+    discount_percent: float = 0
+    special_price: Optional[float] = None
+    notes: Optional[str] = None
 
 # ============ COLORES AUTOMÁTICOS PARA PORTADAS ============
 AUTO_COLORS = [
