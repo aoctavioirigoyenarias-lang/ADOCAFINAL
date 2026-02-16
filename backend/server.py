@@ -179,6 +179,64 @@ async def scan_code(code: str):
         raise HTTPException(status_code=404, detail="Session not found or inactive")
     return session
 
+# ============ ADMIN ENDPOINTS ============
+@api_router.delete("/events/{event_id}")
+async def delete_event(event_id: str):
+    result = await db.events.delete_one({"id": event_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Event not found")
+    return {"message": "Event deleted successfully"}
+
+@api_router.put("/events/{event_id}")
+async def update_event(event_id: str, event_data: EventCreate):
+    result = await db.events.update_one(
+        {"id": event_id},
+        {"$set": event_data.model_dump()}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Event not found")
+    return {"message": "Event updated successfully", "id": event_id}
+
+# Live session management for admin
+@api_router.post("/live/sessions/create")
+async def admin_create_live_session(code: str, event_name: str):
+    # Check if code already exists
+    existing = await db.live_sessions.find_one({"code": code})
+    if existing:
+        raise HTTPException(status_code=400, detail="Code already exists")
+    
+    session = LiveSession(code=code, event_name=event_name)
+    doc = session.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.live_sessions.insert_one(doc)
+    return session
+
+@api_router.delete("/live/sessions/{session_id}")
+async def delete_live_session(session_id: str):
+    result = await db.live_sessions.delete_one({"id": session_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Session not found")
+    return {"message": "Session deleted"}
+
+@api_router.put("/live/sessions/{session_id}/toggle")
+async def toggle_live_session(session_id: str):
+    session = await db.live_sessions.find_one({"id": session_id}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    new_status = not session.get("is_active", True)
+    await db.live_sessions.update_one(
+        {"id": session_id},
+        {"$set": {"is_active": new_status}}
+    )
+    return {"message": "Session toggled", "is_active": new_status}
+
+@api_router.get("/live/sessions/all")
+async def get_all_live_sessions():
+    """Get all sessions (active and inactive) for admin"""
+    sessions = await db.live_sessions.find({}, {"_id": 0}).to_list(100)
+    return sessions
+
 # Seed initial events
 @api_router.post("/seed-events")
 async def seed_events():
