@@ -84,7 +84,7 @@ class AdocaAPITester:
             print(f"   Validation: Expected 3 events, got {len(data)}")
             return False
             
-        required_names = ["Paula", "Fernanda", "Resideo"]
+        required_names = ["PAULA", "FERNANDA", "RESIDEO"]
         expected_urls = {
             "Paula": "https://fotoshare.co/e/-AUAT_kcGz8xs9NmSU1gz",
             "Fernanda": "https://fotoshare.co/e/LuUlUt1awwHl_k0fD7K2M", 
