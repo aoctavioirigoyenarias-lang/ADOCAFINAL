@@ -86,9 +86,9 @@ class AdocaAPITester:
             
         required_names = ["PAULA", "FERNANDA", "RESIDEO"]
         expected_urls = {
-            "Paula": "https://fotoshare.co/e/-AUAT_kcGz8xs9NmSU1gz",
-            "Fernanda": "https://fotoshare.co/e/LuUlUt1awwHl_k0fD7K2M", 
-            "Resideo": "https://fotoshare.co/e/E8uvCS1AtuKMxXiOYUL1M"
+            "PAULA": "https://fotoshare.co/e/-AUAT_kcGz8xs9NmSU1gz",
+            "FERNANDA": "https://fotoshare.co/e/LuUlUt1awwHl_k0fD7K2M", 
+            "RESIDEO": "https://fotoshare.co/e/E8uvCS1AtuKMxXiOYUL1M"
         }
         
         found_names = [event.get('name') for event in data]
