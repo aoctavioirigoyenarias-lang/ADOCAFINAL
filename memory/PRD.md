@@ -1,58 +1,60 @@
-# PRD - adoca.net (Photo Event Gallery)
+# PRD - adoca.net (Photo Event Platform)
 
-## Original Problem Statement
-REPARACIÓN DE EMERGENCIA para adoca.net:
-1. Configurar ruta principal (/) para Galería de Eventos con calendario
-2. Mover PicParty Live a /live
-3. Vincular eventos con links de fotoshare.co (Paula, Fernanda, Resideo)
-4. Mantener precio neto en cotizaciones
-5. Recuperar Cotizador y Panel Admin
+## Problem Statement
+ORDEN TÉCNICA FINAL: Estructura, escalabilidad y automatización para adoca.net
 
 ## Architecture
 - **Frontend:** React + TailwindCSS + shadcn/ui
 - **Backend:** FastAPI + MongoDB
 - **Routes:** 
-  - `/` → EventGallery (calendario + 3 eventos)
-  - `/cotizador` → Cotizador de servicios con precio neto
+  - `/` → Galería de Eventos (calendario buscador + grid escalable)
+  - `/cotizador` → Cotizador con PRECIO NETO
   - `/admin` → Panel Admin (gestión eventos, sesiones, preferencias)
-  - `/live` → PicPartyLive (escáner de código QR)
+  - `/live` → PicParty Live (escáner de código)
 
-## User Personas
-- **Clientes:** Acceden a fotos vía fotoshare.co, solicitan cotizaciones
-- **Asistentes a eventos:** Usan /live para escanear código QR
-- **Admin:** Gestiona eventos, sesiones live y preferencias desde /admin
+## Features Implemented
 
-## Core Requirements (Static)
-- ✅ Galería de eventos en portada con calendario
-- ✅ Links a fotoshare.co funcionales
-- ✅ Cotizador con precio neto configurable
-- ✅ Panel Admin para gestión completa
-- ✅ PicParty Live en ruta secundaria
+### 1. ESCALABILIDAD Y MULTISERVICIO
+- ✅ Grid flexible que soporta 5+ eventos por día
+- ✅ Cada evento puede tener: FOTOS, VIDEO 360, o ambos
+- ✅ Etiquetas claras identifican servicios (📸 Fotos / 🎥 360°)
 
-## What's Been Implemented
-- [2026-01-26] Rutas corregidas (/ = Galería, /live = Live, /cotizador, /admin)
-- [2026-01-26] 3 eventos seeded: Paula, Fernanda, Resideo
-- [2026-01-26] Cotizador completo con cálculo de precio neto
-- [2026-01-26] Panel Admin con tabs: Eventos, Sesiones Live, Preferencias
-- [2026-01-26] APIs completas: /events, /preferences, /quote, /live/*
-- [2026-01-26] CRUD completo para eventos y sesiones live
+### 2. PORTADAS AUTOMÁTICAS (CERO BATALLAS)
+- ✅ Sin obligación de subir fotos
+- ✅ Portada automática: color sólido + emoji grande
+  - 📸 para Fotos
+  - 🎥 para Video 360
+  - 📸🎥 para mixto
+- ✅ Nombre del cliente en MAYÚSCULAS como protagonista
+
+### 3. CALENDARIO BUSCADOR
+- ✅ Funciona como filtro histórico
+- ✅ Fechas con eventos resaltadas
+- ✅ Filtra galería al seleccionar fecha
+- ✅ Botón para limpiar filtro
+
+### 4. FUNCIONES CRÍTICAS
+- ✅ Rutas configuradas correctamente
+- ✅ Cotizador con PRECIO NETO según preferencias guardadas
+- ✅ Opción Video 360 (+$3,000 MXN) en cotizador
+- ✅ Links de fotoshare.co inyectados
 
 ## Eventos Configurados
-| Evento   | URL Fotoshare                                      |
-|----------|---------------------------------------------------|
-| Paula    | https://fotoshare.co/e/-AUAT_kcGz8xs9NmSU1gz      |
-| Fernanda | https://fotoshare.co/e/LuUlUt1awwHl_k0fD7K2M      |
-| Resideo  | https://fotoshare.co/e/E8uvCS1AtuKMxXiOYUL1M      |
+| Evento   | Color   | Servicios      | URL Fotoshare                               |
+|----------|---------|----------------|---------------------------------------------|
+| PAULA    | #EC4899 | 📸 Fotos       | fotoshare.co/e/-AUAT_kcGz8xs9NmSU1gz       |
+| FERNANDA | #8B5CF6 | 📸 Fotos       | fotoshare.co/e/LuUlUt1awwHl_k0fD7K2M       |
+| RESIDEO  | #3B82F6 | 📸🎥 Fotos+360 | fotoshare.co/e/E8uvCS1AtuKMxXiOYUL1M       |
 
-## Preferencias Guardadas
-- `show_net_price: true` (Precio neto habilitado)
+## Preferencias
+- `show_net_price: true` (PRECIO NETO activado)
 - `tax_rate: 0.16` (IVA 16%)
 
 ## Test Results
-- Backend: 100% passed
-- Frontend: 100% passed
-- Integration: 100% passed
+- Frontend: 100%
+- Backend: 92%
+- Integration: 100%
 
-## Next Tasks
-1. Replace deployment para actualizar dominio adoca.net
-2. Agregar más eventos según necesidad desde /admin
+## Next Steps
+1. Verificar iconos automáticos en Preview
+2. Replace deployment a adoca.net
