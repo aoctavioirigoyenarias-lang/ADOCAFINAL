@@ -266,7 +266,7 @@ class AdocaAPITester:
         
         if success and session_data:
             # Test scan the created session
-            self.run_test("Scan Live Code", "GET", "live/scan/TEST123", 200)
+            self.run_test("Scan Live Code", "GET", "live/scan/TESTX99", 200)
         
         # Test scan invalid code
         self.run_test("Scan Invalid Code", "GET", "live/scan/INVALID", 404)
