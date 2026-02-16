@@ -563,8 +563,19 @@ const Cotizador = () => {
   );
 };
 
-// ============ PANEL ADMIN (RUTA /admin) ============
+// ============ PANEL ADMIN (RUTA /admin) - PROTEGIDO CON LOGIN ============
+const PICPARTY_LOGO = "https://customer-assets.emergentagent.com/job_net-price-quotes/artifacts/udz3kgwy_logo%20pic%20party.png";
+const ADMIN_USER = "OCTAVIO";
+const ADMIN_PASS = "CHELO1980";
+
 const AdminPanel = () => {
+  // ========== ESTADO DE AUTENTICACIÓN ==========
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loginUser, setLoginUser] = useState("");
+  const [loginPass, setLoginPass] = useState("");
+  const [loginError, setLoginError] = useState("");
+  
+  // ========== ESTADO DEL PANEL ==========
   const [events, setEvents] = useState([]);
   const [liveSessions, setLiveSessions] = useState([]);
   const [preferences, setPreferences] = useState({ show_net_price: true, tax_rate: 0.16 });
@@ -577,6 +588,34 @@ const AdminPanel = () => {
   });
   
   const [newSession, setNewSession] = useState({ code: "", event_name: "" });
+
+  // ========== FUNCIÓN DE LOGIN ==========
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (loginUser === ADMIN_USER && loginPass === ADMIN_PASS) {
+      setIsAuthenticated(true);
+      setLoginError("");
+      sessionStorage.setItem("adminAuth", "true");
+      toast.success("¡Bienvenido, Octavio!");
+    } else {
+      setLoginError("Usuario o contraseña incorrectos");
+      toast.error("Acceso denegado");
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    sessionStorage.removeItem("adminAuth");
+    toast.info("Sesión cerrada");
+  };
+
+  // Verificar sesión existente
+  useEffect(() => {
+    const savedAuth = sessionStorage.getItem("adminAuth");
+    if (savedAuth === "true") {
+      setIsAuthenticated(true);
+    }
+  }, []);
 
   const colorOptions = [
     { value: "#EC4899", label: "Rosa" },
