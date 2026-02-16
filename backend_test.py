@@ -106,8 +106,24 @@ class AdocaAPITester:
                 if actual_url != expected_url:
                     print(f"   Validation: Wrong URL for {name}. Expected: {expected_url}, Got: {actual_url}")
                     return False
+        
+        # Validate service fields (has_photos and has_video360)
+        for event in data:
+            name = event.get('name')
+            has_photos = event.get('has_photos')
+            has_video360 = event.get('has_video360')
+            
+            if has_photos is None or has_video360 is None:
+                print(f"   Validation: Missing service fields for {name}")
+                return False
+                
+            # Specific validation for RESIDEO (should have both services)
+            if name == "RESIDEO":
+                if not has_photos or not has_video360:
+                    print(f"   Validation: RESIDEO should have both photos and video360. Got photos:{has_photos}, video360:{has_video360}")
+                    return False
                     
-        print("   Validation: All events have correct names and fotoshare URLs")
+        print("   Validation: All events have correct names, fotoshare URLs, and service fields")
         return True
 
     def validate_preferences_response(self, data):
