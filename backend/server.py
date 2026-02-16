@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -6,10 +6,9 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
-from typing import List
+from typing import List, Optional
 import uuid
 from datetime import datetime, timezone
-
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -19,52 +18,222 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# Create the main app without a prefix
+# Create the main app
 app = FastAPI()
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
-
 # Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
-    
+class Event(BaseModel):
+    model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    name: str
+    date: str
+    time: Optional[str] = None
+    description: Optional[str] = None
+    fotoshare_url: str
+    thumbnail: Optional[str] = None
+    location: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-class StatusCheckCreate(BaseModel):
-    client_name: str
+class EventCreate(BaseModel):
+    name: str
+    date: str
+    time: Optional[str] = None
+    description: Optional[str] = None
+    fotoshare_url: str
+    thumbnail: Optional[str] = None
+    location: Optional[str] = None
 
-# Add your routes to the router instead of directly to app
+class UserPreferences(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str = "default"
+    show_net_price: bool = True
+    tax_rate: float = 0.16
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class QuoteRequest(BaseModel):
+    base_price: float
+    hours: Optional[int] = 1
+    extras: Optional[List[str]] = []
+
+class QuoteResponse(BaseModel):
+    base_price: float
+    subtotal: float
+    tax: float
+    total: float
+    net_price: float
+    show_net_price: bool
+
+class LiveSession(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    code: str
+    event_name: str
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+# Routes
+
 @api_router.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "PicParty API - adoca.net"}
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
-    
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
+# Events endpoints
+@api_router.get("/events", response_model=List[Event])
+async def get_events():
+    events = await db.events.find({}, {"_id": 0}).to_list(100)
+    for event in events:
+        if isinstance(event.get('created_at'), str):
+            event['created_at'] = datetime.fromisoformat(event['created_at'])
+    return events
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
+@api_router.post("/events", response_model=Event)
+async def create_event(event_data: EventCreate):
+    event = Event(**event_data.model_dump())
+    doc = event.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.events.insert_one(doc)
+    return event
+
+@api_router.get("/events/{event_id}", response_model=Event)
+async def get_event(event_id: str):
+    event = await db.events.find_one({"id": event_id}, {"_id": 0})
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    if isinstance(event.get('created_at'), str):
+        event['created_at'] = datetime.fromisoformat(event['created_at'])
+    return event
+
+# User preferences (for net price setting)
+@api_router.get("/preferences")
+async def get_preferences():
+    prefs = await db.preferences.find_one({"user_id": "default"}, {"_id": 0})
+    if not prefs:
+        default_prefs = UserPreferences()
+        doc = default_prefs.model_dump()
+        doc['updated_at'] = doc['updated_at'].isoformat()
+        await db.preferences.insert_one(doc)
+        return default_prefs
+    if isinstance(prefs.get('updated_at'), str):
+        prefs['updated_at'] = datetime.fromisoformat(prefs['updated_at'])
+    return prefs
+
+@api_router.put("/preferences")
+async def update_preferences(show_net_price: bool = True, tax_rate: float = 0.16):
+    await db.preferences.update_one(
+        {"user_id": "default"},
+        {"$set": {
+            "show_net_price": show_net_price,
+            "tax_rate": tax_rate,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }},
+        upsert=True
+    )
+    return {"message": "Preferences updated", "show_net_price": show_net_price}
+
+# Quote calculation (always shows net price based on preferences)
+@api_router.post("/quote", response_model=QuoteResponse)
+async def calculate_quote(request: QuoteRequest):
+    prefs = await db.preferences.find_one({"user_id": "default"}, {"_id": 0})
+    show_net = prefs.get("show_net_price", True) if prefs else True
+    tax_rate = prefs.get("tax_rate", 0.16) if prefs else 0.16
     
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
+    subtotal = request.base_price * request.hours
+    extras_cost = len(request.extras) * 500 if request.extras else 0
+    subtotal += extras_cost
     
-    return status_checks
+    tax = subtotal * tax_rate
+    total = subtotal + tax
+    net_price = subtotal  # Net price = price before tax
+    
+    return QuoteResponse(
+        base_price=request.base_price,
+        subtotal=subtotal,
+        tax=tax,
+        total=total,
+        net_price=net_price,
+        show_net_price=show_net
+    )
+
+# Live session endpoints (for /live route)
+@api_router.get("/live/sessions")
+async def get_live_sessions():
+    sessions = await db.live_sessions.find({"is_active": True}, {"_id": 0}).to_list(100)
+    return sessions
+
+@api_router.post("/live/sessions", response_model=LiveSession)
+async def create_live_session(code: str, event_name: str):
+    session = LiveSession(code=code, event_name=event_name)
+    doc = session.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.live_sessions.insert_one(doc)
+    return session
+
+@api_router.get("/live/scan/{code}")
+async def scan_code(code: str):
+    session = await db.live_sessions.find_one({"code": code, "is_active": True}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found or inactive")
+    return session
+
+# Seed initial events
+@api_router.post("/seed-events")
+async def seed_events():
+    initial_events = [
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Paula",
+            "date": "2025-01-15",
+            "time": "18:00",
+            "description": "Evento especial de Paula",
+            "fotoshare_url": "https://fotoshare.co/e/-AUAT_kcGz8xs9NmSU1gz",
+            "thumbnail": "https://images.unsplash.com/photo-1519741497674-611481863552?w=400",
+            "location": "Ciudad de México",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Fernanda",
+            "date": "2025-01-20",
+            "time": "19:00",
+            "description": "Celebración de Fernanda",
+            "fotoshare_url": "https://fotoshare.co/e/LuUlUt1awwHl_k0fD7K2M",
+            "thumbnail": "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400",
+            "location": "Monterrey",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Resideo",
+            "date": "2025-01-25",
+            "time": "17:00",
+            "description": "Evento corporativo Resideo",
+            "fotoshare_url": "https://fotoshare.co/e/E8uvCS1AtuKMxXiOYUL1M",
+            "thumbnail": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400",
+            "location": "Guadalajara",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+    ]
+    
+    # Clear existing and insert new
+    await db.events.delete_many({})
+    await db.events.insert_many(initial_events)
+    
+    # Set default preferences with net price enabled
+    await db.preferences.update_one(
+        {"user_id": "default"},
+        {"$set": {
+            "show_net_price": True,
+            "tax_rate": 0.16,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }},
+        upsert=True
+    )
+    
+    return {"message": "Events seeded successfully", "count": len(initial_events)}
 
 # Include the router in the main app
 app.include_router(api_router)
