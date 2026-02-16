@@ -722,7 +722,7 @@ const AdminPanel = () => {
     }
   };
 
-  if (loading) {
+  if (loading && isAuthenticated) {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center">
         <div className="text-white">Cargando...</div>
@@ -730,21 +730,96 @@ const AdminPanel = () => {
     );
   }
 
+  // ========== PANTALLA DE LOGIN ==========
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-slate-900 flex items-center justify-center" data-testid="admin-login">
+        <Card className="w-full max-w-md bg-slate-800/90 border-white/10 backdrop-blur-sm">
+          <CardHeader className="text-center pb-2">
+            <img 
+              src={PICPARTY_LOGO} 
+              alt="PicParty Logo" 
+              className="w-40 h-40 mx-auto mb-4 object-contain"
+            />
+            <CardTitle className="text-2xl text-white">Panel de Administración</CardTitle>
+            <CardDescription className="text-gray-400">
+              Ingresa tus credenciales para continuar
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-2">
+                <Label className="text-white">Usuario</Label>
+                <Input
+                  type="text"
+                  placeholder="Usuario"
+                  value={loginUser}
+                  onChange={(e) => setLoginUser(e.target.value.toUpperCase())}
+                  className="bg-slate-700 border-white/20 text-white placeholder:text-gray-500"
+                  data-testid="login-user"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-white">Contraseña</Label>
+                <Input
+                  type="password"
+                  placeholder="••••••••"
+                  value={loginPass}
+                  onChange={(e) => setLoginPass(e.target.value)}
+                  className="bg-slate-700 border-white/20 text-white placeholder:text-gray-500"
+                  data-testid="login-pass"
+                />
+              </div>
+              {loginError && (
+                <p className="text-red-400 text-sm text-center">{loginError}</p>
+              )}
+              <Button 
+                type="submit" 
+                className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                data-testid="login-btn"
+              >
+                🔐 Ingresar
+              </Button>
+            </form>
+            <div className="mt-6 text-center">
+              <Link to="/">
+                <Button variant="ghost" className="text-gray-400 hover:text-white">
+                  ← Volver a la Galería
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // ========== PANEL ADMIN (SOLO SI ESTÁ AUTENTICADO) ==========
   return (
     <div className="min-h-screen bg-slate-900" data-testid="admin-panel">
       <header className="border-b border-white/10 bg-slate-800">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
-              <span className="text-xl">⚙️</span>
-            </div>
+            <img src={PICPARTY_LOGO} alt="PicParty" className="w-10 h-10 object-contain" />
             <h1 className="text-2xl font-bold text-white">Panel Admin</h1>
+            <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+              👤 OCTAVIO
+            </Badge>
           </div>
-          <Link to="/">
-            <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
-              ← Volver
+          <div className="flex gap-2">
+            <Link to="/">
+              <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
+                ← Galería
+              </Button>
+            </Link>
+            <Button 
+              variant="destructive" 
+              onClick={handleLogout}
+              data-testid="logout-btn"
+            >
+              Cerrar Sesión
             </Button>
-          </Link>
+          </div>
         </div>
       </header>
 
