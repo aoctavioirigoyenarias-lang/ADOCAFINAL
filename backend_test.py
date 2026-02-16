@@ -209,12 +209,13 @@ class AdocaAPITester:
         print("=" * 50)
         
         quote_data = {
-            "base_price": 1000.0,
-            "hours": 2,
-            "extras": ["backdrop", "props"]
+            "base_price": 5000.0,
+            "hours": 4,
+            "extras": ["photobooth", "drone"],
+            "include_video360": False
         }
         
-        success, response = self.run_test("Calculate Quote", "POST", "quote", 200, data=quote_data)
+        success, response = self.run_test("Calculate Quote (No Video 360)", "POST", "quote", 200, data=quote_data)
         
         if success and response:
             # Validate quote response structure
@@ -224,6 +225,27 @@ class AdocaAPITester:
                     print(f"   Validation: Missing field '{field}' in quote response")
                     return False
             print("   Validation: Quote response has all required fields")
+            
+            # Test with Video 360
+            quote_data_360 = {
+                "base_price": 5000.0,
+                "hours": 4,
+                "extras": ["photobooth", "drone"],
+                "include_video360": True
+            }
+            
+            success_360, response_360 = self.run_test("Calculate Quote (With Video 360)", "POST", "quote", 200, data=quote_data_360)
+            
+            if success_360 and response_360:
+                # Validate that Video 360 adds $3000 to subtotal
+                expected_difference = 3000
+                actual_difference = response_360.get('subtotal', 0) - response.get('subtotal', 0)
+                
+                if actual_difference == expected_difference:
+                    print(f"   Validation: Video 360 correctly adds ${expected_difference} to quote")
+                else:
+                    print(f"   Validation: Video 360 price incorrect. Expected +${expected_difference}, got +${actual_difference}")
+                    return False
 
     def test_live_session_api(self):
         """Test live session endpoints"""
