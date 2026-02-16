@@ -986,13 +986,16 @@ const AdminPanel = () => {
             <Card className="bg-slate-800 border-white/10">
               <CardHeader>
                 <CardTitle className="text-white">Crear Sesión Live</CardTitle>
+                <CardDescription className="text-gray-400">
+                  Se genera automáticamente un QR único para cada evento
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex gap-4">
                   <Input
-                    placeholder="Código (ej: ABC123)"
+                    placeholder="Código (ej: BODA-PEDRO)"
                     value={newSession.code}
-                    onChange={(e) => setNewSession({...newSession, code: e.target.value.toUpperCase()})}
+                    onChange={(e) => setNewSession({...newSession, code: e.target.value.toUpperCase().replace(/\s+/g, '-')})}
                     className="bg-slate-700 border-white/10 text-white"
                   />
                   <Input
@@ -1009,42 +1012,161 @@ const AdminPanel = () => {
             </Card>
 
             <div className="grid gap-4">
-              {liveSessions.map((session) => (
-                <Card key={session.id} className="bg-slate-800 border-white/10">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-white font-mono text-lg">{session.code}</span>
-                          <Badge className={session.is_active ? "bg-green-500" : "bg-gray-500"}>
-                            {session.is_active ? "🟢 Activo" : "⚫ Inactivo"}
-                          </Badge>
+              {liveSessions.map((session) => {
+                const qrUrl = `https://${SITE_DOMAIN}/live?event=${session.code}`;
+                
+                // Función para imprimir QR en PDF
+                const printQRPDF = async () => {
+                  toast.info("Generando PDF...");
+                  
+                  const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'letter'
+                  });
+                  
+                  const pageWidth = pdf.internal.pageSize.getWidth();
+                  const pageHeight = pdf.internal.pageSize.getHeight();
+                  
+                  // Fondo negro
+                  pdf.setFillColor(15, 23, 42);
+                  pdf.rect(0, 0, pageWidth, pageHeight, 'F');
+                  
+                  // Logo PicParty (cargar como imagen)
+                  try {
+                    const logoImg = new Image();
+                    logoImg.crossOrigin = "anonymous";
+                    logoImg.src = PICPARTY_LOGO;
+                    
+                    await new Promise((resolve, reject) => {
+                      logoImg.onload = resolve;
+                      logoImg.onerror = reject;
+                      setTimeout(reject, 3000);
+                    });
+                    
+                    const logoSize = 50;
+                    pdf.addImage(logoImg, 'PNG', (pageWidth - logoSize) / 2, 15, logoSize, logoSize);
+                  } catch (e) {
+                    // Si falla el logo, poner texto
+                    pdf.setFontSize(24);
+                    pdf.setTextColor(255, 255, 255);
+                    pdf.text("PICPARTY", pageWidth / 2, 40, { align: 'center' });
+                  }
+                  
+                  // Título del evento
+                  pdf.setFontSize(32);
+                  pdf.setTextColor(255, 255, 255);
+                  pdf.text(session.event_name.toUpperCase(), pageWidth / 2, 85, { align: 'center' });
+                  
+                  // Subtítulo
+                  pdf.setFontSize(14);
+                  pdf.setTextColor(156, 163, 175);
+                  pdf.text("Escanea el código QR para ver las fotos", pageWidth / 2, 95, { align: 'center' });
+                  
+                  // Generar QR como canvas
+                  const qrCanvas = document.createElement('canvas');
+                  const qrSize = 1000; // Alta resolución
+                  qrCanvas.width = qrSize;
+                  qrCanvas.height = qrSize;
+                  
+                  // Usar una librería temporal para generar el QR en canvas
+                  const QRCodeLib = await import('qrcode');
+                  await QRCodeLib.toCanvas(qrCanvas, qrUrl, {
+                    width: qrSize,
+                    margin: 2,
+                    color: { dark: '#000000', light: '#FFFFFF' }
+                  });
+                  
+                  // QR centrado y grande (120mm)
+                  const qrPdfSize = 120;
+                  const qrX = (pageWidth - qrPdfSize) / 2;
+                  pdf.addImage(qrCanvas.toDataURL('image/png'), 'PNG', qrX, 105, qrPdfSize, qrPdfSize);
+                  
+                  // URL debajo del QR
+                  pdf.setFontSize(12);
+                  pdf.setTextColor(236, 72, 153);
+                  pdf.text(qrUrl, pageWidth / 2, 235, { align: 'center' });
+                  
+                  // Código del evento
+                  pdf.setFontSize(18);
+                  pdf.setTextColor(255, 255, 255);
+                  pdf.text(`Código: ${session.code}`, pageWidth / 2, 250, { align: 'center' });
+                  
+                  // Footer
+                  pdf.setFontSize(10);
+                  pdf.setTextColor(107, 114, 128);
+                  pdf.text("Powered by PicParty - adoca.net", pageWidth / 2, 270, { align: 'center' });
+                  
+                  // Abrir PDF
+                  pdf.output('dataurlnewwindow');
+                  toast.success("PDF generado correctamente");
+                };
+                
+                return (
+                  <Card key={session.id} className="bg-slate-800 border-white/10">
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between gap-4">
+                        {/* Info y QR Preview */}
+                        <div className="flex items-start gap-4">
+                          {/* QR Preview pequeño */}
+                          <div className="bg-white p-2 rounded-lg">
+                            <QRCodeSVG 
+                              value={qrUrl}
+                              size={80}
+                              level="H"
+                            />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-white font-mono text-lg font-bold">{session.code}</span>
+                              <Badge className={session.is_active ? "bg-green-500" : "bg-gray-500"}>
+                                {session.is_active ? "🟢 Activo" : "⚫ Inactivo"}
+                              </Badge>
+                            </div>
+                            <p className="text-gray-300 font-semibold">{session.event_name}</p>
+                            <p className="text-cyan-400 text-sm mt-1">{qrUrl}</p>
+                          </div>
                         </div>
-                        <p className="text-gray-400">{session.event_name}</p>
+                        
+                        {/* Botones */}
+                        <div className="flex gap-2">
+                          <Button 
+                            size="sm"
+                            onClick={printQRPDF}
+                            className="bg-blue-500 hover:bg-blue-600"
+                            data-testid={`print-qr-${session.code}`}
+                          >
+                            🖨️ Imprimir QR
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => toggleSession(session.id)}
+                            className="border-white/20 text-white"
+                          >
+                            {session.is_active ? "Desactivar" : "Activar"}
+                          </Button>
+                          <Button 
+                            variant="destructive" 
+                            size="sm"
+                            onClick={() => deleteSession(session.id)}
+                          >
+                            Eliminar
+                          </Button>
+                        </div>
                       </div>
-                      <div className="flex gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => toggleSession(session.id)}
-                          className="border-white/20 text-white"
-                        >
-                          {session.is_active ? "Desactivar" : "Activar"}
-                        </Button>
-                        <Button 
-                          variant="destructive" 
-                          size="sm"
-                          onClick={() => deleteSession(session.id)}
-                        >
-                          Eliminar
-                        </Button>
-                      </div>
-                    </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+              {liveSessions.length === 0 && (
+                <Card className="bg-slate-800/50 border-white/10 border-dashed">
+                  <CardContent className="p-8 text-center">
+                    <span className="text-5xl mb-4 block">📱</span>
+                    <p className="text-gray-400">No hay sesiones live creadas</p>
+                    <p className="text-gray-500 text-sm mt-2">Crea una sesión para generar un QR único</p>
                   </CardContent>
                 </Card>
-              ))}
-              {liveSessions.length === 0 && (
-                <p className="text-gray-500 text-center py-8">No hay sesiones live creadas</p>
               )}
             </div>
           </TabsContent>
