@@ -824,6 +824,176 @@ const AdminPanel = () => {
     toast.success("PDF generado");
   };
 
+  // ============ FUNCIONES DE CONTRATOS ============
+  
+  const calculateContractPreview = () => {
+    let subtotal = contractForm.base_price * contractForm.duration_hours;
+    subtotal += contractForm.extras.length * 500;
+    if (contractForm.include_video360) subtotal += 3000;
+    if (contractForm.include_live) subtotal += 2000;
+    
+    const discountAmount = subtotal * (contractForm.discount_percent / 100);
+    let netPrice;
+    
+    if (contractForm.contract_type === "special" && contractForm.special_price) {
+      netPrice = contractForm.special_price;
+    } else {
+      netPrice = subtotal - discountAmount;
+    }
+    
+    setContractPreview({ subtotal, discountAmount, netPrice });
+  };
+
+  const createContract = async () => {
+    if (!contractForm.client_name || !contractForm.client_phone || !contractForm.event_name || !contractForm.salon || !contractForm.event_date) {
+      toast.error("Complete los campos obligatorios");
+      return;
+    }
+    try {
+      await axios.post(`${API}/contracts`, contractForm);
+      toast.success("Contrato creado exitosamente");
+      setShowContractForm(false);
+      setContractForm({
+        client_name: "", client_phone: "", client_email: "",
+        event_name: "", salon: "", event_date: "", event_time: "", service_time: "",
+        duration_hours: 4, contract_type: "public", base_package: "standard",
+        base_price: 5000, include_video360: false, include_live: false,
+        extras: [], discount_percent: 0, special_price: null, notes: ""
+      });
+      setContractPreview(null);
+      fetchData();
+    } catch (e) {
+      toast.error("Error al crear contrato");
+    }
+  };
+
+  const deleteContract = async (id) => {
+    if (!confirm("¿Eliminar contrato?")) return;
+    await axios.delete(`${API}/contracts/${id}`);
+    toast.success("Contrato eliminado");
+    fetchData();
+  };
+
+  const printContractPDF = async (contract) => {
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const formatCurrency = (amt) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amt);
+    
+    // Header púrpura
+    pdf.setFillColor(88, 28, 135);
+    pdf.rect(0, 0, pageWidth, 55, 'F');
+    
+    try {
+      const logoImg = new Image();
+      logoImg.crossOrigin = "anonymous";
+      logoImg.src = PICPARTY_LOGO;
+      await new Promise(r => { logoImg.onload = r; setTimeout(r, 2000); });
+      pdf.addImage(logoImg, 'PNG', 15, 8, 40, 40);
+    } catch(e) {}
+    
+    pdf.setFontSize(24);
+    pdf.setTextColor(255, 255, 255);
+    pdf.text("CONTRATO DE SERVICIOS", pageWidth - 20, 25, { align: 'right' });
+    pdf.setFontSize(12);
+    pdf.text(contract.contract_type === "special" ? "PROVEEDOR / ESPECIAL" : "PÚBLICO", pageWidth - 20, 35, { align: 'right' });
+    pdf.text(`#${contract.id.substring(0, 8).toUpperCase()}`, pageWidth - 20, 45, { align: 'right' });
+    
+    let y = 70;
+    pdf.setTextColor(50, 50, 50);
+    
+    // Datos del cliente
+    pdf.setFontSize(14);
+    pdf.setFont(undefined, 'bold');
+    pdf.text("DATOS DEL CLIENTE", 20, y);
+    y += 8;
+    pdf.setFontSize(11);
+    pdf.setFont(undefined, 'normal');
+    pdf.text(`Nombre: ${contract.client_name}`, 20, y); y += 6;
+    pdf.text(`Teléfono: ${contract.client_phone}`, 20, y); y += 6;
+    if (contract.client_email) { pdf.text(`Email: ${contract.client_email}`, 20, y); y += 6; }
+    
+    y += 8;
+    pdf.setFont(undefined, 'bold');
+    pdf.setFontSize(14);
+    pdf.text("DATOS DEL EVENTO", 20, y);
+    y += 8;
+    pdf.setFontSize(11);
+    pdf.setFont(undefined, 'normal');
+    pdf.text(`Evento: ${contract.event_name}`, 20, y); y += 6;
+    pdf.text(`Salón: ${contract.salon}`, 20, y); y += 6;
+    pdf.text(`Fecha: ${contract.event_date}`, 20, y); y += 6;
+    pdf.text(`Horario Evento: ${contract.event_time || 'Por definir'}`, 20, y); y += 6;
+    pdf.text(`Horario Servicio: ${contract.service_time || 'Por definir'}`, 20, y); y += 6;
+    pdf.text(`Duración: ${contract.duration_hours} horas`, 20, y); y += 6;
+    
+    y += 8;
+    pdf.setFont(undefined, 'bold');
+    pdf.setFontSize(14);
+    pdf.text("DESGLOSE DE SERVICIOS", 20, y);
+    y += 10;
+    
+    pdf.setFillColor(240, 240, 240);
+    pdf.rect(20, y - 5, pageWidth - 40, 8, 'F');
+    pdf.setFontSize(10);
+    pdf.text("Concepto", 25, y);
+    pdf.text("Precio", pageWidth - 45, y, { align: 'right' });
+    y += 10;
+    
+    pdf.setFont(undefined, 'normal');
+    pdf.text(`Servicio Fotográfico (${contract.duration_hours} hrs)`, 25, y);
+    pdf.text(formatCurrency(contract.base_price * contract.duration_hours), pageWidth - 45, y, { align: 'right' });
+    y += 7;
+    
+    if (contract.include_video360) {
+      pdf.text("Video 360°", 25, y);
+      pdf.text(formatCurrency(3000), pageWidth - 45, y, { align: 'right' });
+      y += 7;
+    }
+    if (contract.include_live) {
+      pdf.text("PicParty Live", 25, y);
+      pdf.text(formatCurrency(2000), pageWidth - 45, y, { align: 'right' });
+      y += 7;
+    }
+    
+    y += 5;
+    pdf.line(20, y, pageWidth - 20, y);
+    y += 8;
+    
+    pdf.text("Subtotal:", 25, y);
+    pdf.text(formatCurrency(contract.subtotal), pageWidth - 45, y, { align: 'right' });
+    y += 7;
+    
+    // Descuento en NARANJA
+    if (contract.discount_percent > 0) {
+      pdf.setTextColor(234, 88, 12);
+      pdf.setFont(undefined, 'bold');
+      pdf.text(`DESCUENTO (${contract.discount_percent}%):`, 25, y);
+      pdf.text(`-${formatCurrency(contract.discount_amount)}`, pageWidth - 45, y, { align: 'right' });
+      y += 10;
+      pdf.setTextColor(50, 50, 50);
+    }
+    
+    // Precio Neto Final
+    pdf.setFillColor(88, 28, 135);
+    pdf.rect(20, y - 5, pageWidth - 40, 14, 'F');
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(14);
+    pdf.setFont(undefined, 'bold');
+    pdf.text("PRECIO NETO FINAL:", 25, y + 4);
+    pdf.text(formatCurrency(contract.net_price), pageWidth - 45, y + 4, { align: 'right' });
+    
+    // Footer
+    y = 255;
+    pdf.setFontSize(9);
+    pdf.setTextColor(150, 150, 150);
+    pdf.setFont(undefined, 'normal');
+    pdf.text("* Precios Netos. Contrato válido por 15 días.", pageWidth / 2, y, { align: 'center' });
+    pdf.text("PicParty - Cabina Fotográfica | adoca.net", pageWidth / 2, y + 5, { align: 'center' });
+    
+    pdf.save(`Contrato_PicParty_${contract.client_name.replace(/\s+/g, '_')}.pdf`);
+    toast.success("Contrato PDF descargado");
+  };
+
   // LOGIN SCREEN
   if (!isAuthenticated) {
     return (
