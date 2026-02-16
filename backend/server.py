@@ -18,13 +18,11 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# Create the main app
 app = FastAPI()
-
-# Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
-# Define Models
+# ============ MODELS ============
+
 class Event(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -32,9 +30,13 @@ class Event(BaseModel):
     date: str
     time: Optional[str] = None
     description: Optional[str] = None
-    fotoshare_url: str
+    fotoshare_url: Optional[str] = None
+    video360_url: Optional[str] = None
     thumbnail: Optional[str] = None
     location: Optional[str] = None
+    has_photos: bool = True
+    has_video360: bool = False
+    color: Optional[str] = None  # Color de portada automática
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class EventCreate(BaseModel):
@@ -42,9 +44,13 @@ class EventCreate(BaseModel):
     date: str
     time: Optional[str] = None
     description: Optional[str] = None
-    fotoshare_url: str
+    fotoshare_url: Optional[str] = None
+    video360_url: Optional[str] = None
     thumbnail: Optional[str] = None
     location: Optional[str] = None
+    has_photos: bool = True
+    has_video360: bool = False
+    color: Optional[str] = None
 
 class UserPreferences(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -58,6 +64,7 @@ class QuoteRequest(BaseModel):
     base_price: float
     hours: Optional[int] = 1
     extras: Optional[List[str]] = []
+    include_video360: bool = False
 
 class QuoteResponse(BaseModel):
     base_price: float
@@ -75,7 +82,18 @@ class LiveSession(BaseModel):
     is_active: bool = True
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-# Routes
+# ============ COLORES AUTOMÁTICOS PARA PORTADAS ============
+AUTO_COLORS = [
+    "#EC4899", "#8B5CF6", "#3B82F6", "#10B981", "#F59E0B",
+    "#EF4444", "#06B6D4", "#84CC16", "#F97316", "#6366F1"
+]
+
+def get_auto_color(name: str) -> str:
+    """Genera un color consistente basado en el nombre"""
+    hash_val = sum(ord(c) for c in name)
+    return AUTO_COLORS[hash_val % len(AUTO_COLORS)]
+
+# ============ ROUTES ============
 
 @api_router.get("/")
 async def root():
@@ -88,11 +106,30 @@ async def get_events():
     for event in events:
         if isinstance(event.get('created_at'), str):
             event['created_at'] = datetime.fromisoformat(event['created_at'])
+        # Asignar color automático si no tiene
+        if not event.get('color'):
+            event['color'] = get_auto_color(event.get('name', 'Default'))
+    return events
+
+@api_router.get("/events/by-date/{date}")
+async def get_events_by_date(date: str):
+    """Filtrar eventos por fecha específica (YYYY-MM-DD)"""
+    events = await db.events.find({"date": date}, {"_id": 0}).to_list(100)
+    for event in events:
+        if isinstance(event.get('created_at'), str):
+            event['created_at'] = datetime.fromisoformat(event['created_at'])
+        if not event.get('color'):
+            event['color'] = get_auto_color(event.get('name', 'Default'))
     return events
 
 @api_router.post("/events", response_model=Event)
 async def create_event(event_data: EventCreate):
-    event = Event(**event_data.model_dump())
+    event_dict = event_data.model_dump()
+    # Asignar color automático si no se proporciona
+    if not event_dict.get('color'):
+        event_dict['color'] = get_auto_color(event_dict['name'])
+    
+    event = Event(**event_dict)
     doc = event.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
     await db.events.insert_one(doc)
@@ -105,9 +142,32 @@ async def get_event(event_id: str):
         raise HTTPException(status_code=404, detail="Event not found")
     if isinstance(event.get('created_at'), str):
         event['created_at'] = datetime.fromisoformat(event['created_at'])
+    if not event.get('color'):
+        event['color'] = get_auto_color(event.get('name', 'Default'))
     return event
 
-# User preferences (for net price setting)
+@api_router.delete("/events/{event_id}")
+async def delete_event(event_id: str):
+    result = await db.events.delete_one({"id": event_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Event not found")
+    return {"message": "Event deleted successfully"}
+
+@api_router.put("/events/{event_id}")
+async def update_event(event_id: str, event_data: EventCreate):
+    update_dict = event_data.model_dump()
+    if not update_dict.get('color'):
+        update_dict['color'] = get_auto_color(update_dict['name'])
+    
+    result = await db.events.update_one(
+        {"id": event_id},
+        {"$set": update_dict}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Event not found")
+    return {"message": "Event updated successfully", "id": event_id}
+
+# User preferences
 @api_router.get("/preferences")
 async def get_preferences():
     prefs = await db.preferences.find_one({"user_id": "default"}, {"_id": 0})
@@ -134,7 +194,7 @@ async def update_preferences(show_net_price: bool = True, tax_rate: float = 0.16
     )
     return {"message": "Preferences updated", "show_net_price": show_net_price}
 
-# Quote calculation (always shows net price based on preferences)
+# Quote calculation - PRECIO NETO
 @api_router.post("/quote", response_model=QuoteResponse)
 async def calculate_quote(request: QuoteRequest):
     prefs = await db.preferences.find_one({"user_id": "default"}, {"_id": 0})
@@ -145,9 +205,13 @@ async def calculate_quote(request: QuoteRequest):
     extras_cost = len(request.extras) * 500 if request.extras else 0
     subtotal += extras_cost
     
+    # Video 360 extra
+    if request.include_video360:
+        subtotal += 3000
+    
     tax = subtotal * tax_rate
     total = subtotal + tax
-    net_price = subtotal  # Net price = price before tax
+    net_price = subtotal
     
     return QuoteResponse(
         base_price=request.base_price,
@@ -158,14 +222,23 @@ async def calculate_quote(request: QuoteRequest):
         show_net_price=show_net
     )
 
-# Live session endpoints (for /live route)
+# Live session endpoints
 @api_router.get("/live/sessions")
 async def get_live_sessions():
     sessions = await db.live_sessions.find({"is_active": True}, {"_id": 0}).to_list(100)
     return sessions
 
-@api_router.post("/live/sessions", response_model=LiveSession)
-async def create_live_session(code: str, event_name: str):
+@api_router.get("/live/sessions/all")
+async def get_all_live_sessions():
+    sessions = await db.live_sessions.find({}, {"_id": 0}).to_list(100)
+    return sessions
+
+@api_router.post("/live/sessions/create")
+async def admin_create_live_session(code: str, event_name: str):
+    existing = await db.live_sessions.find_one({"code": code})
+    if existing:
+        raise HTTPException(status_code=400, detail="Code already exists")
+    
     session = LiveSession(code=code, event_name=event_name)
     doc = session.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
@@ -177,38 +250,6 @@ async def scan_code(code: str):
     session = await db.live_sessions.find_one({"code": code, "is_active": True}, {"_id": 0})
     if not session:
         raise HTTPException(status_code=404, detail="Session not found or inactive")
-    return session
-
-# ============ ADMIN ENDPOINTS ============
-@api_router.delete("/events/{event_id}")
-async def delete_event(event_id: str):
-    result = await db.events.delete_one({"id": event_id})
-    if result.deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Event not found")
-    return {"message": "Event deleted successfully"}
-
-@api_router.put("/events/{event_id}")
-async def update_event(event_id: str, event_data: EventCreate):
-    result = await db.events.update_one(
-        {"id": event_id},
-        {"$set": event_data.model_dump()}
-    )
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Event not found")
-    return {"message": "Event updated successfully", "id": event_id}
-
-# Live session management for admin
-@api_router.post("/live/sessions/create")
-async def admin_create_live_session(code: str, event_name: str):
-    # Check if code already exists
-    existing = await db.live_sessions.find_one({"code": code})
-    if existing:
-        raise HTTPException(status_code=400, detail="Code already exists")
-    
-    session = LiveSession(code=code, event_name=event_name)
-    doc = session.model_dump()
-    doc['created_at'] = doc['created_at'].isoformat()
-    await db.live_sessions.insert_one(doc)
     return session
 
 @api_router.delete("/live/sessions/{session_id}")
@@ -231,56 +272,60 @@ async def toggle_live_session(session_id: str):
     )
     return {"message": "Session toggled", "is_active": new_status}
 
-@api_router.get("/live/sessions/all")
-async def get_all_live_sessions():
-    """Get all sessions (active and inactive) for admin"""
-    sessions = await db.live_sessions.find({}, {"_id": 0}).to_list(100)
-    return sessions
-
-# Seed initial events
+# Seed events with MULTISERVICIO support
 @api_router.post("/seed-events")
 async def seed_events():
     initial_events = [
         {
             "id": str(uuid.uuid4()),
-            "name": "Paula",
+            "name": "PAULA",
             "date": "2025-01-15",
             "time": "18:00",
             "description": "Evento especial de Paula",
             "fotoshare_url": "https://fotoshare.co/e/-AUAT_kcGz8xs9NmSU1gz",
-            "thumbnail": "https://images.unsplash.com/photo-1519741497674-611481863552?w=400",
+            "video360_url": None,
+            "thumbnail": None,  # SIN FOTO - usará portada automática
             "location": "Ciudad de México",
+            "has_photos": True,
+            "has_video360": False,
+            "color": "#EC4899",
             "created_at": datetime.now(timezone.utc).isoformat()
         },
         {
             "id": str(uuid.uuid4()),
-            "name": "Fernanda",
+            "name": "FERNANDA",
             "date": "2025-01-20",
             "time": "19:00",
             "description": "Celebración de Fernanda",
             "fotoshare_url": "https://fotoshare.co/e/LuUlUt1awwHl_k0fD7K2M",
-            "thumbnail": "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400",
+            "video360_url": None,
+            "thumbnail": None,  # SIN FOTO - usará portada automática
             "location": "Monterrey",
+            "has_photos": True,
+            "has_video360": False,
+            "color": "#8B5CF6",
             "created_at": datetime.now(timezone.utc).isoformat()
         },
         {
             "id": str(uuid.uuid4()),
-            "name": "Resideo",
+            "name": "RESIDEO",
             "date": "2025-01-25",
             "time": "17:00",
             "description": "Evento corporativo Resideo",
             "fotoshare_url": "https://fotoshare.co/e/E8uvCS1AtuKMxXiOYUL1M",
-            "thumbnail": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400",
+            "video360_url": "https://example.com/resideo-360",
+            "thumbnail": None,  # SIN FOTO - usará portada automática
             "location": "Guadalajara",
+            "has_photos": True,
+            "has_video360": True,  # MIXTO: Fotos + Video 360
+            "color": "#3B82F6",
             "created_at": datetime.now(timezone.utc).isoformat()
         }
     ]
     
-    # Clear existing and insert new
     await db.events.delete_many({})
     await db.events.insert_many(initial_events)
     
-    # Set default preferences with net price enabled
     await db.preferences.update_one(
         {"user_id": "default"},
         {"$set": {
@@ -293,7 +338,14 @@ async def seed_events():
     
     return {"message": "Events seeded successfully", "count": len(initial_events)}
 
-# Include the router in the main app
+# Calendar data endpoint
+@api_router.get("/calendar/dates-with-events")
+async def get_dates_with_events():
+    """Devuelve todas las fechas que tienen eventos"""
+    events = await db.events.find({}, {"date": 1, "_id": 0}).to_list(1000)
+    dates = list(set(e["date"] for e in events))
+    return {"dates": dates}
+
 app.include_router(api_router)
 
 app.add_middleware(
@@ -304,7 +356,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
