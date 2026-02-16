@@ -260,7 +260,7 @@ class AdocaAPITester:
         success, session_data = self.run_test(
             "Create Live Session", 
             "POST", 
-            "live/sessions?code=TEST123&event_name=Test Event", 
+            "live/sessions/create?code=TESTX99&event_name=Test Event", 
             200
         )
         
