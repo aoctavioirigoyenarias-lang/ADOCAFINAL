@@ -24,6 +24,7 @@ api_router = APIRouter(prefix="/api")
 # ============ MODELS ============
 
 class Event(BaseModel):
+    """Eventos para GALERÍA PRO - Solo visualización IFRAME, NO Cloudinary"""
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
@@ -36,7 +37,8 @@ class Event(BaseModel):
     location: Optional[str] = None
     has_photos: bool = True
     has_video360: bool = False
-    color: Optional[str] = None  # Color de portada automática
+    color: Optional[str] = None
+    event_type: str = "gallery"  # "gallery" = solo visualización
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class EventCreate(BaseModel):
