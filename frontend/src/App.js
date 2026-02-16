@@ -704,10 +704,22 @@ const AdminPanel = () => {
   const [loginPass, setLoginPass] = useState("");
   const [events, setEvents] = useState([]);
   const [liveSessions, setLiveSessions] = useState([]);
+  const [contracts, setContracts] = useState([]);
   const [preferences, setPreferences] = useState({ show_net_price: true });
   const [loading, setLoading] = useState(true);
   const [newEvent, setNewEvent] = useState({ name: "", date: "", time: "", description: "", fotoshare_url: "", video360_url: "", location: "", has_photos: true, has_video360: false, color: "" });
   const [newSession, setNewSession] = useState({ code: "", event_name: "", is_vip: false, vip_pass: "" });
+  
+  // Estado para contratos
+  const [showContractForm, setShowContractForm] = useState(false);
+  const [contractForm, setContractForm] = useState({
+    client_name: "", client_phone: "", client_email: "",
+    event_name: "", salon: "", event_date: "", event_time: "", service_time: "",
+    duration_hours: 4, contract_type: "public", base_package: "standard",
+    base_price: 5000, include_video360: false, include_live: false,
+    extras: [], discount_percent: 0, special_price: null, notes: ""
+  });
+  const [contractPreview, setContractPreview] = useState(null);
 
   useEffect(() => {
     if (sessionStorage.getItem("adminAuth") === "true") setIsAuthenticated(true);
@@ -730,14 +742,16 @@ const AdminPanel = () => {
 
   const fetchData = async () => {
     try {
-      const [eventsRes, sessionsRes, prefsRes] = await Promise.all([
+      const [eventsRes, sessionsRes, prefsRes, contractsRes] = await Promise.all([
         axios.get(`${API}/events`),
         axios.get(`${API}/live/sessions/all`),
-        axios.get(`${API}/preferences`)
+        axios.get(`${API}/preferences`),
+        axios.get(`${API}/contracts`).catch(() => ({ data: [] }))
       ]);
       setEvents(eventsRes.data);
       setLiveSessions(sessionsRes.data);
       setPreferences(prefsRes.data);
+      setContracts(contractsRes.data);
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
   };
@@ -745,8 +759,8 @@ const AdminPanel = () => {
   const createEvent = async () => {
     if (!newEvent.name || !newEvent.date) { toast.error("Nombre y fecha requeridos"); return; }
     try {
-      await axios.post(`${API}/events`, newEvent);
-      toast.success("Evento creado");
+      await axios.post(`${API}/events`, { ...newEvent, event_type: "gallery" });
+      toast.success("Evento de galería creado (solo visualización)");
       setNewEvent({ name: "", date: "", time: "", description: "", fotoshare_url: "", video360_url: "", location: "", has_photos: true, has_video360: false, color: "" });
       fetchData();
     } catch (e) { toast.error("Error"); }
