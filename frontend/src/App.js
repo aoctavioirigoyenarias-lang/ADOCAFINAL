@@ -1139,6 +1139,13 @@ const PicPartyLive = () => {
                     <p className="text-center text-gray-400 text-xs mt-3">
                       Toca para tomar o seleccionar hasta 10 fotos
                     </p>
+                    
+                    {/* Aviso de calidad */}
+                    <div className="mt-3 p-2 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                      <p className="text-yellow-300/80 text-xs text-center">
+                        ⚠️ La calidad de las fotos varía según la resolución y el equipo móvil utilizado.
+                      </p>
+                    </div>
                   </CardContent>
                 </Card>
 
