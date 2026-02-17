@@ -681,7 +681,8 @@ const clearSessionStorage = () => {
 const PicPartyLive = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const eventCode = searchParams.get('event');
+  // Soportar tanto ?event= como ?code= para acceso directo
+  const eventCode = searchParams.get('event') || searchParams.get('code');
   const [session, setSession] = useState(null);
   const [code, setCode] = useState(eventCode || "");
   const [loading, setLoading] = useState(true);
@@ -690,10 +691,11 @@ const PicPartyLive = () => {
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
   const [totalFiles, setTotalFiles] = useState(0);
   const [uploadedPhotos, setUploadedPhotos] = useState([]);
-  const [galleryPhotos, setGalleryPhotos] = useState([]); // Muro colaborativo
+  const [galleryPhotos, setGalleryPhotos] = useState([]);
   const [error, setError] = useState("");
   const [showPWABanner, setShowPWABanner] = useState(false);
-  const [activeTab, setActiveTab] = useState("upload"); // "upload" o "gallery"
+  const [activeTab, setActiveTab] = useState("upload");
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const fileInputRef = useRef(null);
   
   // ID único para este invitado (anónimo)
