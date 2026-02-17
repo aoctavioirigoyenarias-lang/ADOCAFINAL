@@ -291,12 +291,7 @@ async def get_live_sessions():
     sessions = await db.live_sessions.find({"is_active": True}, {"_id": 0}).to_list(100)
     return sessions
 
-@api_router.get("/live/sessions/all")
-async def get_all_live_sessions():
-    sessions = await db.live_sessions.find({}, {"_id": 0}).to_list(100)
-    return sessions
-
-@api_router.post("/live/sessions/create")
+@api_router.post("/live/sessions/create-simple")
 async def admin_create_live_session(code: str, event_name: str):
     existing = await db.live_sessions.find_one({"code": code})
     if existing:
