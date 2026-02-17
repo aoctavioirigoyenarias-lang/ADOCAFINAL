@@ -708,7 +708,26 @@ const AdminPanel = () => {
   const [preferences, setPreferences] = useState({ show_net_price: true });
   const [loading, setLoading] = useState(true);
   const [newEvent, setNewEvent] = useState({ name: "", date: "", time: "", description: "", fotoshare_url: "", video360_url: "", location: "", has_photos: true, has_video360: false, color: "" });
-  const [newSession, setNewSession] = useState({ code: "", event_name: "", is_vip: false, vip_pass: "" });
+  const [newSession, setNewSession] = useState({ 
+    code: "", 
+    event_name: "", 
+    event_type: "boda",
+    event_type_custom: "",
+    event_date: "",
+    is_vip: false, 
+    vip_pass: "" 
+  });
+  
+  // Tipos de evento disponibles
+  const eventTypes = [
+    { value: "boda", label: "💍 Boda", emoji: "💍" },
+    { value: "quinceanios", label: "👑 Quinceaños", emoji: "👑" },
+    { value: "cumpleanos", label: "🎂 Cumpleaños", emoji: "🎂" },
+    { value: "empresarial", label: "🏢 Empresarial", emoji: "🏢" },
+    { value: "publico", label: "🎉 Evento Público", emoji: "🎉" },
+    { value: "fiesta", label: "🎊 Fiesta", emoji: "🎊" },
+    { value: "otro", label: "✏️ Otro", emoji: "✨" }
+  ];
   
   // Estado para contratos
   const [showContractForm, setShowContractForm] = useState(false);
