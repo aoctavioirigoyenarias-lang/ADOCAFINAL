@@ -490,30 +490,43 @@ const Cotizador = () => {
                   <Switch checked={includeVideo360} onCheckedChange={setIncludeVideo360} />
                 </div>
                 
-                {/* Paquetes PicPartyLive con precios NETO */}
+                {/* Paquetes PICPARTYLIVE con precios NETO */}
                 <div className="space-y-2">
-                  <p className="text-pink-300 font-semibold">🔴 PicParty Live</p>
+                  <p className="text-pink-300 font-semibold">🔴 PICPARTYLIVE</p>
+                  <p className="text-gray-400 text-xs mb-2">Muro en vivo con almacenamiento ILIMITADO. Incluye software de proyección en tiempo real para pantallas o TV. No incluye equipo físico (pantallas/cableado).</p>
                   <div className="grid grid-cols-3 gap-2">
                     <Button 
                       variant={includeLive && livePackage === 700 ? "default" : "outline"}
-                      className={includeLive && livePackage === 700 ? "bg-pink-500 text-white" : "border-pink-500/30 text-pink-300"}
+                      className={`${includeLive && livePackage === 700 ? "bg-pink-500 text-white" : "border-pink-500/30 text-pink-300"} h-auto py-2`}
                       onClick={() => { setIncludeLive(true); setLivePackage(700); }}
                     >
-                      $700 MXN<br/><span className="text-xs">(NETO)</span>
+                      <div className="text-center">
+                        <span className="font-bold">$700</span><br/>
+                        <span className="text-[10px] opacity-80">Súper Precio</span><br/>
+                        <span className="text-[9px] opacity-60">Al contratar Cabina, 360 o Key Moments</span>
+                      </div>
                     </Button>
                     <Button 
                       variant={includeLive && livePackage === 1000 ? "default" : "outline"}
-                      className={includeLive && livePackage === 1000 ? "bg-pink-500 text-white" : "border-pink-500/30 text-pink-300"}
+                      className={`${includeLive && livePackage === 1000 ? "bg-pink-500 text-white" : "border-pink-500/30 text-pink-300"} h-auto py-2`}
                       onClick={() => { setIncludeLive(true); setLivePackage(1000); }}
                     >
-                      $1,000 MXN<br/><span className="text-xs">(NETO)</span>
+                      <div className="text-center">
+                        <span className="font-bold">$1,000</span><br/>
+                        <span className="text-[10px] opacity-80">Promo Expo</span><br/>
+                        <span className="text-[9px] opacity-60">Precio temporal por tiempo limitado</span>
+                      </div>
                     </Button>
                     <Button 
                       variant={includeLive && livePackage === 1500 ? "default" : "outline"}
-                      className={includeLive && livePackage === 1500 ? "bg-pink-500 text-white" : "border-pink-500/30 text-pink-300"}
+                      className={`${includeLive && livePackage === 1500 ? "bg-pink-500 text-white" : "border-pink-500/30 text-pink-300"} h-auto py-2`}
                       onClick={() => { setIncludeLive(true); setLivePackage(1500); }}
                     >
-                      $1,500 MXN<br/><span className="text-xs">(NETO)</span>
+                      <div className="text-center">
+                        <span className="font-bold">$1,500</span><br/>
+                        <span className="text-[10px] opacity-80">Precio Regular</span><br/>
+                        <span className="text-[9px] opacity-60">(NETO)</span>
+                      </div>
                     </Button>
                   </div>
                   {includeLive && (
@@ -523,7 +536,7 @@ const Cotizador = () => {
                       className="text-gray-400 text-xs"
                       onClick={() => { setIncludeLive(false); setLivePackage(0); }}
                     >
-                      ✕ Quitar PicParty Live
+                      ✕ Quitar PICPARTYLIVE
                     </Button>
                   )}
                 </div>
@@ -1142,10 +1155,10 @@ const PicPartyLive = () => {
                       Toca para tomar o seleccionar hasta 10 fotos
                     </p>
                     
-                    {/* Aviso de calidad */}
-                    <div className="mt-3 p-2 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
-                      <p className="text-yellow-300/80 text-xs text-center">
-                        ⚠️ La calidad de las fotos varía según la resolución y el equipo móvil utilizado.
+                    {/* Aviso de almacenamiento */}
+                    <div className="mt-3 p-2 bg-green-500/10 border border-green-500/30 rounded-lg">
+                      <p className="text-green-300/80 text-xs text-center">
+                        ✓ Almacenamiento de fotos ILIMITADO. La resolución depende del celular del invitado.
                       </p>
                     </div>
                   </CardContent>
