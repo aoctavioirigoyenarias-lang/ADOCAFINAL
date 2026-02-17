@@ -1240,11 +1240,22 @@ const PicPartyLive = () => {
               </Card>
             )}
 
-            {/* Info de carpeta */}
+            {/* Info de carpeta - Nueva estructura */}
             <div className="p-3 bg-white/5 rounded-lg border border-white/10 text-center">
               <p className="text-gray-400 text-xs">
-                📁 <span className="text-purple-400 font-mono">
-                  {session.cloudinary_folder || `${session.event_name.replace(/\s+/g, '_')}_${session.event_date || 'evento'}`}
+                📁 <span className="text-purple-400 font-mono text-[10px]">
+                  ADOCA/{(() => {
+                    const meses = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 
+                                   'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
+                    const d = session.event_date ? new Date(session.event_date + 'T12:00:00') : new Date();
+                    const mes = meses[d.getMonth()];
+                    const dia = String(d.getDate()).padStart(2, '0');
+                    const mesNum = String(d.getMonth() + 1).padStart(2, '0');
+                    const anio = String(d.getFullYear()).slice(-2);
+                    const tipo = (session.event_type || 'EVENTO').toUpperCase().replace('QUINCEANIOS', 'XV');
+                    const nombre = session.event_name.toUpperCase().replace(/\s+/g, '_').slice(0, 15);
+                    return `${mes}/${dia}-${mesNum}-${anio}/${tipo}_${nombre}`;
+                  })()}
                 </span>
               </p>
             </div>
