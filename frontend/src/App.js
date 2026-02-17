@@ -1066,6 +1066,15 @@ const PicPartyLive = () => {
         ) : (
           /* ============ INTERFAZ DE INVITADOS ============ */
           <div className="max-w-lg mx-auto">
+            {/* Banner DEMO para código 9022 */}
+            {session.code === '9022' && (
+              <div className="mb-4 p-3 bg-amber-500/20 border border-amber-500/50 rounded-lg animate-pulse">
+                <p className="text-amber-300 text-sm text-center font-semibold">
+                  ⚠️ Galería de Prueba: El contenido y las interacciones se eliminan automáticamente cada 24 horas.
+                </p>
+              </div>
+            )}
+            
             {/* Barra de emojis decorativos */}
             <div className="flex justify-center gap-3 mb-3 text-xl">
               {PICPARTY_EMOJIS.map((emoji, i) => (
