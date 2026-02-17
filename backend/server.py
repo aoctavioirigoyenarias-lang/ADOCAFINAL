@@ -527,19 +527,30 @@ async def delete_contract(contract_id: str):
 # ============ LIVE SESSIONS CON CLOUDINARY ============
 
 @api_router.post("/live/sessions/create")
-async def create_live_session_with_cloudinary(code: str, event_name: str, is_vip: bool = False, vip_pass: str = None):
+async def create_live_session_with_cloudinary(
+    code: str, 
+    event_name: str, 
+    event_type: str = "boda",
+    event_type_custom: str = None,
+    event_date: str = None,
+    is_vip: bool = False, 
+    vip_pass: str = None
+):
     """Crear sesión Live con carpeta Cloudinary automática"""
     existing = await db.live_sessions.find_one({"code": code})
     if existing:
         raise HTTPException(status_code=400, detail="Código ya existe")
     
-    # Generar nombre de carpeta Cloudinary: [Nombre]_[Fecha]
-    today = datetime.now().strftime("%Y-%m-%d")
-    cloudinary_folder = f"{event_name.replace(' ', '_')}_{today}"
+    # Usar la fecha del evento o la de hoy
+    date_for_folder = event_date if event_date else datetime.now().strftime("%Y-%m-%d")
+    cloudinary_folder = f"{event_name.replace(' ', '_')}_{date_for_folder}"
     
     session = LiveSession(
         code=code,
         event_name=event_name,
+        event_type=event_type,
+        event_type_custom=event_type_custom if event_type == "otro" else None,
+        event_date=event_date or datetime.now().strftime("%Y-%m-%d"),
         is_vip=is_vip,
         vip_pass=vip_pass if is_vip else None,
         cloudinary_folder=cloudinary_folder
@@ -550,6 +561,13 @@ async def create_live_session_with_cloudinary(code: str, event_name: str, is_vip
     await db.live_sessions.insert_one(doc)
     
     return session
+
+# Obtener sesiones ordenadas por fecha descendente
+@api_router.get("/live/sessions/all")
+async def get_all_live_sessions_sorted():
+    """Obtener todas las sesiones ordenadas por fecha (más recientes primero)"""
+    sessions = await db.live_sessions.find({}, {"_id": 0}).sort("event_date", -1).to_list(100)
+    return sessions
 
 app.include_router(api_router)
 
