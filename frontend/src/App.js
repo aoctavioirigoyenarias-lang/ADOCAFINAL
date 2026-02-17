@@ -1378,7 +1378,6 @@ const AdminPanel = () => {
   const [loading, setLoading] = useState(true);
   const [newEvent, setNewEvent] = useState({ name: "", date: "", time: "", description: "", fotoshare_url: "", video360_url: "", location: "", has_photos: true, has_video360: false, color: "" });
   const [newSession, setNewSession] = useState({ 
-    code: "", 
     event_name: "", 
     event_type: "boda",
     event_type_custom: "",
@@ -1386,6 +1385,19 @@ const AdminPanel = () => {
     is_vip: false, 
     vip_pass: "" 
   });
+  
+  // Generar código numérico único de 4 dígitos
+  const generateUniqueCode = () => {
+    const existingCodes = liveSessions.map(s => s.code);
+    let code;
+    let attempts = 0;
+    do {
+      // Generar número entre 1000 y 9999
+      code = String(Math.floor(1000 + Math.random() * 9000));
+      attempts++;
+    } while (existingCodes.includes(code) && attempts < 100);
+    return code;
+  };
   
   // Tipos de evento disponibles con emojis temáticos
   const eventTypes = [
