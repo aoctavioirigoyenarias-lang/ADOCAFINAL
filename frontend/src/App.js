@@ -1476,29 +1476,96 @@ const AdminPanel = () => {
                 </div>
               </CardContent>
             </Card>
-            {liveSessions.map(session => (
-              <Card key={session.id} className="bg-slate-800 border-white/10">
-                <CardContent className="p-4 flex justify-between items-center">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-white p-2 rounded">
-                      <QRCodeSVG value={`https://${SITE_DOMAIN}/live?event=${session.code}`} size={60} />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-white font-bold">{session.code}</span>
-                        <Badge className={session.is_active ? "bg-green-500" : "bg-gray-500"}>{session.is_active ? "Activo" : "Inactivo"}</Badge>
-                      </div>
-                      <p className="text-gray-300">{session.event_name}</p>
-                      <p className="text-cyan-400 text-sm">https://{SITE_DOMAIN}/live?event={session.code}</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" className="bg-blue-500" onClick={() => printQRPDF(session)}>🖨️ Imprimir QR</Button>
-                    <Button size="sm" variant="destructive" onClick={async () => { await axios.delete(`${API}/live/sessions/${session.id}`); fetchData(); }}>Eliminar</Button>
-                  </div>
+            {/* Lista de sesiones - Ordenadas por fecha descendente */}
+            {liveSessions.length === 0 ? (
+              <Card className="bg-slate-800/50 border-white/10 border-dashed">
+                <CardContent className="p-8 text-center">
+                  <span className="text-5xl block mb-4">🔴</span>
+                  <p className="text-gray-400">No hay sesiones Live creadas</p>
+                  <p className="text-gray-500 text-sm">Crea tu primera sesión con el formulario de arriba</p>
                 </CardContent>
               </Card>
-            ))}
+            ) : (
+              [...liveSessions]
+                .sort((a, b) => new Date(b.event_date || '1970-01-01') - new Date(a.event_date || '1970-01-01'))
+                .map(session => {
+                  const typeInfo = getEventTypeInfo(session.event_type, session.event_type_custom);
+                  return (
+                    <Card key={session.id} className="bg-slate-800 border-white/10 hover:border-cyan-500/30 transition-colors">
+                      <CardContent className="p-4">
+                        <div className="flex justify-between items-start">
+                          {/* Lado izquierdo: QR y datos */}
+                          <div className="flex items-start gap-4">
+                            <div className="bg-white p-2 rounded-lg shadow-lg">
+                              <QRCodeSVG value={`https://${SITE_DOMAIN}/picpartylive?event=${session.code}`} size={70} />
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-white font-bold text-lg">{session.code}</span>
+                                <Badge className={session.is_active ? "bg-green-500/80" : "bg-gray-500"}>
+                                  {session.is_active ? "🟢 Activo" : "⚫ Inactivo"}
+                                </Badge>
+                                {session.is_vip && <Badge className="bg-yellow-500/80">⭐ VIP</Badge>}
+                              </div>
+                              <p className="text-gray-200 font-medium">{session.event_name}</p>
+                              <div className="flex items-center gap-3 mt-1">
+                                <Badge className="bg-purple-500/20 text-purple-300 text-xs">
+                                  {typeInfo.emoji} {typeInfo.label}
+                                </Badge>
+                                {session.event_date && (
+                                  <span className="text-gray-400 text-sm">
+                                    📅 {new Date(session.event_date + 'T12:00:00').toLocaleDateString('es-MX', { 
+                                      day: 'numeric', month: 'short', year: 'numeric' 
+                                    })}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-cyan-400 text-xs mt-2 font-mono">
+                                https://{SITE_DOMAIN}/picpartylive?event={session.code}
+                              </p>
+                            </div>
+                          </div>
+                          
+                          {/* Lado derecho: Botones */}
+                          <div className="flex flex-col gap-2">
+                            <Button 
+                              size="sm" 
+                              className="bg-blue-500 hover:bg-blue-600" 
+                              onClick={() => printQRPDF(session)}
+                              data-testid={`print-qr-${session.code}`}
+                            >
+                              🖨️ Imprimir QR
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="border-white/20 text-white hover:bg-white/10"
+                              onClick={async () => { 
+                                await axios.put(`${API}/live/sessions/${session.id}/toggle`); 
+                                fetchData(); 
+                              }}
+                            >
+                              {session.is_active ? "⏸️ Pausar" : "▶️ Activar"}
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="destructive" 
+                              onClick={async () => { 
+                                if (confirm('¿Eliminar esta sesión?')) {
+                                  await axios.delete(`${API}/live/sessions/${session.id}`); 
+                                  fetchData(); 
+                                }
+                              }}
+                            >
+                              🗑️ Eliminar
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })
+            )}
           </TabsContent>
 
           <TabsContent value="cloudinary" className="mt-4">
