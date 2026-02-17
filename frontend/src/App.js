@@ -1861,9 +1861,28 @@ const AdminPanel = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
-              <Input placeholder="Usuario" value={loginUser} onChange={(e) => setLoginUser(e.target.value.toUpperCase())} className="bg-white/10 border-white/20 text-white" />
-              <Input type="password" placeholder="Contraseña" value={loginPass} onChange={(e) => setLoginPass(e.target.value)} className="bg-white/10 border-white/20 text-white" />
-              <Button type="submit" className="w-full bg-purple-500">🔐 Ingresar</Button>
+              <div>
+                <Input 
+                  placeholder="Usuario" 
+                  value={loginUser} 
+                  onChange={(e) => setLoginUser(e.target.value.toUpperCase())} 
+                  className="bg-white/10 border-white/20 text-white"
+                  autoComplete="username"
+                />
+                <p className="text-gray-500 text-xs mt-1">Usuario: OCTAVIO</p>
+              </div>
+              <div>
+                <Input 
+                  type="password" 
+                  placeholder="Contraseña" 
+                  value={loginPass} 
+                  onChange={(e) => setLoginPass(e.target.value)} 
+                  className="bg-white/10 border-white/20 text-white"
+                  autoComplete="current-password"
+                />
+                <p className="text-gray-500 text-xs mt-1">Contraseña: CHELO1980</p>
+              </div>
+              <Button type="submit" className="w-full bg-purple-500 hover:bg-purple-600">🔐 Ingresar</Button>
             </form>
             <Link to="/" className="block text-center mt-4 text-gray-400 hover:text-white">← Volver</Link>
           </CardContent>
