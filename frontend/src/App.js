@@ -607,46 +607,199 @@ const Cotizador = () => {
 };
 
 // ============ PICPARTY LIVE (MICROSITIO) ============
+// ============ PICPARTY LIVE - COMPONENTE DE EMERGENCIA ============
 const PicPartyLive = () => {
   const [searchParams] = useSearchParams();
   const eventCode = searchParams.get('event');
-  const [session, setSession] = useState(null);
-  const [code, setCode] = useState(eventCode || "");
-  const [loading, setLoading] = useState(!!eventCode);
-  const [selectedFiles, setSelectedFiles] = useState([]);
-  const [uploading, setUploading] = useState(false);
-  const [uploadedPhotos, setUploadedPhotos] = useState([]);
-  const fileInputRef = useRef(null);
+  const [eventName, setEventName] = useState("");
+  const [joined, setJoined] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleJoin = async () => {
-    if (!code.trim()) {
-      toast.error("Ingresa un código");
-      return;
-    }
-    setLoading(true);
-    try {
-      const response = await axios.get(`${API}/live/scan/${code}`);
-      setSession(response.data);
-      toast.success(`¡Bienvenido a ${response.data.event_name}!`);
-    } catch (e) {
-      toast.error("Código inválido o evento no activo");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Unirse al evento automáticamente si hay código en URL
   useEffect(() => {
-    if (eventCode) handleJoin();
-  }, []);
-
-  const handleFileSelect = (e) => {
-    const files = Array.from(e.target.files);
-    if (files.length > 0) {
-      setSelectedFiles(files);
-      // Simular subida (placeholder - requiere Cloudinary)
-      handleUpload(files);
+    if (eventCode) {
+      fetch(`${API}/live/scan/${eventCode}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Evento no encontrado");
+          return res.json();
+        })
+        .then(data => {
+          setEventName(data.event_name || eventCode);
+          setJoined(true);
+        })
+        .catch(() => {
+          setError("Código inválido");
+        });
     }
+  }, [eventCode]);
+
+  // Función para abrir cámara
+  const openCamera = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.capture = 'environment';
+    input.onchange = (e) => {
+      if (e.target.files && e.target.files[0]) {
+        alert(`Foto seleccionada: ${e.target.files[0].name}\n\nNota: Cloudinary pendiente de configurar`);
+      }
+    };
+    input.click();
   };
+
+  // VISTA DE EMERGENCIA - Sin librerías pesadas
+  return (
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #4a148c 0%, #7b1fa2 50%, #4a148c 100%)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '20px',
+      fontFamily: 'system-ui, -apple-system, sans-serif'
+    }}>
+      
+      {/* Logo simple */}
+      <div style={{
+        fontSize: '60px',
+        marginBottom: '20px'
+      }}>
+        📸
+      </div>
+
+      {/* Título */}
+      <h1 style={{
+        color: 'white',
+        fontSize: '28px',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        margin: '0 0 10px 0'
+      }}>
+        {joined ? '¡Bienvenido a la fiesta!' : '¡Únete a la Fiesta!'}
+      </h1>
+
+      {/* Nombre del evento */}
+      {joined && eventName && (
+        <p style={{
+          color: '#e1bee7',
+          fontSize: '22px',
+          fontWeight: '600',
+          margin: '0 0 30px 0',
+          textAlign: 'center'
+        }}>
+          {eventName}
+        </p>
+      )}
+
+      {/* Error */}
+      {error && (
+        <p style={{
+          color: '#ff8a80',
+          fontSize: '16px',
+          margin: '0 0 20px 0'
+        }}>
+          {error}
+        </p>
+      )}
+
+      {/* BOTÓN PRINCIPAL */}
+      {joined ? (
+        <button
+          onClick={openCamera}
+          style={{
+            width: '100%',
+            maxWidth: '320px',
+            padding: '25px 40px',
+            fontSize: '24px',
+            fontWeight: 'bold',
+            color: 'white',
+            background: 'linear-gradient(135deg, #ec407a 0%, #d81b60 100%)',
+            border: 'none',
+            borderRadius: '20px',
+            cursor: 'pointer',
+            boxShadow: '0 8px 30px rgba(236, 64, 122, 0.4)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '12px'
+          }}
+        >
+          📸 SUBIR MI FOTO
+        </button>
+      ) : !eventCode ? (
+        <div style={{ width: '100%', maxWidth: '320px' }}>
+          <input
+            type="text"
+            placeholder="CÓDIGO"
+            style={{
+              width: '100%',
+              padding: '18px',
+              fontSize: '24px',
+              textAlign: 'center',
+              letterSpacing: '0.2em',
+              border: 'none',
+              borderRadius: '12px',
+              marginBottom: '15px',
+              background: 'rgba(255,255,255,0.15)',
+              color: 'white'
+            }}
+            onChange={(e) => {
+              const val = e.target.value.toUpperCase();
+              e.target.value = val;
+            }}
+            id="codeInput"
+          />
+          <button
+            onClick={() => {
+              const code = document.getElementById('codeInput').value;
+              if (code) {
+                window.location.href = `/live?event=${code}`;
+              }
+            }}
+            style={{
+              width: '100%',
+              padding: '18px',
+              fontSize: '20px',
+              fontWeight: 'bold',
+              color: 'white',
+              background: 'linear-gradient(135deg, #ec407a 0%, #d81b60 100%)',
+              border: 'none',
+              borderRadius: '12px',
+              cursor: 'pointer'
+            }}
+          >
+            🎉 ENTRAR
+          </button>
+        </div>
+      ) : (
+        <p style={{ color: 'white' }}>Cargando...</p>
+      )}
+
+      {/* Carpeta destino */}
+      {joined && (
+        <p style={{
+          color: 'rgba(255,255,255,0.5)',
+          fontSize: '12px',
+          marginTop: '30px',
+          textAlign: 'center'
+        }}>
+          📁 Carpeta: {eventName.replace(/\s+/g, '_')}
+        </p>
+      )}
+
+      {/* Footer */}
+      <p style={{
+        position: 'fixed',
+        bottom: '15px',
+        color: 'rgba(255,255,255,0.4)',
+        fontSize: '11px'
+      }}>
+        PicParty Live
+      </p>
+    </div>
+  );
+};
 
   const handleUpload = async (files) => {
     setUploading(true);
