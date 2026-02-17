@@ -849,16 +849,6 @@ const PicPartyLive = () => {
       throw error;
     }
   };
-            setUploadProgress(percent);
-          }
-        }
-      );
-      return response.data;
-    } catch (error) {
-      console.error('Error subiendo a Cloudinary:', error);
-      throw error;
-    }
-  };
 
   // Manejar selección de archivos (máximo 10 fotos)
   const handleFileSelect = async (e) => {
@@ -898,6 +888,8 @@ const PicPartyLive = () => {
     
     if (uploaded.length > 0) {
       setUploadedPhotos(prev => [...uploaded, ...prev]);
+      // Actualizar galería colaborativa
+      if (session) fetchGalleryPhotos(session.code);
       toast.success(`¡${uploaded.length} foto(s) subida(s)! ${PICPARTY_EMOJIS[Math.floor(Math.random() * PICPARTY_EMOJIS.length)]}`);
     }
     
