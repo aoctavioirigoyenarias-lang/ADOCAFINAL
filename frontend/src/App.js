@@ -2215,6 +2215,14 @@ const AdminPanel = () => {
                             </Button>
                             <Button 
                               size="sm" 
+                              className="bg-amber-500 hover:bg-amber-600"
+                              onClick={() => openEditModal(session)}
+                              data-testid={`edit-${session.code}`}
+                            >
+                              ✏️ Editar
+                            </Button>
+                            <Button 
+                              size="sm" 
                               variant="outline" 
                               className="border-white/20 text-white hover:bg-white/10"
                               onClick={async () => { 
@@ -2242,6 +2250,109 @@ const AdminPanel = () => {
                     </Card>
                   );
                 })
+            )}
+
+            {/* ============ MODAL DE EDICIÓN ============ */}
+            {editingSession && (
+              <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+                <Card className="bg-slate-800 border-cyan-500/50 w-full max-w-md mx-4">
+                  <CardHeader>
+                    <CardTitle className="text-white flex items-center gap-2">
+                      ✏️ Editar Evento: {editingSession.code}
+                    </CardTitle>
+                    <CardDescription className="text-gray-400">
+                      Modifica los datos del evento y guarda los cambios
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Código */}
+                    <div>
+                      <Label className="text-white text-sm">Código del Evento</Label>
+                      <Input 
+                        value={editForm.code}
+                        onChange={(e) => setEditForm({...editForm, code: e.target.value.toUpperCase()})}
+                        className="bg-slate-700 border-white/10 text-white mt-1"
+                        placeholder="Código único"
+                      />
+                    </div>
+                    
+                    {/* Nombre */}
+                    <div>
+                      <Label className="text-white text-sm">Nombre del Evento *</Label>
+                      <Input 
+                        value={editForm.event_name}
+                        onChange={(e) => setEditForm({...editForm, event_name: e.target.value})}
+                        className="bg-slate-700 border-white/10 text-white mt-1"
+                        placeholder="Nombre del evento"
+                      />
+                    </div>
+                    
+                    {/* Tipo de Evento */}
+                    <div>
+                      <Label className="text-white text-sm">Tipo de Evento</Label>
+                      <Select 
+                        value={editForm.event_type} 
+                        onValueChange={(v) => setEditForm({...editForm, event_type: v})}
+                      >
+                        <SelectTrigger className="bg-slate-700 border-white/10 text-white mt-1">
+                          <SelectValue placeholder="Selecciona tipo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {eventTypes.map(type => (
+                            <SelectItem key={type.value} value={type.value}>
+                              {type.emoji} {type.label.replace(type.emoji, '').trim()}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    {/* Campo personalizado si es "Otro" */}
+                    {editForm.event_type === "otro" && (
+                      <div>
+                        <Label className="text-white text-sm">Especifica el tipo</Label>
+                        <Input 
+                          value={editForm.event_type_custom}
+                          onChange={(e) => setEditForm({...editForm, event_type_custom: e.target.value})}
+                          className="bg-slate-700 border-white/10 text-white mt-1"
+                          placeholder="ej: Graduación, Bautizo"
+                        />
+                      </div>
+                    )}
+                    
+                    {/* Fecha */}
+                    <div>
+                      <Label className="text-white text-sm">Fecha del Evento *</Label>
+                      <Input 
+                        type="date"
+                        value={editForm.event_date}
+                        onChange={(e) => setEditForm({...editForm, event_date: e.target.value})}
+                        className="bg-slate-700 border-white/10 text-white mt-1"
+                      />
+                      <p className="text-gray-500 text-xs mt-1">
+                        💡 Cambia a fecha de hoy para activar acceso inmediato
+                      </p>
+                    </div>
+                    
+                    {/* Botones */}
+                    <div className="flex gap-3 pt-4">
+                      <Button 
+                        variant="outline" 
+                        className="flex-1 border-white/20 text-white"
+                        onClick={closeEditModal}
+                      >
+                        Cancelar
+                      </Button>
+                      <Button 
+                        className="flex-1 bg-cyan-500 hover:bg-cyan-600"
+                        onClick={saveSessionEdit}
+                      >
+                        💾 Guardar Cambios
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             )}
           </TabsContent>
 
