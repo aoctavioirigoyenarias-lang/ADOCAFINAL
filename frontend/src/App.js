@@ -756,19 +756,27 @@ const PicPartyLive = () => {
     }
   };
 
-  // Manejar selección de archivos
+  // Manejar selección de archivos (máximo 10 fotos)
   const handleFileSelect = async (e) => {
-    const files = Array.from(e.target.files);
+    let files = Array.from(e.target.files);
     if (files.length === 0) return;
+    
+    // Limitar a 10 fotos máximo
+    if (files.length > 10) {
+      toast.warning("Máximo 10 fotos a la vez. Se subirán las primeras 10.");
+      files = files.slice(0, 10);
+    }
     
     setUploading(true);
     setUploadProgress(0);
-    toast.info(`Subiendo ${files.length} foto(s)...`);
+    setTotalFiles(files.length);
+    setCurrentFileIndex(0);
     
     const uploaded = [];
     
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
+      setCurrentFileIndex(i + 1);
       try {
         const result = await uploadToCloudinary(file);
         uploaded.push({
@@ -776,7 +784,8 @@ const PicPartyLive = () => {
           url: result.secure_url,
           thumbnail: result.secure_url.replace('/upload/', '/upload/w_200,h_200,c_fill/'),
           name: file.name,
-          timestamp: new Date().toLocaleTimeString('es-MX')
+          timestamp: new Date().toLocaleTimeString('es-MX'),
+          emoji: PICPARTY_EMOJIS[Math.floor(Math.random() * PICPARTY_EMOJIS.length)]
         });
       } catch (err) {
         toast.error(`Error subiendo ${file.name}`);
@@ -785,16 +794,36 @@ const PicPartyLive = () => {
     
     if (uploaded.length > 0) {
       setUploadedPhotos(prev => [...uploaded, ...prev]);
-      toast.success(`¡${uploaded.length} foto(s) subida(s) con éxito!`);
+      toast.success(`¡${uploaded.length} foto(s) subida(s)! ${PICPARTY_EMOJIS[Math.floor(Math.random() * PICPARTY_EMOJIS.length)]}`);
     }
     
     setUploading(false);
     setUploadProgress(0);
+    setTotalFiles(0);
+    setCurrentFileIndex(0);
     
     // Limpiar el input
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+  };
+
+  // Función para prompt de instalación PWA
+  const handleAddToHome = () => {
+    setShowPWABanner(false);
+    localStorage.setItem('pwa_banner_dismissed', 'true');
+    // Mostrar instrucciones según el dispositivo
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (isIOS) {
+      toast.info("Toca el ícono de compartir ⬆️ y luego 'Añadir a pantalla de inicio'", { duration: 5000 });
+    } else {
+      toast.info("Toca el menú ⋮ y selecciona 'Añadir a pantalla de inicio'", { duration: 5000 });
+    }
+  };
+
+  const dismissPWABanner = () => {
+    setShowPWABanner(false);
+    localStorage.setItem('pwa_banner_dismissed', 'true');
   };
 
   // Pantalla de carga inicial
@@ -803,9 +832,9 @@ const PicPartyLive = () => {
       <div className="min-h-screen bg-gradient-to-br from-purple-950 via-violet-900 to-purple-950 flex items-center justify-center">
         <div className="text-center">
           <div className="w-24 h-24 mx-auto bg-gradient-to-r from-pink-500 to-violet-500 rounded-full flex items-center justify-center mb-6 animate-pulse">
-            <span className="text-5xl">📸</span>
+            <span className="text-5xl">{PICPARTY_EMOJIS[Math.floor(Math.random() * PICPARTY_EMOJIS.length)]}</span>
           </div>
-          <p className="text-white text-xl">Entrando al evento...</p>
+          <p className="text-white text-xl">Cargando... ✨</p>
         </div>
       </div>
     );
@@ -813,8 +842,32 @@ const PicPartyLive = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-950 via-violet-900 to-purple-950">
+      {/* Banner PWA flotante */}
+      {showPWABanner && (
+        <div className="fixed top-14 left-2 right-2 z-50 animate-in slide-in-from-top">
+          <div className="bg-gradient-to-r from-pink-500 to-fuchsia-500 rounded-xl p-3 shadow-2xl">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">📱</span>
+                <p className="text-white text-sm font-medium">
+                  ¿Subir fotos más rápido? ¡Agrega a inicio!
+                </p>
+              </div>
+              <div className="flex gap-1">
+                <Button size="sm" onClick={handleAddToHome} className="bg-white text-pink-600 hover:bg-white/90 text-xs px-2 h-7">
+                  Agregar
+                </Button>
+                <Button size="sm" variant="ghost" onClick={dismissPWABanner} className="text-white hover:bg-white/20 text-xs px-2 h-7">
+                  ✕
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
-      <header className="border-b border-white/10 backdrop-blur-sm bg-black/30 sticky top-0 z-50">
+      <header className="border-b border-white/10 backdrop-blur-sm bg-black/30 sticky top-0 z-40">
         <div className="container mx-auto px-4 py-2 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <img src={PICPARTY_LOGO} alt="PicParty" className="h-8 w-8 object-contain" />
