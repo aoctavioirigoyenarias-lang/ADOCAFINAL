@@ -82,10 +82,13 @@ class LiveSession(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     code: str
     event_name: str
+    event_type: str = "boda"  # Tipo de evento
+    event_type_custom: Optional[str] = None  # Si es "otro"
+    event_date: str  # Fecha del evento
     is_active: bool = True
     is_vip: bool = False
     vip_pass: Optional[str] = None
-    cloudinary_folder: Optional[str] = None  # Carpeta automática [Nombre]_[Fecha]
+    cloudinary_folder: Optional[str] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class Contract(BaseModel):
