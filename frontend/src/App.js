@@ -899,21 +899,6 @@ const AdminPanel = () => {
     pdf.save(`QR_PicParty_${session.event_name.replace(/\s+/g, '_')}.pdf`);
     toast.success("PDF descargado correctamente");
   };
-    const qrCanvas = document.createElement('canvas');
-    await QRCodeLib.toCanvas(qrCanvas, qrUrl, { width: 1000, margin: 2 });
-    pdf.addImage(qrCanvas.toDataURL('image/png'), 'PNG', (pageWidth - 120) / 2, 105, 120, 120);
-    
-    pdf.setFontSize(12);
-    pdf.setTextColor(236, 72, 153);
-    pdf.text(qrUrl, pageWidth / 2, 235, { align: 'center' });
-    
-    pdf.setFontSize(16);
-    pdf.setTextColor(255, 255, 255);
-    pdf.text(`Código: ${session.code}`, pageWidth / 2, 250, { align: 'center' });
-    
-    pdf.output('dataurlnewwindow');
-    toast.success("PDF generado");
-  };
 
   // ============ FUNCIONES DE CONTRATOS ============
   
