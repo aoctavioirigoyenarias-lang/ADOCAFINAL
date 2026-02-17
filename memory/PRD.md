@@ -65,3 +65,44 @@ ADOCA/{{MES}}/{{FECHA}}/{{TIPO}}_{{NOMBRE}}/
 - Acceso Restringido: 100% ✅
 - Muro Colaborativo: 100% ✅
 - Reacciones: 100% ✅
+
+## ACTUALIZACIÓN DICIEMBRE 2025 - Branding & Sales Optimization
+
+### 7. BOTONES DE COMPARTIR (Admin Panel)
+- ✅ **Copiar Link**: Copia `https://adoca.net/live?code=[CODIGO]` al portapapeles
+- ✅ **WhatsApp**: Abre wa.me con mensaje pre-llenado incluyendo el link directo
+- ✅ URL mostrada debajo del QR para referencia
+
+### 8. ACCESO DIRECTO CON ?code=
+- ✅ Ruta `/live?code=CODIGO` permite acceso directo sin ingresar código
+- ✅ Compatible con links compartidos vía WhatsApp o QR
+- ✅ Sesión guardada en LocalStorage por 24 horas
+
+### 9. FOOTER DE VENTAS (Guest View)
+- ✅ Botón CTA: "✨ ¡Quiero PICPARTYLIVE en mi fiesta!" → /cotizador
+- ✅ Branding: "PICPARTYLIVE • adoca.net"
+- ✅ Link: "🔒 Seguridad y Privacidad" → Modal informativo
+
+### 10. MODAL DE PRIVACIDAD
+- ✅ Control del Anfitrión
+- ✅ Fotos Privadas
+- ✅ Sin Apps que Descargar
+- ✅ Protección de Datos
+
+### 11. QR CODE PDF
+- ✅ URL actualizada a `/live?code=[CODIGO]` (consistente con botones)
+- ✅ Descarga forzada con Blob URL
+- ✅ Link de respaldo si descarga automática falla
+
+## Test Results (Diciembre 2025)
+- Admin Login: 100% ✅
+- Botones Compartir: 100% ✅
+- Precios NETO: 100% ✅
+- Acceso Directo ?code=: 100% ✅
+- Footer Ventas: 100% ✅
+- Modal Privacidad: 100% ✅
+- QR PDF Download: 100% ✅
+
+## Próximas Tareas (Backlog)
+- P1: Descarga ZIP de todas las fotos de un evento
+- P2: Ruta `/live-tv` para proyectores con feed animado
