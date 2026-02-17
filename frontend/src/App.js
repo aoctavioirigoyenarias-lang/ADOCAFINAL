@@ -329,12 +329,13 @@ const Cotizador = () => {
     
     if (includeVideo360) {
       pdf.text("Video 360°", 25, y);
-      pdf.text(formatCurrency(3000), pageWidth - 45, y, { align: 'right' });
+      pdf.text(formatCurrency(3000) + " (NETO)", pageWidth - 45, y, { align: 'right' });
       y += 7;
     }
-    if (includeLive) {
-      pdf.text("PicParty Live", 25, y);
-      pdf.text(formatCurrency(2000), pageWidth - 45, y, { align: 'right' });
+    if (includeLive && livePackage > 0) {
+      const pkgLabel = livePackage === 700 ? "Básico" : livePackage === 1000 ? "Estándar" : "Premium";
+      pdf.text(`PicParty Live - ${pkgLabel}`, 25, y);
+      pdf.text(formatCurrency(livePackage) + " (NETO)", pageWidth - 45, y, { align: 'right' });
       y += 7;
     }
     extras.forEach(extra => {
