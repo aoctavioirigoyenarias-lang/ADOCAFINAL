@@ -1329,6 +1329,16 @@ const AdminPanel = () => {
     extras: [], discount_percent: 0, special_price: null, notes: ""
   });
   const [contractPreview, setContractPreview] = useState(null);
+  
+  // Estado para edición de sesiones Live
+  const [editingSession, setEditingSession] = useState(null);
+  const [editForm, setEditForm] = useState({
+    event_name: "",
+    event_type: "",
+    event_type_custom: "",
+    event_date: "",
+    code: ""
+  });
 
   useEffect(() => {
     if (sessionStorage.getItem("adminAuth") === "true") setIsAuthenticated(true);
