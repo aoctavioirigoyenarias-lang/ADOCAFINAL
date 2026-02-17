@@ -333,8 +333,8 @@ const Cotizador = () => {
       y += 7;
     }
     if (includeLive && livePackage > 0) {
-      const pkgLabel = livePackage === 700 ? "Básico" : livePackage === 1000 ? "Estándar" : "Premium";
-      pdf.text(`PicParty Live - ${pkgLabel}`, 25, y);
+      const pkgLabel = livePackage === 700 ? "Súper Precio" : livePackage === 1000 ? "Promo Expo" : "Regular";
+      pdf.text(`PICPARTYLIVE - ${pkgLabel}`, 25, y);
       pdf.text(formatCurrency(livePackage) + " (NETO)", pageWidth - 45, y, { align: 'right' });
       y += 7;
     }
@@ -599,8 +599,8 @@ const Cotizador = () => {
                     )}
                     {includeLive && (
                       <div className="flex justify-between text-pink-400">
-                        <span>PicParty Live</span>
-                        <span>{formatCurrency(2000)}</span>
+                        <span>PICPARTYLIVE</span>
+                        <span>{formatCurrency(livePackage)}</span>
                       </div>
                     )}
                     {extras.map(extra => {
