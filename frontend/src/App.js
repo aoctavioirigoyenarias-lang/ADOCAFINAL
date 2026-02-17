@@ -1052,74 +1052,155 @@ const PicPartyLive = () => {
               )}
             </div>
 
-            {/* BOTÓN PRINCIPAL DE SUBIDA */}
-            <Card className="bg-white/5 border-white/10 backdrop-blur mb-4">
-              <CardContent className="p-4">
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  capture="environment"
-                  ref={fileInputRef}
-                  onChange={handleFileSelect}
-                  className="hidden"
-                  data-testid="photo-input"
-                />
-                
-                <Button 
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploading}
-                  className="w-full h-20 text-xl font-black bg-gradient-to-r from-pink-500 to-fuchsia-500 hover:from-pink-600 hover:to-fuchsia-600 rounded-xl shadow-2xl shadow-pink-500/40 transition-all hover:scale-[1.02] active:scale-[0.98]"
-                  data-testid="upload-photo-btn"
-                >
-                  {uploading ? (
-                    <span className="flex flex-col items-center gap-1">
-                      <span>✨ Subiendo {currentFileIndex}/{totalFiles}... {uploadProgress}%</span>
-                      <div className="w-32 h-1 bg-white/30 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-white transition-all duration-300" 
-                          style={{ width: `${uploadProgress}%` }}
-                        />
-                      </div>
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-3">
-                      📸 SUBIR MI FOTO
-                    </span>
-                  )}
-                </Button>
-                
-                <p className="text-center text-gray-400 text-xs mt-3">
-                  Toca para tomar o seleccionar fotos
-                </p>
-              </CardContent>
-            </Card>
+            {/* TABS: Subir / Galería */}
+            <div className="flex gap-2 mb-4">
+              <Button 
+                variant={activeTab === "upload" ? "default" : "outline"}
+                className={activeTab === "upload" ? "flex-1 bg-pink-500" : "flex-1 border-white/20 text-white"}
+                onClick={() => setActiveTab("upload")}
+              >
+                📸 Subir
+              </Button>
+              <Button 
+                variant={activeTab === "gallery" ? "default" : "outline"}
+                className={activeTab === "gallery" ? "flex-1 bg-purple-500" : "flex-1 border-white/20 text-white"}
+                onClick={() => { setActiveTab("gallery"); fetchGalleryPhotos(session.code); }}
+              >
+                👑 Galería ({galleryPhotos.length})
+              </Button>
+            </div>
 
-            {/* Galería de fotos subidas */}
-            {uploadedPhotos.length > 0 && (
+            {activeTab === "upload" ? (
+              <>
+                {/* BOTÓN PRINCIPAL DE SUBIDA */}
+                <Card className="bg-white/5 border-white/10 backdrop-blur mb-4">
+                  <CardContent className="p-4">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      capture="environment"
+                      ref={fileInputRef}
+                      onChange={handleFileSelect}
+                      className="hidden"
+                      data-testid="photo-input"
+                    />
+                    
+                    <Button 
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
+                      className="w-full h-20 text-xl font-black bg-gradient-to-r from-pink-500 to-fuchsia-500 hover:from-pink-600 hover:to-fuchsia-600 rounded-xl shadow-2xl shadow-pink-500/40 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                      data-testid="upload-photo-btn"
+                    >
+                      {uploading ? (
+                        <span className="flex flex-col items-center gap-1">
+                          <span>✨ Subiendo {currentFileIndex}/{totalFiles}... {uploadProgress}%</span>
+                          <div className="w-32 h-1 bg-white/30 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-white transition-all duration-300" 
+                              style={{ width: `${uploadProgress}%` }}
+                            />
+                          </div>
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-3">
+                          📸 SUBIR MI FOTO
+                        </span>
+                      )}
+                    </Button>
+                    
+                    <p className="text-center text-gray-400 text-xs mt-3">
+                      Toca para tomar o seleccionar hasta 10 fotos
+                    </p>
+                  </CardContent>
+                </Card>
+
+                {/* Mis fotos subidas */}
+                {uploadedPhotos.length > 0 && (
+                  <Card className="bg-white/5 border-white/10 backdrop-blur mb-4">
+                    <CardHeader className="py-3 px-4">
+                      <CardTitle className="text-white text-sm flex items-center gap-2">
+                        📷 Mis Fotos ({uploadedPhotos.length})
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="px-4 pb-4">
+                      <div className="grid grid-cols-3 gap-2">
+                        {uploadedPhotos.slice(0, 9).map(photo => (
+                          <div key={photo.id} className="relative aspect-square rounded-lg overflow-hidden bg-white/5">
+                            <img 
+                              src={photo.thumbnail || photo.url} 
+                              alt={photo.name}
+                              className="w-full h-full object-cover"
+                              loading="lazy"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                      {uploadedPhotos.length > 9 && (
+                        <p className="text-center text-gray-400 text-xs mt-2">
+                          +{uploadedPhotos.length - 9} fotos más ✨
+                        </p>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
+              </>
+            ) : (
+              /* ============ MURO COLABORATIVO ============ */
               <Card className="bg-white/5 border-white/10 backdrop-blur mb-4">
                 <CardHeader className="py-3 px-4">
-                  <CardTitle className="text-white text-sm flex items-center gap-2">
-                    📷 Mis Fotos ({uploadedPhotos.length})
+                  <CardTitle className="text-white text-sm flex items-center justify-between">
+                    <span>👑 Muro Colaborativo</span>
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="text-purple-300 text-xs"
+                      onClick={() => fetchGalleryPhotos(session.code)}
+                    >
+                      🔄 Actualizar
+                    </Button>
                   </CardTitle>
+                  <p className="text-gray-400 text-xs">Fotos de todos los invitados</p>
                 </CardHeader>
                 <CardContent className="px-4 pb-4">
-                  <div className="grid grid-cols-3 gap-2">
-                    {uploadedPhotos.slice(0, 9).map(photo => (
-                      <div key={photo.id} className="relative aspect-square rounded-lg overflow-hidden bg-white/5">
-                        <img 
-                          src={photo.thumbnail || photo.url} 
-                          alt={photo.name}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                  {uploadedPhotos.length > 9 && (
-                    <p className="text-center text-gray-400 text-xs mt-2">
-                      +{uploadedPhotos.length - 9} fotos más ✨
-                    </p>
+                  {galleryPhotos.length === 0 ? (
+                    <div className="text-center py-8">
+                      <span className="text-4xl block mb-2">📸</span>
+                      <p className="text-gray-400">Aún no hay fotos</p>
+                      <p className="text-gray-500 text-sm">¡Sé el primero en subir!</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {galleryPhotos.map(photo => (
+                        <div key={photo.id} className="bg-white/5 rounded-xl overflow-hidden">
+                          {/* Imagen */}
+                          <div className="aspect-square relative">
+                            <img 
+                              src={photo.cloudinary_url} 
+                              alt="Foto del evento"
+                              className="w-full h-full object-cover"
+                              loading="lazy"
+                            />
+                          </div>
+                          
+                          {/* Barra de reacciones */}
+                          <div className="p-3 flex justify-around items-center bg-black/30">
+                            {PICPARTY_EMOJIS.map(emoji => (
+                              <button
+                                key={emoji}
+                                onClick={() => addReaction(photo.id, emoji)}
+                                className="flex flex-col items-center gap-1 hover:scale-110 transition-transform active:scale-95"
+                              >
+                                <span className="text-2xl">{emoji}</span>
+                                <span className="text-xs text-gray-300">
+                                  {photo.reactions?.[emoji] || 0}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </CardContent>
               </Card>
@@ -1134,7 +1215,7 @@ const PicPartyLive = () => {
               </p>
             </div>
 
-            {/* Cerrar sesión - libera LocalStorage */}
+            {/* Cerrar sesión - redirige a landing */}
             <Button 
               variant="ghost" 
               className="w-full mt-3 text-gray-400 hover:text-white text-sm"
