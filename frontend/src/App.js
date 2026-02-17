@@ -1801,7 +1801,7 @@ const AdminPanel = () => {
       y += 7;
     }
     if (contract.include_live) {
-      pdf.text("PicParty Live", 25, y);
+      pdf.text("PICPARTYLIVE", 25, y);
       pdf.text(formatCurrency(2000), pageWidth - 45, y, { align: 'right' });
       y += 7;
     }
@@ -2137,12 +2137,12 @@ const AdminPanel = () => {
             ))}
           </TabsContent>
 
-          {/* ============ PESTAÑA PICPARTY LIVE ============ */}
+          {/* ============ PESTAÑA PICPARTYLIVE ============ */}
           <TabsContent value="live" className="space-y-4 mt-4">
             <Card className="bg-cyan-500/10 border-cyan-500/30">
               <CardContent className="p-4">
-                <p className="text-cyan-300 font-semibold">🔴 PicParty Live - Social</p>
-                <p className="text-gray-400 text-sm">Estos eventos generan carpeta automática en Cloudinary y código QR para invitados.</p>
+                <p className="text-cyan-300 font-semibold">🔴 PICPARTYLIVE - Muro en Vivo</p>
+                <p className="text-gray-400 text-sm">Estos eventos generan carpeta automática en Cloudinary y código QR para invitados. Incluye software de proyección en tiempo real para pantallas o TV. No incluye equipo físico (pantallas/cableado).</p>
               </CardContent>
             </Card>
             <Card className="bg-slate-800 border-white/10">
@@ -2463,7 +2463,7 @@ const AdminPanel = () => {
             <Card className="bg-slate-800 border-white/10">
               <CardHeader>
                 <CardTitle className="text-white">☁️ Configuración Cloudinary</CardTitle>
-                <CardDescription className="text-gray-400">Almacenamiento de fotos para PicParty Live</CardDescription>
+                <CardDescription className="text-gray-400">Almacenamiento ILIMITADO de fotos para PICPARTYLIVE</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded">
