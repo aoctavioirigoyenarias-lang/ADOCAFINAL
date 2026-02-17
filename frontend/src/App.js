@@ -679,6 +679,7 @@ const clearSessionStorage = () => {
 };
 
 const PicPartyLive = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const eventCode = searchParams.get('event');
   const [session, setSession] = useState(null);
@@ -689,9 +690,43 @@ const PicPartyLive = () => {
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
   const [totalFiles, setTotalFiles] = useState(0);
   const [uploadedPhotos, setUploadedPhotos] = useState([]);
+  const [galleryPhotos, setGalleryPhotos] = useState([]); // Muro colaborativo
   const [error, setError] = useState("");
   const [showPWABanner, setShowPWABanner] = useState(false);
+  const [activeTab, setActiveTab] = useState("upload"); // "upload" o "gallery"
   const fileInputRef = useRef(null);
+  
+  // ID único para este invitado (anónimo)
+  const [visitorId] = useState(() => {
+    let id = localStorage.getItem('picparty_visitor_id');
+    if (!id) {
+      id = 'guest_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('picparty_visitor_id', id);
+    }
+    return id;
+  });
+
+  // Cargar fotos del muro colaborativo
+  const fetchGalleryPhotos = async (eventCode) => {
+    try {
+      const response = await axios.get(`${API}/live/photos/${eventCode}`);
+      setGalleryPhotos(response.data.photos || []);
+    } catch (e) {
+      console.error("Error cargando galería:", e);
+    }
+  };
+
+  // Agregar reacción a una foto
+  const addReaction = async (photoId, emoji) => {
+    try {
+      await axios.post(`${API}/live/photos/${photoId}/react`, { emoji });
+      // Actualizar galería
+      if (session) fetchGalleryPhotos(session.code);
+      toast.success(`${emoji} agregado!`);
+    } catch (e) {
+      toast.error("Error al reaccionar");
+    }
+  };
 
   // Verificar sesión guardada al iniciar
   useEffect(() => {
@@ -710,11 +745,14 @@ const PicPartyLive = () => {
         try {
           const response = await axios.get(`${API}/live/scan/${savedSession.code}`);
           setSession(response.data);
-          saveSessionToStorage(response.data); // Renovar expiración
+          saveSessionToStorage(response.data);
+          fetchGalleryPhotos(savedSession.code);
           toast.success(`¡Bienvenido de nuevo a ${response.data.event_name}!`);
         } catch {
-          // Sesión ya no existe en servidor, limpiar
           clearSessionStorage();
+          // SEGURIDAD: Redirigir a landing si no hay sesión válida
+          navigate('/');
+          return;
         }
       }
       setLoading(false);
@@ -731,6 +769,17 @@ const PicPartyLive = () => {
     initSession();
   }, []);
 
+  // Polling para actualizar galería en tiempo real (cada 10 segundos)
+  useEffect(() => {
+    if (!session) return;
+    
+    const interval = setInterval(() => {
+      fetchGalleryPhotos(session.code);
+    }, 10000);
+    
+    return () => clearInterval(interval);
+  }, [session]);
+
   // Unirse al evento
   const handleJoin = async (codeToUse) => {
     const targetCode = codeToUse || code;
@@ -743,7 +792,8 @@ const PicPartyLive = () => {
     try {
       const response = await axios.get(`${API}/live/scan/${targetCode}`);
       setSession(response.data);
-      saveSessionToStorage(response.data); // Guardar sesión por 24 horas
+      saveSessionToStorage(response.data);
+      fetchGalleryPhotos(targetCode);
       toast.success(`¡Bienvenido a ${response.data.event_name}!`);
     } catch (e) {
       setError("Código inválido o evento no activo");
@@ -753,15 +803,17 @@ const PicPartyLive = () => {
     }
   };
 
-  // Cerrar sesión
+  // Cerrar sesión y redirigir a landing
   const handleLogout = () => {
     clearSessionStorage();
     setSession(null);
     setCode("");
     setUploadedPhotos([]);
+    setGalleryPhotos([]);
+    navigate('/'); // SEGURIDAD: Redirigir a landing
   };
 
-  // Subir foto a Cloudinary
+  // Subir foto a Cloudinary y registrar en backend
   const uploadToCloudinary = async (file) => {
     const folderName = session.cloudinary_folder || 
       `${session.event_name.replace(/\s+/g, '_')}_${session.event_date || new Date().toISOString().split('T')[0]}`;
@@ -778,6 +830,25 @@ const PicPartyLive = () => {
         {
           onUploadProgress: (progressEvent) => {
             const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadProgress(percent);
+          }
+        }
+      );
+      
+      // Registrar foto en el backend para el muro colaborativo
+      await axios.post(`${API}/live/photos`, {
+        event_code: session.code,
+        cloudinary_url: response.data.secure_url,
+        thumbnail_url: response.data.secure_url.replace('/upload/', '/upload/w_300,h_300,c_fill/'),
+        uploader_id: visitorId
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.error('Error subiendo a Cloudinary:', error);
+      throw error;
+    }
+  };
             setUploadProgress(percent);
           }
         }
