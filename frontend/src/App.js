@@ -2188,29 +2188,18 @@ const AdminPanel = () => {
             <Card className="bg-slate-800 border-white/10">
               <CardHeader>
                 <CardTitle className="text-white">Crear Sesión Live</CardTitle>
-                <CardDescription className="text-gray-400">Genera: QR + Carpeta Cloudinary [Nombre]_[Fecha]</CardDescription>
+                <CardDescription className="text-gray-400">El código de 4 dígitos se genera automáticamente</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {/* Fila 1: Código y Nombre */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label className="text-white text-sm">Código del Evento *</Label>
-                    <Input 
-                      placeholder="ej: BODA-PEDRO" 
-                      value={newSession.code} 
-                      onChange={(e) => setNewSession({...newSession, code: e.target.value.toUpperCase().replace(/\s+/g, '-')})} 
-                      className="bg-slate-700 border-white/10 text-white mt-1" 
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-white text-sm">Nombre del Evento *</Label>
-                    <Input 
-                      placeholder="Boda de Pedro y María" 
-                      value={newSession.event_name} 
-                      onChange={(e) => setNewSession({...newSession, event_name: e.target.value})} 
-                      className="bg-slate-700 border-white/10 text-white mt-1" 
-                    />
-                  </div>
+                {/* Fila 1: Nombre del Evento */}
+                <div>
+                  <Label className="text-white text-sm">Nombre del Evento *</Label>
+                  <Input 
+                    placeholder="ej: Boda de Pedro y María" 
+                    value={newSession.event_name} 
+                    onChange={(e) => setNewSession({...newSession, event_name: e.target.value})} 
+                    className="bg-slate-700 border-white/10 text-white mt-1" 
+                  />
                 </div>
                 
                 {/* Fila 2: Tipo de Evento y Fecha */}
