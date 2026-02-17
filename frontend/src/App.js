@@ -1445,19 +1445,18 @@ const AdminPanel = () => {
           pdf.addImage(logoImg, 'PNG', (pageWidth - 60) / 2, 15, 60, 60);
         }
       } catch(e) {
-        // Si falla el logo, mostrar texto
         pdf.setFontSize(32);
         pdf.setTextColor(255, 255, 255);
         pdf.text("PICPARTY", pageWidth / 2, 45, { align: 'center' });
       }
       
-      // Tipo de evento con emoji
+      // Tipo de evento
       const typeInfo = getEventTypeInfo(session.event_type, session.event_type_custom);
       pdf.setFontSize(18);
       pdf.setTextColor(236, 72, 153);
       pdf.text(`${typeInfo.label.toUpperCase()}`, pageWidth / 2, 90, { align: 'center' });
       
-      // === QR EN ALTA RESOLUCIÓN - Método más robusto ===
+      // === QR EN ALTA RESOLUCIÓN ===
       const QRCode = (await import('qrcode')).default;
       const qrCanvas = document.createElement('canvas');
       qrCanvas.width = 1200;
@@ -1470,12 +1469,11 @@ const AdminPanel = () => {
         errorCorrectionLevel: 'H'
       });
       
-      // QR grande y centrado (120mm)
       const qrSize = 120;
       const qrDataUrl = qrCanvas.toDataURL('image/png');
       pdf.addImage(qrDataUrl, 'PNG', (pageWidth - qrSize) / 2, 100, qrSize, qrSize);
       
-      // === NOMBRE DEL EVENTO DEBAJO ===
+      // Nombre del evento
       pdf.setFontSize(26);
       pdf.setTextColor(255, 255, 255);
       pdf.text(session.event_name.toUpperCase(), pageWidth / 2, 235, { align: 'center' });
@@ -1498,16 +1496,54 @@ const AdminPanel = () => {
       pdf.setTextColor(100, 100, 100);
       pdf.text(`adoca.net | Código: ${session.code}`, pageWidth / 2, 270, { align: 'center' });
       
-      // === DESCARGA DIRECTA ===
+      // === DESCARGA FORZADA CON BLOB URL ===
       const fileName = `QR_PicParty_${session.event_name.replace(/\s+/g, '_')}_${session.event_date || 'evento'}.pdf`;
-      pdf.save(fileName);
-      toast.success("¡PDF descargado exitosamente!");
+      
+      // Generar Blob del PDF
+      const pdfBlob = pdf.output('blob');
+      const blobUrl = URL.createObjectURL(pdfBlob);
+      
+      // Crear enlace de descarga forzada
+      const downloadLink = document.createElement('a');
+      downloadLink.href = blobUrl;
+      downloadLink.download = fileName;
+      downloadLink.style.display = 'none';
+      document.body.appendChild(downloadLink);
+      
+      // Forzar click para iniciar descarga
+      downloadLink.click();
+      
+      // Limpiar después de un momento
+      setTimeout(() => {
+        document.body.removeChild(downloadLink);
+        URL.revokeObjectURL(blobUrl);
+      }, 1000);
+      
+      // Mostrar toast con enlace de respaldo
+      toast.success(
+        <div>
+          <p>¡PDF generado!</p>
+          <a 
+            href={blobUrl} 
+            download={fileName}
+            style={{ color: '#60a5fa', textDecoration: 'underline', display: 'block', marginTop: '8px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            👉 Haz clic aquí si no inició la descarga
+          </a>
+        </div>,
+        { duration: 10000 }
+      );
       
     } catch (error) {
       console.error("Error generando PDF:", error);
       toast.error("Error al generar PDF. Intenta de nuevo.");
     }
   };
+  
+  // Estado para mostrar enlace de descarga manual
+  const [manualDownloadUrl, setManualDownloadUrl] = useState(null);
+  const [manualDownloadName, setManualDownloadName] = useState("");
 
   // ============ FUNCIONES DE CONTRATOS ============
   
