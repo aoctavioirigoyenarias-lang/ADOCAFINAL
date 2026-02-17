@@ -564,6 +564,112 @@ async def get_all_live_sessions_sorted():
     sessions = await db.live_sessions.find({}, {"_id": 0}).sort("event_date", -1).to_list(100)
     return sessions
 
+# ============ MURO COLABORATIVO - FOTOS Y REACCIONES ============
+
+class PhotoReaction(BaseModel):
+    """Modelo para reacciones de fotos"""
+    model_config = ConfigDict(extra="ignore")
+    emoji: str  # 👸, ✨, 👑, 💃, 📸
+    count: int = 0
+
+class EventPhoto(BaseModel):
+    """Modelo para fotos subidas al evento"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    event_code: str  # Código del evento
+    cloudinary_url: str  # URL de la imagen en Cloudinary
+    thumbnail_url: Optional[str] = None
+    uploader_id: Optional[str] = None  # ID anónimo del que subió
+    reactions: dict = Field(default_factory=lambda: {"👸": 0, "✨": 0, "👑": 0, "💃": 0, "📸": 0})
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class PhotoCreate(BaseModel):
+    event_code: str
+    cloudinary_url: str
+    thumbnail_url: Optional[str] = None
+    uploader_id: Optional[str] = None
+
+class ReactionUpdate(BaseModel):
+    emoji: str  # Debe ser uno de: 👸, ✨, 👑, 💃, 📸
+
+# Emojis permitidos para reacciones
+ALLOWED_EMOJIS = ["👸", "✨", "👑", "💃", "📸"]
+
+@api_router.post("/live/photos")
+async def add_photo_to_event(photo_data: PhotoCreate):
+    """Agregar foto al muro colaborativo del evento"""
+    # Verificar que el evento existe y está activo
+    session = await db.live_sessions.find_one({"code": photo_data.event_code, "is_active": True})
+    if not session:
+        raise HTTPException(status_code=404, detail="Evento no encontrado o inactivo")
+    
+    photo = EventPhoto(
+        event_code=photo_data.event_code,
+        cloudinary_url=photo_data.cloudinary_url,
+        thumbnail_url=photo_data.thumbnail_url,
+        uploader_id=photo_data.uploader_id
+    )
+    
+    doc = photo.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.event_photos.insert_one(doc)
+    
+    return {"id": photo.id, "message": "Foto agregada al muro"}
+
+@api_router.get("/live/photos/{event_code}")
+async def get_event_photos(event_code: str):
+    """Obtener todas las fotos del muro colaborativo del evento"""
+    # Verificar que el evento existe
+    session = await db.live_sessions.find_one({"code": event_code})
+    if not session:
+        raise HTTPException(status_code=404, detail="Evento no encontrado")
+    
+    photos = await db.event_photos.find(
+        {"event_code": event_code}, 
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(500)  # Máximo 500 fotos
+    
+    return {"event_code": event_code, "photos": photos, "total": len(photos)}
+
+@api_router.post("/live/photos/{photo_id}/react")
+async def add_reaction_to_photo(photo_id: str, reaction: ReactionUpdate):
+    """Agregar reacción a una foto"""
+    if reaction.emoji not in ALLOWED_EMOJIS:
+        raise HTTPException(status_code=400, detail=f"Emoji no permitido. Use: {ALLOWED_EMOJIS}")
+    
+    # Verificar que la foto existe
+    photo = await db.event_photos.find_one({"id": photo_id})
+    if not photo:
+        raise HTTPException(status_code=404, detail="Foto no encontrada")
+    
+    # Incrementar contador de reacción
+    result = await db.event_photos.update_one(
+        {"id": photo_id},
+        {"$inc": {f"reactions.{reaction.emoji}": 1}}
+    )
+    
+    # Obtener foto actualizada
+    updated_photo = await db.event_photos.find_one({"id": photo_id}, {"_id": 0})
+    
+    return {"message": "Reacción agregada", "reactions": updated_photo.get("reactions", {})}
+
+@api_router.get("/live/photos/{photo_id}/reactions")
+async def get_photo_reactions(photo_id: str):
+    """Obtener reacciones de una foto específica"""
+    photo = await db.event_photos.find_one({"id": photo_id}, {"_id": 0, "reactions": 1})
+    if not photo:
+        raise HTTPException(status_code=404, detail="Foto no encontrada")
+    
+    return {"photo_id": photo_id, "reactions": photo.get("reactions", {})}
+
+@api_router.delete("/live/photos/{photo_id}")
+async def delete_photo(photo_id: str):
+    """Eliminar una foto del muro (solo admin)"""
+    result = await db.event_photos.delete_one({"id": photo_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Foto no encontrada")
+    return {"message": "Foto eliminada"}
+
 app.include_router(api_router)
 
 app.add_middleware(
