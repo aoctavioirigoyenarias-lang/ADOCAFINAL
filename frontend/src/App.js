@@ -1022,7 +1022,7 @@ const PicPartyLive = () => {
                   </div>
                   {uploadedPhotos.length > 9 && (
                     <p className="text-center text-gray-400 text-xs mt-2">
-                      +{uploadedPhotos.length - 9} fotos más
+                      +{uploadedPhotos.length - 9} fotos más ✨
                     </p>
                   )}
                 </CardContent>
@@ -1038,21 +1038,25 @@ const PicPartyLive = () => {
               </p>
             </div>
 
-            {/* Cambiar evento */}
+            {/* Cerrar sesión - libera LocalStorage */}
             <Button 
               variant="ghost" 
               className="w-full mt-3 text-gray-400 hover:text-white text-sm"
-              onClick={() => { setSession(null); setCode(""); }}
+              onClick={handleLogout}
             >
-              ← Cambiar de evento
+              ← Salir del evento
             </Button>
           </div>
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm border-t border-white/10 py-2 text-center">
-        <p className="text-gray-500 text-xs">PicParty Live • adoca.net</p>
+      {/* Footer con emojis temáticos */}
+      <footer className="fixed bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm border-t border-white/10 py-2">
+        <div className="flex justify-center items-center gap-2">
+          <span className="text-sm">👸</span>
+          <p className="text-gray-500 text-xs">PicParty Live • adoca.net</p>
+          <span className="text-sm">✨</span>
+        </div>
       </footer>
     </div>
   );
@@ -1082,15 +1086,15 @@ const AdminPanel = () => {
     vip_pass: "" 
   });
   
-  // Tipos de evento disponibles
+  // Tipos de evento disponibles con emojis temáticos
   const eventTypes = [
     { value: "boda", label: "💍 Boda", emoji: "💍" },
     { value: "quinceanios", label: "👑 Quinceaños", emoji: "👑" },
     { value: "cumpleanos", label: "🎂 Cumpleaños", emoji: "🎂" },
     { value: "empresarial", label: "🏢 Empresarial", emoji: "🏢" },
-    { value: "publico", label: "🎉 Evento Público", emoji: "🎉" },
-    { value: "fiesta", label: "🎊 Fiesta", emoji: "🎊" },
-    { value: "otro", label: "✏️ Otro", emoji: "✨" }
+    { value: "publico", label: "✨ Evento Público", emoji: "✨" },
+    { value: "fiesta", label: "💃 Fiesta", emoji: "💃" },
+    { value: "otro", label: "📸 Otro", emoji: "📸" }
   ];
   
   // Estado para contratos
