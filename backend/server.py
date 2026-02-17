@@ -580,6 +580,7 @@ class EventPhoto(BaseModel):
     cloudinary_url: str  # URL de la imagen en Cloudinary
     thumbnail_url: Optional[str] = None
     uploader_id: Optional[str] = None  # ID anónimo del que subió
+    cloudinary_folder: Optional[str] = None  # Ruta de carpeta en Cloudinary
     reactions: dict = Field(default_factory=lambda: {"👸": 0, "✨": 0, "👑": 0, "💃": 0, "📸": 0})
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
@@ -588,6 +589,7 @@ class PhotoCreate(BaseModel):
     cloudinary_url: str
     thumbnail_url: Optional[str] = None
     uploader_id: Optional[str] = None
+    cloudinary_folder: Optional[str] = None  # ADOCA/MES/FECHA/TIPO_NOMBRE/
 
 class ReactionUpdate(BaseModel):
     emoji: str  # Debe ser uno de: 👸, ✨, 👑, 💃, 📸
@@ -607,14 +609,15 @@ async def add_photo_to_event(photo_data: PhotoCreate):
         event_code=photo_data.event_code,
         cloudinary_url=photo_data.cloudinary_url,
         thumbnail_url=photo_data.thumbnail_url,
-        uploader_id=photo_data.uploader_id
+        uploader_id=photo_data.uploader_id,
+        cloudinary_folder=photo_data.cloudinary_folder
     )
     
     doc = photo.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
     await db.event_photos.insert_one(doc)
     
-    return {"id": photo.id, "message": "Foto agregada al muro"}
+    return {"id": photo.id, "message": "Foto agregada al muro", "folder": photo_data.cloudinary_folder}
 
 @api_router.get("/live/photos/{event_code}")
 async def get_event_photos(event_code: str):
