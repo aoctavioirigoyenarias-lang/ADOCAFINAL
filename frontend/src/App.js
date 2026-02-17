@@ -611,17 +611,92 @@ const Cotizador = () => {
 const CLOUDINARY_CLOUD_NAME = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME || 'dpvliv2wl';
 const CLOUDINARY_UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET || 'picparty_unsigned';
 
+// Emojis temáticos PicParty
+const PICPARTY_EMOJIS = ['👸', '✨', '👑', '💃', '📸'];
+
+// Utilidad para LocalStorage con expiración de 24 horas
+const SESSION_STORAGE_KEY = 'picparty_active_session';
+const SESSION_EXPIRY_HOURS = 24;
+
+const saveSessionToStorage = (sessionData) => {
+  const data = {
+    session: sessionData,
+    expiry: Date.now() + (SESSION_EXPIRY_HOURS * 60 * 60 * 1000)
+  };
+  localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(data));
+};
+
+const getSessionFromStorage = () => {
+  try {
+    const stored = localStorage.getItem(SESSION_STORAGE_KEY);
+    if (!stored) return null;
+    const data = JSON.parse(stored);
+    if (Date.now() > data.expiry) {
+      localStorage.removeItem(SESSION_STORAGE_KEY);
+      return null;
+    }
+    return data.session;
+  } catch {
+    return null;
+  }
+};
+
+const clearSessionStorage = () => {
+  localStorage.removeItem(SESSION_STORAGE_KEY);
+};
+
 const PicPartyLive = () => {
   const [searchParams] = useSearchParams();
   const eventCode = searchParams.get('event');
   const [session, setSession] = useState(null);
   const [code, setCode] = useState(eventCode || "");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [currentFileIndex, setCurrentFileIndex] = useState(0);
+  const [totalFiles, setTotalFiles] = useState(0);
   const [uploadedPhotos, setUploadedPhotos] = useState([]);
   const [error, setError] = useState("");
+  const [showPWABanner, setShowPWABanner] = useState(false);
   const fileInputRef = useRef(null);
+
+  // Verificar sesión guardada al iniciar
+  useEffect(() => {
+    const initSession = async () => {
+      // Primero verificar si hay código en URL (prioridad)
+      if (eventCode) {
+        await handleJoin(eventCode);
+        setLoading(false);
+        return;
+      }
+      
+      // Si no hay código en URL, buscar sesión guardada
+      const savedSession = getSessionFromStorage();
+      if (savedSession) {
+        // Verificar que la sesión sigue activa en el servidor
+        try {
+          const response = await axios.get(`${API}/live/scan/${savedSession.code}`);
+          setSession(response.data);
+          saveSessionToStorage(response.data); // Renovar expiración
+          toast.success(`¡Bienvenido de nuevo a ${response.data.event_name}!`);
+        } catch {
+          // Sesión ya no existe en servidor, limpiar
+          clearSessionStorage();
+        }
+      }
+      setLoading(false);
+      
+      // Mostrar banner PWA después de 3 segundos
+      setTimeout(() => {
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+        if (!isStandalone && !localStorage.getItem('pwa_banner_dismissed')) {
+          setShowPWABanner(true);
+        }
+      }, 3000);
+    };
+    
+    initSession();
+  }, []);
 
   // Unirse al evento
   const handleJoin = async (codeToUse) => {
@@ -635,6 +710,7 @@ const PicPartyLive = () => {
     try {
       const response = await axios.get(`${API}/live/scan/${targetCode}`);
       setSession(response.data);
+      saveSessionToStorage(response.data); // Guardar sesión por 24 horas
       toast.success(`¡Bienvenido a ${response.data.event_name}!`);
     } catch (e) {
       setError("Código inválido o evento no activo");
@@ -644,12 +720,13 @@ const PicPartyLive = () => {
     }
   };
 
-  // Auto-join si hay código en URL
-  useEffect(() => {
-    if (eventCode) {
-      handleJoin(eventCode);
-    }
-  }, []);
+  // Cerrar sesión
+  const handleLogout = () => {
+    clearSessionStorage();
+    setSession(null);
+    setCode("");
+    setUploadedPhotos([]);
+  };
 
   // Subir foto a Cloudinary
   const uploadToCloudinary = async (file) => {
