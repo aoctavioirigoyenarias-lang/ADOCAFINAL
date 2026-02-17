@@ -305,9 +305,12 @@ async def admin_create_live_session(code: str, event_name: str):
 
 @api_router.get("/live/scan/{code}")
 async def scan_code(code: str):
-    session = await db.live_sessions.find_one({"code": code, "is_active": True}, {"_id": 0})
+    """Acceso por código - SIN VALIDACIÓN DE FECHA NI ESTADO ACTIVO"""
+    # Buscar sesión solo por código - acceso inmediato si existe
+    session = await db.live_sessions.find_one({"code": code}, {"_id": 0})
     if not session:
-        raise HTTPException(status_code=404, detail="Session not found or inactive")
+        raise HTTPException(status_code=404, detail="Código no encontrado")
+    # Retornar sesión sin importar is_active o event_date
     return session
 
 @api_router.delete("/live/sessions/{session_id}")
