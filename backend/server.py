@@ -557,6 +557,52 @@ async def create_live_session_with_cloudinary(
     
     return session
 
+# Actualizar sesión Live (EDICIÓN)
+@api_router.put("/live/sessions/{session_id}")
+async def update_live_session(
+    session_id: str,
+    event_name: str = None,
+    event_type: str = None,
+    event_type_custom: str = None,
+    event_date: str = None,
+    code: str = None
+):
+    """Actualizar datos de una sesión Live existente"""
+    # Buscar sesión por ID
+    session = await db.live_sessions.find_one({"id": session_id})
+    if not session:
+        raise HTTPException(status_code=404, detail="Sesión no encontrada")
+    
+    # Construir actualización
+    update_data = {}
+    if event_name is not None:
+        update_data["event_name"] = event_name
+    if event_type is not None:
+        update_data["event_type"] = event_type
+    if event_type_custom is not None:
+        update_data["event_type_custom"] = event_type_custom if event_type == "otro" else None
+    if event_date is not None:
+        update_data["event_date"] = event_date
+    if code is not None:
+        # Verificar que el nuevo código no exista
+        existing = await db.live_sessions.find_one({"code": code, "id": {"$ne": session_id}})
+        if existing:
+            raise HTTPException(status_code=400, detail="Ese código ya está en uso")
+        update_data["code"] = code
+    
+    # Actualizar carpeta Cloudinary si cambia nombre o fecha
+    if event_name or event_date:
+        new_name = event_name or session.get("event_name", "Evento")
+        new_date = event_date or session.get("event_date", datetime.now().strftime("%Y-%m-%d"))
+        update_data["cloudinary_folder"] = f"{new_name.replace(' ', '_')}_{new_date}"
+    
+    if update_data:
+        await db.live_sessions.update_one({"id": session_id}, {"$set": update_data})
+    
+    # Retornar sesión actualizada
+    updated = await db.live_sessions.find_one({"id": session_id}, {"_id": 0})
+    return updated
+
 # Obtener sesiones ordenadas por fecha descendente
 @api_router.get("/live/sessions/all")
 async def get_all_live_sessions_sorted():
