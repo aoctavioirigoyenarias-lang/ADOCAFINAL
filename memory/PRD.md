@@ -6,67 +6,74 @@ Aplicación de cabina fotográfica con gestión de eventos, cotizaciones, contra
 ## Architecture
 - **Frontend:** React + TailwindCSS + shadcn/ui + jsPDF + qrcode
 - **Backend:** FastAPI + MongoDB
+- **Storage:** Cloudinary (Cloud: dpvliv2wl)
+- **Domain:** adoca.net (DNS: 76.76.21.21)
 - **Routes:** 
-  - `/` → Galería de Eventos (calendario buscador + grid escalable)
-  - `/cotizador` → Cotizador con PRECIO NETO y PDF
-  - `/admin` → Panel Admin (gestión eventos, sesiones Live, contratos)
-  - `/picpartylive` o `/live` → PicParty Live (escáner de código QR)
+  - `/` → Galería de Eventos
+  - `/cotizador` → Cotizador con PRECIO NETO
+  - `/admin` → Panel Admin
+  - `/live` o `/picpartylive` → PicParty Live (invitados)
 
 ## Credenciales Admin
 - **Usuario:** OCTAVIO
 - **Password:** CHELO1980
 
+## Cloudinary Configuration
+- **Cloud Name:** dpvliv2wl
+- **Upload Preset:** picparty_unsigned (unsigned)
+- **Folder Structure:** picparty/[Nombre_Evento]_[Fecha]/
+
+### Variables de Entorno Requeridas (Settings > Environment Variables):
+```
+REACT_APP_CLOUDINARY_CLOUD_NAME=dpvliv2wl
+REACT_APP_CLOUDINARY_UPLOAD_PRESET=picparty_unsigned
+```
+
+**IMPORTANTE:** Crear el upload preset en Cloudinary:
+1. Ir a Settings > Upload > Upload presets
+2. Crear preset "picparty_unsigned"
+3. Signing Mode: Unsigned
+4. Folder: picparty
+
 ## Features Implemented
 
 ### 1. GALERÍA PRO (Solo visualización IFRAME)
 - ✅ Grid flexible que soporta 5+ eventos por día
-- ✅ Cada evento puede tener: FOTOS, VIDEO 360, o ambos
-- ✅ Etiquetas claras identifican servicios (📸 Fotos / 🎥 360°)
 - ✅ Portadas automáticas con color + emoji + nombre
+- ✅ Calendario buscador con fechas resaltadas
 
-### 2. PICPARTY LIVE V2.1 ✅ (Completado Diciembre 2025)
-- ✅ **Descarga QR PDF corregida** - pdf.save() descarga directo, NO abre about:blank
-- ✅ **QR alta resolución** - Canvas 1200px para impresión
-- ✅ **Tipo de Evento** - Dropdown: Boda, Quinceaños, Cumpleaños, Empresarial, Evento Público, Fiesta, Otro
-- ✅ **Fecha del Evento** - Selector de fecha obligatorio
-- ✅ **Ordenamiento descendente** - Eventos más recientes primero
-- ✅ **Badges de tipo** - Emoji + etiqueta en lista de eventos
-- ✅ **PDF incluye:** Logo PicParty, QR grande, nombre evento, tipo, fecha
+### 2. PICPARTY LIVE V2.1 ✅
+- ✅ Descarga QR PDF con pdf.save() - NO about:blank
+- ✅ QR alta resolución (1200px)
+- ✅ Dropdown Tipo de Evento (Boda, Quinceaños, etc.)
+- ✅ Selector Fecha del Evento
+- ✅ Ordenamiento descendente por fecha
+- ✅ Interfaz de invitados con botón "SUBIR MI FOTO"
+- ✅ Integración Cloudinary preparada
 
 ### 3. SISTEMA DE CONTRATOS
 - ✅ Contratos Públicos (Precio Neto)
-- ✅ Contratos Especiales/Proveedor (Precio editable)
+- ✅ Contratos Especiales/Proveedor
 - ✅ Descuento manual configurable
-- ✅ Generación de PDF de contrato
+- ✅ PDF de contrato
 
 ### 4. COTIZADOR PÚBLICO
 - ✅ Formulario con datos cliente
 - ✅ Paquetes Base, Video 360, PicParty Live
-- ✅ Extras opcionales
-- ✅ Descarga PDF de cotización
+- ✅ **PRECIO NETO siempre activo**
 
-## Eventos Configurados (Galería)
-| Evento   | Color   | Servicios      | URL Fotoshare                               |
-|----------|---------|----------------|---------------------------------------------|
-| PAULA    | #EC4899 | 📸 Fotos       | fotoshare.co/e/-AUAT_kcGz8xs9NmSU1gz       |
-| FERNANDA | #8B5CF6 | 📸 Fotos       | fotoshare.co/e/LuUlUt1awwHl_k0fD7K2M       |
-| RESIDEO  | #3B82F6 | 📸🎥 Fotos+360 | fotoshare.co/e/E8uvCS1AtuKMxXiOYUL1M       |
+## REGLA ADOCA: Precio Neto
+Todas las cotizaciones y contratos muestran SIEMPRE el precio neto (show_net_price: true).
 
-## Test Results (Diciembre 2025)
-- PicPartyLive V2.1: 100% ✅
-  - PDF Download: PASS
-  - Form Fields: PASS
-  - Date Sorting: PASS  
-  - Event Type Badge: PASS
+## Test Results (Febrero 2025)
+- PicPartyLive: 100% ✅
+- Interfaz Invitados: 100% ✅
+- QR PDF Download: 100% ✅
 
-## Known Issues
-- **CORS Logo en PDF**: El logo de PicParty puede no aparecer en el PDF debido a CORS. El PDF descarga correctamente.
+## Pending Tasks
+1. **Configurar Upload Preset en Cloudinary** - El usuario debe crear "picparty_unsigned"
+2. **Deploy a adoca.net** - Usar "Replace deployment"
 
-## Pending/Future Tasks (P1-P2)
-1. **Cloudinary Integration** - Subida de fotos a carpetas [Nombre]_[Fecha] (requiere API keys del usuario)
-2. **ZIP Download** - Descargar todas las fotos de un evento como .zip
-3. **Ruta /live-tv** - Feed público con fotos en tiempo real y rankings emoji
-
-## Preferencias
-- `show_net_price: true` (PRECIO NETO activado)
+## Preferencias Default
+- `show_net_price: true` (PRECIO NETO siempre)
 - `tax_rate: 0.16` (IVA 16%)
