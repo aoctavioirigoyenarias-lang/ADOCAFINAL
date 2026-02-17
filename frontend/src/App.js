@@ -237,6 +237,7 @@ const Cotizador = () => {
   const [extras, setExtras] = useState([]);
   const [includeVideo360, setIncludeVideo360] = useState(false);
   const [includeLive, setIncludeLive] = useState(false);
+  const [livePackage, setLivePackage] = useState(0); // $700, $1000, $1500 NETO
   
   const extraOptions = [
     { id: "photobooth", label: "Photobooth", price: 500 },
@@ -249,12 +250,12 @@ const Cotizador = () => {
     let subtotal = basePrice * hours;
     subtotal += extras.length * 500;
     if (includeVideo360) subtotal += 3000;
-    if (includeLive) subtotal += 2000;
+    if (includeLive && livePackage > 0) subtotal += livePackage; // Usar el paquete seleccionado
     
     const descuentoAmount = subtotal * (clientData.descuento / 100);
     const netPrice = subtotal - descuentoAmount;
     
-    setQuote({ subtotal, descuento: descuentoAmount, netPrice, descuentoPct: clientData.descuento });
+    setQuote({ subtotal, descuento: descuentoAmount, netPrice, descuentoPct: clientData.descuento, livePackage });
   };
 
   const formatCurrency = (amount) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
