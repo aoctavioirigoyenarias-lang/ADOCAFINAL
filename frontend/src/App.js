@@ -813,15 +813,41 @@ const PicPartyLive = () => {
     navigate('/'); // SEGURIDAD: Redirigir a landing
   };
 
+  // Generar estructura de carpeta Cloudinary: ADOCA/MES/FECHA/TIPO_NOMBRE/
+  const generateCloudinaryFolder = () => {
+    const meses = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 
+                   'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
+    
+    // Usar fecha del evento o fecha actual
+    const eventDate = session.event_date ? new Date(session.event_date + 'T12:00:00') : new Date();
+    const mes = meses[eventDate.getMonth()];
+    const dia = String(eventDate.getDate()).padStart(2, '0');
+    const mesNum = String(eventDate.getMonth() + 1).padStart(2, '0');
+    const anio = String(eventDate.getFullYear()).slice(-2);
+    const fechaFormato = `${dia}-${mesNum}-${anio}`; // Ej: 21-03-26
+    
+    // Tipo de evento en mayúsculas
+    const tipoEvento = (session.event_type || 'EVENTO').toUpperCase().replace('QUINCEANIOS', 'XV');
+    
+    // Nombre del evento limpio
+    const nombreEvento = session.event_name
+      .toUpperCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Quitar acentos
+      .replace(/[^A-Z0-9\s]/g, '') // Solo letras y números
+      .replace(/\s+/g, '_'); // Espacios a guiones bajos
+    
+    // Estructura final: ADOCA/MES/FECHA/TIPO_NOMBRE/
+    return `ADOCA/${mes}/${fechaFormato}/${tipoEvento}_${nombreEvento}`;
+  };
+
   // Subir foto a Cloudinary y registrar en backend
   const uploadToCloudinary = async (file) => {
-    const folderName = session.cloudinary_folder || 
-      `${session.event_name.replace(/\s+/g, '_')}_${session.event_date || new Date().toISOString().split('T')[0]}`;
+    const folderPath = generateCloudinaryFolder();
     
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-    formData.append('folder', `picparty/${folderName}`);
+    formData.append('folder', folderPath);
     
     try {
       const response = await axios.post(
@@ -840,7 +866,8 @@ const PicPartyLive = () => {
         event_code: session.code,
         cloudinary_url: response.data.secure_url,
         thumbnail_url: response.data.secure_url.replace('/upload/', '/upload/w_300,h_300,c_fill/'),
-        uploader_id: visitorId
+        uploader_id: visitorId,
+        cloudinary_folder: folderPath
       });
       
       return response.data;
