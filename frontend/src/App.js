@@ -607,196 +607,309 @@ const Cotizador = () => {
 };
 
 // ============ PICPARTY LIVE (MICROSITIO) ============
-// ============ PICPARTY LIVE - COMPONENTE DE EMERGENCIA ============
+// ============ PICPARTY LIVE - INTERFAZ COMPLETA CON CLOUDINARY ============
+const CLOUDINARY_CLOUD_NAME = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME || 'dpvliv2wl';
+const CLOUDINARY_UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET || 'picparty_unsigned';
+
 const PicPartyLive = () => {
   const [searchParams] = useSearchParams();
   const eventCode = searchParams.get('event');
-  const [eventName, setEventName] = useState("");
-  const [joined, setJoined] = useState(false);
+  const [session, setSession] = useState(null);
+  const [code, setCode] = useState(eventCode || "");
+  const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadedPhotos, setUploadedPhotos] = useState([]);
   const [error, setError] = useState("");
+  const fileInputRef = useRef(null);
 
-  // Unirse al evento automáticamente si hay código en URL
-  useEffect(() => {
-    if (eventCode) {
-      fetch(`${API}/live/scan/${eventCode}`)
-        .then(res => {
-          if (!res.ok) throw new Error("Evento no encontrado");
-          return res.json();
-        })
-        .then(data => {
-          setEventName(data.event_name || eventCode);
-          setJoined(true);
-        })
-        .catch(() => {
-          setError("Código inválido");
-        });
+  // Unirse al evento
+  const handleJoin = async (codeToUse) => {
+    const targetCode = codeToUse || code;
+    if (!targetCode.trim()) {
+      toast.error("Ingresa un código");
+      return;
     }
-  }, [eventCode]);
-
-  // Función para abrir cámara
-  const openCamera = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.capture = 'environment';
-    input.onchange = (e) => {
-      if (e.target.files && e.target.files[0]) {
-        alert(`Foto seleccionada: ${e.target.files[0].name}\n\nNota: Cloudinary pendiente de configurar`);
-      }
-    };
-    input.click();
+    setLoading(true);
+    setError("");
+    try {
+      const response = await axios.get(`${API}/live/scan/${targetCode}`);
+      setSession(response.data);
+      toast.success(`¡Bienvenido a ${response.data.event_name}!`);
+    } catch (e) {
+      setError("Código inválido o evento no activo");
+      toast.error("Código inválido o evento no activo");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // VISTA DE EMERGENCIA - Sin librerías pesadas
-  return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #4a148c 0%, #7b1fa2 50%, #4a148c 100%)',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '20px',
-      fontFamily: 'system-ui, -apple-system, sans-serif'
-    }}>
-      
-      {/* Logo simple */}
-      <div style={{
-        fontSize: '60px',
-        marginBottom: '20px'
-      }}>
-        📸
-      </div>
+  // Auto-join si hay código en URL
+  useEffect(() => {
+    if (eventCode) {
+      handleJoin(eventCode);
+    }
+  }, []);
 
-      {/* Título */}
-      <h1 style={{
-        color: 'white',
-        fontSize: '28px',
-        fontWeight: 'bold',
-        textAlign: 'center',
-        margin: '0 0 10px 0'
-      }}>
-        {joined ? '¡Bienvenido a la fiesta!' : '¡Únete a la Fiesta!'}
-      </h1>
+  // Subir foto a Cloudinary
+  const uploadToCloudinary = async (file) => {
+    const folderName = session.cloudinary_folder || 
+      `${session.event_name.replace(/\s+/g, '_')}_${session.event_date || new Date().toISOString().split('T')[0]}`;
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    formData.append('folder', `picparty/${folderName}`);
+    
+    try {
+      const response = await axios.post(
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+        formData,
+        {
+          onUploadProgress: (progressEvent) => {
+            const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadProgress(percent);
+          }
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error subiendo a Cloudinary:', error);
+      throw error;
+    }
+  };
 
-      {/* Nombre del evento */}
-      {joined && eventName && (
-        <p style={{
-          color: '#e1bee7',
-          fontSize: '22px',
-          fontWeight: '600',
-          margin: '0 0 30px 0',
-          textAlign: 'center'
-        }}>
-          {eventName}
-        </p>
-      )}
+  // Manejar selección de archivos
+  const handleFileSelect = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+    
+    setUploading(true);
+    setUploadProgress(0);
+    toast.info(`Subiendo ${files.length} foto(s)...`);
+    
+    const uploaded = [];
+    
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      try {
+        const result = await uploadToCloudinary(file);
+        uploaded.push({
+          id: result.public_id,
+          url: result.secure_url,
+          thumbnail: result.secure_url.replace('/upload/', '/upload/w_200,h_200,c_fill/'),
+          name: file.name,
+          timestamp: new Date().toLocaleTimeString('es-MX')
+        });
+      } catch (err) {
+        toast.error(`Error subiendo ${file.name}`);
+      }
+    }
+    
+    if (uploaded.length > 0) {
+      setUploadedPhotos(prev => [...uploaded, ...prev]);
+      toast.success(`¡${uploaded.length} foto(s) subida(s) con éxito!`);
+    }
+    
+    setUploading(false);
+    setUploadProgress(0);
+    
+    // Limpiar el input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
-      {/* Error */}
-      {error && (
-        <p style={{
-          color: '#ff8a80',
-          fontSize: '16px',
-          margin: '0 0 20px 0'
-        }}>
-          {error}
-        </p>
-      )}
-
-      {/* BOTÓN PRINCIPAL */}
-      {joined ? (
-        <button
-          onClick={openCamera}
-          style={{
-            width: '100%',
-            maxWidth: '320px',
-            padding: '25px 40px',
-            fontSize: '24px',
-            fontWeight: 'bold',
-            color: 'white',
-            background: 'linear-gradient(135deg, #ec407a 0%, #d81b60 100%)',
-            border: 'none',
-            borderRadius: '20px',
-            cursor: 'pointer',
-            boxShadow: '0 8px 30px rgba(236, 64, 122, 0.4)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '12px'
-          }}
-        >
-          📸 SUBIR MI FOTO
-        </button>
-      ) : !eventCode ? (
-        <div style={{ width: '100%', maxWidth: '320px' }}>
-          <input
-            type="text"
-            placeholder="CÓDIGO"
-            style={{
-              width: '100%',
-              padding: '18px',
-              fontSize: '24px',
-              textAlign: 'center',
-              letterSpacing: '0.2em',
-              border: 'none',
-              borderRadius: '12px',
-              marginBottom: '15px',
-              background: 'rgba(255,255,255,0.15)',
-              color: 'white'
-            }}
-            onChange={(e) => {
-              const val = e.target.value.toUpperCase();
-              e.target.value = val;
-            }}
-            id="codeInput"
-          />
-          <button
-            onClick={() => {
-              const code = document.getElementById('codeInput').value;
-              if (code) {
-                window.location.href = `/live?event=${code}`;
-              }
-            }}
-            style={{
-              width: '100%',
-              padding: '18px',
-              fontSize: '20px',
-              fontWeight: 'bold',
-              color: 'white',
-              background: 'linear-gradient(135deg, #ec407a 0%, #d81b60 100%)',
-              border: 'none',
-              borderRadius: '12px',
-              cursor: 'pointer'
-            }}
-          >
-            🎉 ENTRAR
-          </button>
+  // Pantalla de carga inicial
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-950 via-violet-900 to-purple-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-24 h-24 mx-auto bg-gradient-to-r from-pink-500 to-violet-500 rounded-full flex items-center justify-center mb-6 animate-pulse">
+            <span className="text-5xl">📸</span>
+          </div>
+          <p className="text-white text-xl">Entrando al evento...</p>
         </div>
-      ) : (
-        <p style={{ color: 'white' }}>Cargando...</p>
-      )}
+      </div>
+    );
+  }
 
-      {/* Carpeta destino */}
-      {joined && (
-        <p style={{
-          color: 'rgba(255,255,255,0.5)',
-          fontSize: '12px',
-          marginTop: '30px',
-          textAlign: 'center'
-        }}>
-          📁 Carpeta: {eventName.replace(/\s+/g, '_')}
-        </p>
-      )}
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-violet-900 to-purple-950">
+      {/* Header */}
+      <header className="border-b border-white/10 backdrop-blur-sm bg-black/30 sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-2 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <img src={PICPARTY_LOGO} alt="PicParty" className="h-8 w-8 object-contain" />
+            <span className="text-lg font-bold text-white">PicParty</span>
+            <Badge className="bg-red-500 animate-pulse text-xs">🔴 LIVE</Badge>
+          </div>
+          {session && (
+            <Badge className="bg-purple-500/30 text-purple-200 text-xs">
+              {session.code}
+            </Badge>
+          )}
+        </div>
+      </header>
+
+      <main className="container mx-auto px-4 py-6 pb-20">
+        {!session ? (
+          /* ============ PANTALLA DE ENTRADA ============ */
+          <div className="max-w-md mx-auto text-center pt-8">
+            <div className="w-28 h-28 mx-auto bg-gradient-to-r from-pink-500 to-violet-500 rounded-full flex items-center justify-center mb-6 shadow-2xl shadow-pink-500/30">
+              <span className="text-5xl">🎉</span>
+            </div>
+            <h1 className="text-3xl font-black text-white mb-2">¡Únete a la Fiesta!</h1>
+            <p className="text-gray-400 mb-6">Ingresa el código del evento</p>
+            
+            {error && (
+              <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg">
+                <p className="text-red-300 text-sm">{error}</p>
+              </div>
+            )}
+            
+            <Card className="bg-white/5 border-white/10 backdrop-blur">
+              <CardContent className="pt-6 space-y-4">
+                <Input 
+                  placeholder="CÓDIGO"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.toUpperCase())}
+                  className="bg-white/10 border-white/20 text-white text-center text-2xl h-14 tracking-[0.2em] font-bold"
+                  data-testid="event-code-input"
+                />
+                <Button 
+                  onClick={() => handleJoin()}
+                  disabled={loading}
+                  className="w-full h-12 text-lg font-bold bg-gradient-to-r from-pink-500 to-fuchsia-500 hover:from-pink-600 hover:to-fuchsia-600 shadow-lg shadow-pink-500/30"
+                  data-testid="join-event-btn"
+                >
+                  🎉 ENTRAR AL EVENTO
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        ) : (
+          /* ============ INTERFAZ DE INVITADOS ============ */
+          <div className="max-w-lg mx-auto">
+            {/* Bienvenida */}
+            <div className="text-center mb-6">
+              <h1 className="text-2xl font-black text-white mb-1">
+                ¡Bienvenido a la fiesta!
+              </h1>
+              <p className="text-xl font-bold bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">
+                {session.event_name}
+              </p>
+              {session.event_type && (
+                <Badge className="mt-2 bg-purple-500/30 text-purple-200">
+                  {session.event_type === 'boda' && '💍 Boda'}
+                  {session.event_type === 'quinceanios' && '👑 Quinceaños'}
+                  {session.event_type === 'cumpleanos' && '🎂 Cumpleaños'}
+                  {session.event_type === 'empresarial' && '🏢 Empresarial'}
+                  {session.event_type === 'fiesta' && '🎊 Fiesta'}
+                  {session.event_type === 'publico' && '🎉 Evento Público'}
+                  {session.event_type === 'otro' && `✨ ${session.event_type_custom || 'Evento'}`}
+                </Badge>
+              )}
+            </div>
+
+            {/* BOTÓN PRINCIPAL DE SUBIDA */}
+            <Card className="bg-white/5 border-white/10 backdrop-blur mb-4">
+              <CardContent className="p-4">
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  capture="environment"
+                  ref={fileInputRef}
+                  onChange={handleFileSelect}
+                  className="hidden"
+                  data-testid="photo-input"
+                />
+                
+                <Button 
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="w-full h-20 text-xl font-black bg-gradient-to-r from-pink-500 to-fuchsia-500 hover:from-pink-600 hover:to-fuchsia-600 rounded-xl shadow-2xl shadow-pink-500/40 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  data-testid="upload-photo-btn"
+                >
+                  {uploading ? (
+                    <span className="flex flex-col items-center gap-1">
+                      <span>⏳ SUBIENDO... {uploadProgress}%</span>
+                      <div className="w-32 h-1 bg-white/30 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-white transition-all duration-300" 
+                          style={{ width: `${uploadProgress}%` }}
+                        />
+                      </div>
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-3">
+                      📸 SUBIR MI FOTO
+                    </span>
+                  )}
+                </Button>
+                
+                <p className="text-center text-gray-400 text-xs mt-3">
+                  Toca para tomar o seleccionar fotos
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Galería de fotos subidas */}
+            {uploadedPhotos.length > 0 && (
+              <Card className="bg-white/5 border-white/10 backdrop-blur mb-4">
+                <CardHeader className="py-3 px-4">
+                  <CardTitle className="text-white text-sm flex items-center gap-2">
+                    📷 Mis Fotos ({uploadedPhotos.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-4 pb-4">
+                  <div className="grid grid-cols-3 gap-2">
+                    {uploadedPhotos.slice(0, 9).map(photo => (
+                      <div key={photo.id} className="relative aspect-square rounded-lg overflow-hidden bg-white/5">
+                        <img 
+                          src={photo.thumbnail || photo.url} 
+                          alt={photo.name}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  {uploadedPhotos.length > 9 && (
+                    <p className="text-center text-gray-400 text-xs mt-2">
+                      +{uploadedPhotos.length - 9} fotos más
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Info de carpeta */}
+            <div className="p-3 bg-white/5 rounded-lg border border-white/10 text-center">
+              <p className="text-gray-400 text-xs">
+                📁 <span className="text-purple-400 font-mono">
+                  {session.cloudinary_folder || `${session.event_name.replace(/\s+/g, '_')}_${session.event_date || 'evento'}`}
+                </span>
+              </p>
+            </div>
+
+            {/* Cambiar evento */}
+            <Button 
+              variant="ghost" 
+              className="w-full mt-3 text-gray-400 hover:text-white text-sm"
+              onClick={() => { setSession(null); setCode(""); }}
+            >
+              ← Cambiar de evento
+            </Button>
+          </div>
+        )}
+      </main>
 
       {/* Footer */}
-      <p style={{
-        position: 'fixed',
-        bottom: '15px',
-        color: 'rgba(255,255,255,0.4)',
-        fontSize: '11px'
-      }}>
-        PicParty Live
-      </p>
+      <footer className="fixed bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm border-t border-white/10 py-2 text-center">
+        <p className="text-gray-500 text-xs">PicParty Live • adoca.net</p>
+      </footer>
     </div>
   );
 };
