@@ -2231,7 +2231,7 @@ const AdminPanel = () => {
                           {/* Lado izquierdo: QR y datos */}
                           <div className="flex items-start gap-4">
                             <div className="bg-white p-2 rounded-lg shadow-lg">
-                              <QRCodeSVG value={`https://${SITE_DOMAIN}/picpartylive?event=${session.code}`} size={70} />
+                              <QRCodeSVG value={`https://${SITE_DOMAIN}/live?code=${session.code}`} size={70} />
                             </div>
                             <div>
                               <div className="flex items-center gap-2 mb-1">
@@ -2255,8 +2255,32 @@ const AdminPanel = () => {
                                 )}
                               </div>
                               <p className="text-cyan-400 text-xs mt-2 font-mono">
-                                https://{SITE_DOMAIN}/picpartylive?event={session.code}
+                                https://{SITE_DOMAIN}/live?code={session.code}
                               </p>
+                              {/* Botones de compartir */}
+                              <div className="flex gap-2 mt-2">
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  className="border-cyan-500/50 text-cyan-300 hover:bg-cyan-500/20 text-xs h-7"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(`https://${SITE_DOMAIN}/live?code=${session.code}`);
+                                    toast.success("🔗 Link copiado al portapapeles");
+                                  }}
+                                >
+                                  🔗 Copiar Link
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  className="bg-green-500 hover:bg-green-600 text-xs h-7"
+                                  onClick={() => {
+                                    const msg = encodeURIComponent(`¡Hola! Tu evento *${session.event_name}* en PICPARTYLIVE está listo.\n\n📸 Acceso directo: https://${SITE_DOMAIN}/live?code=${session.code}\n\n¡Sube tus fotos y compártelas con todos!`);
+                                    window.open(`https://wa.me/?text=${msg}`, '_blank');
+                                  }}
+                                >
+                                  🟢 WhatsApp
+                                </Button>
+                              </div>
                             </div>
                           </div>
                           
