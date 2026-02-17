@@ -830,74 +830,93 @@ const AdminPanel = () => {
 
   const printQRPDF = async (session) => {
     toast.info("Generando PDF de alta calidad...");
-    const qrUrl = `https://${SITE_DOMAIN}/live?event=${session.code}`;
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
     
-    // Fondo púrpura profundo
-    pdf.setFillColor(59, 7, 100);
-    pdf.rect(0, 0, pageWidth, pageHeight, 'F');
-    
-    // === LOGO PICPARTY ARRIBA ===
     try {
-      const logoImg = new Image();
-      logoImg.crossOrigin = "anonymous";
-      logoImg.src = PICPARTY_LOGO;
-      await new Promise((resolve) => { 
-        logoImg.onload = resolve; 
-        setTimeout(resolve, 3000); 
-      });
-      pdf.addImage(logoImg, 'PNG', (pageWidth - 60) / 2, 20, 60, 60);
-    } catch(e) {
-      pdf.setFontSize(32);
-      pdf.setTextColor(255, 255, 255);
-      pdf.text("PICPARTY", pageWidth / 2, 50, { align: 'center' });
-    }
-    
-    // Tipo de evento con emoji
-    const typeInfo = getEventTypeInfo(session.event_type, session.event_type_custom);
-    pdf.setFontSize(16);
-    pdf.setTextColor(236, 72, 153);
-    pdf.text(`${typeInfo.emoji} ${typeInfo.label.toUpperCase()}`, pageWidth / 2, 95, { align: 'center' });
-    
-    // === QR EN ALTA RESOLUCIÓN ===
-    try {
-      const QRCodeLib = await import('qrcode');
+      const qrUrl = `https://${SITE_DOMAIN}/picpartylive?event=${session.code}`;
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      
+      // Fondo púrpura profundo
+      pdf.setFillColor(59, 7, 100);
+      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
+      
+      // === LOGO PICPARTY ARRIBA ===
+      try {
+        const logoImg = new Image();
+        logoImg.crossOrigin = "anonymous";
+        logoImg.src = PICPARTY_LOGO;
+        await new Promise((resolve, reject) => { 
+          logoImg.onload = resolve;
+          logoImg.onerror = reject;
+          setTimeout(resolve, 3000); 
+        });
+        if (logoImg.complete && logoImg.naturalWidth > 0) {
+          pdf.addImage(logoImg, 'PNG', (pageWidth - 60) / 2, 15, 60, 60);
+        }
+      } catch(e) {
+        // Si falla el logo, mostrar texto
+        pdf.setFontSize(32);
+        pdf.setTextColor(255, 255, 255);
+        pdf.text("PICPARTY", pageWidth / 2, 45, { align: 'center' });
+      }
+      
+      // Tipo de evento con emoji
+      const typeInfo = getEventTypeInfo(session.event_type, session.event_type_custom);
+      pdf.setFontSize(18);
+      pdf.setTextColor(236, 72, 153);
+      pdf.text(`${typeInfo.label.toUpperCase()}`, pageWidth / 2, 90, { align: 'center' });
+      
+      // === QR EN ALTA RESOLUCIÓN - Método más robusto ===
+      const QRCode = (await import('qrcode')).default;
       const qrCanvas = document.createElement('canvas');
-      // Canvas de alta resolución (1200px para impresión)
-      await QRCodeLib.toCanvas(qrCanvas, qrUrl, { 
-        width: 1200, 
+      qrCanvas.width = 1200;
+      qrCanvas.height = 1200;
+      
+      await QRCode.toCanvas(qrCanvas, qrUrl, { 
+        width: 1200,
         margin: 2,
         color: { dark: '#000000', light: '#FFFFFF' },
         errorCorrectionLevel: 'H'
       });
       
-      // QR grande y centrado (130mm)
-      const qrSize = 130;
-      pdf.addImage(qrCanvas.toDataURL('image/png'), 'PNG', (pageWidth - qrSize) / 2, 105, qrSize, qrSize);
-    } catch(e) {
-      console.error("Error generando QR:", e);
+      // QR grande y centrado (120mm)
+      const qrSize = 120;
+      const qrDataUrl = qrCanvas.toDataURL('image/png');
+      pdf.addImage(qrDataUrl, 'PNG', (pageWidth - qrSize) / 2, 100, qrSize, qrSize);
+      
+      // === NOMBRE DEL EVENTO DEBAJO ===
+      pdf.setFontSize(26);
+      pdf.setTextColor(255, 255, 255);
+      pdf.text(session.event_name.toUpperCase(), pageWidth / 2, 235, { align: 'center' });
+      
+      // Fecha del evento
+      if (session.event_date) {
+        pdf.setFontSize(14);
+        pdf.setTextColor(200, 200, 200);
+        const formattedDate = new Date(session.event_date + 'T12:00:00').toLocaleDateString('es-MX', { 
+          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+        });
+        pdf.text(formattedDate, pageWidth / 2, 245, { align: 'center' });
+      }
+      
+      // Footer
+      pdf.setFontSize(11);
+      pdf.setTextColor(150, 150, 150);
+      pdf.text("Escanea el código QR para ver y compartir fotos", pageWidth / 2, 262, { align: 'center' });
+      pdf.setFontSize(9);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text(`adoca.net | Código: ${session.code}`, pageWidth / 2, 270, { align: 'center' });
+      
+      // === DESCARGA DIRECTA ===
+      const fileName = `QR_PicParty_${session.event_name.replace(/\s+/g, '_')}_${session.event_date || 'evento'}.pdf`;
+      pdf.save(fileName);
+      toast.success("¡PDF descargado exitosamente!");
+      
+    } catch (error) {
+      console.error("Error generando PDF:", error);
+      toast.error("Error al generar PDF. Intenta de nuevo.");
     }
-    
-    // === NOMBRE DEL EVENTO DEBAJO ===
-    pdf.setFontSize(28);
-    pdf.setTextColor(255, 255, 255);
-    pdf.text(session.event_name.toUpperCase(), pageWidth / 2, 250, { align: 'center' });
-    
-    // Fecha del evento
-    pdf.setFontSize(14);
-    pdf.setTextColor(180, 180, 180);
-    pdf.text(session.event_date || "", pageWidth / 2, 260, { align: 'center' });
-    
-    // Footer
-    pdf.setFontSize(10);
-    pdf.setTextColor(120, 120, 120);
-    pdf.text("Escanea el código QR para ver y compartir fotos", pageWidth / 2, 272, { align: 'center' });
-    
-    // === DESCARGA DIRECTA (solución about:blank) ===
-    pdf.save(`QR_PicParty_${session.event_name.replace(/\s+/g, '_')}.pdf`);
-    toast.success("PDF descargado correctamente");
   };
 
   // ============ FUNCIONES DE CONTRATOS ============
