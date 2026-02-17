@@ -1530,7 +1530,7 @@ const AdminPanel = () => {
     toast.info("Generando PDF de alta calidad...");
     
     try {
-      const qrUrl = `https://${SITE_DOMAIN}/picpartylive?event=${session.code}`;
+      const qrUrl = `https://${SITE_DOMAIN}/live?code=${session.code}`;
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
