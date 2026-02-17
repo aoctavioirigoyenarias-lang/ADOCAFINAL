@@ -1,60 +1,72 @@
-# PRD - adoca.net (Photo Event Platform)
+# PRD - PicParty / adoca.net (Photo Event Platform)
 
 ## Problem Statement
-ORDEN TÉCNICA FINAL: Estructura, escalabilidad y automatización para adoca.net
+Aplicación de cabina fotográfica con gestión de eventos, cotizaciones, contratos y PicParty Live para compartir fotos en tiempo real.
 
 ## Architecture
-- **Frontend:** React + TailwindCSS + shadcn/ui
+- **Frontend:** React + TailwindCSS + shadcn/ui + jsPDF + qrcode
 - **Backend:** FastAPI + MongoDB
 - **Routes:** 
   - `/` → Galería de Eventos (calendario buscador + grid escalable)
-  - `/cotizador` → Cotizador con PRECIO NETO
-  - `/admin` → Panel Admin (gestión eventos, sesiones, preferencias)
-  - `/live` → PicParty Live (escáner de código)
+  - `/cotizador` → Cotizador con PRECIO NETO y PDF
+  - `/admin` → Panel Admin (gestión eventos, sesiones Live, contratos)
+  - `/picpartylive` o `/live` → PicParty Live (escáner de código QR)
+
+## Credenciales Admin
+- **Usuario:** OCTAVIO
+- **Password:** CHELO1980
 
 ## Features Implemented
 
-### 1. ESCALABILIDAD Y MULTISERVICIO
+### 1. GALERÍA PRO (Solo visualización IFRAME)
 - ✅ Grid flexible que soporta 5+ eventos por día
 - ✅ Cada evento puede tener: FOTOS, VIDEO 360, o ambos
 - ✅ Etiquetas claras identifican servicios (📸 Fotos / 🎥 360°)
+- ✅ Portadas automáticas con color + emoji + nombre
 
-### 2. PORTADAS AUTOMÁTICAS (CERO BATALLAS)
-- ✅ Sin obligación de subir fotos
-- ✅ Portada automática: color sólido + emoji grande
-  - 📸 para Fotos
-  - 🎥 para Video 360
-  - 📸🎥 para mixto
-- ✅ Nombre del cliente en MAYÚSCULAS como protagonista
+### 2. PICPARTY LIVE V2.1 ✅ (Completado Diciembre 2025)
+- ✅ **Descarga QR PDF corregida** - pdf.save() descarga directo, NO abre about:blank
+- ✅ **QR alta resolución** - Canvas 1200px para impresión
+- ✅ **Tipo de Evento** - Dropdown: Boda, Quinceaños, Cumpleaños, Empresarial, Evento Público, Fiesta, Otro
+- ✅ **Fecha del Evento** - Selector de fecha obligatorio
+- ✅ **Ordenamiento descendente** - Eventos más recientes primero
+- ✅ **Badges de tipo** - Emoji + etiqueta en lista de eventos
+- ✅ **PDF incluye:** Logo PicParty, QR grande, nombre evento, tipo, fecha
 
-### 3. CALENDARIO BUSCADOR
-- ✅ Funciona como filtro histórico
-- ✅ Fechas con eventos resaltadas
-- ✅ Filtra galería al seleccionar fecha
-- ✅ Botón para limpiar filtro
+### 3. SISTEMA DE CONTRATOS
+- ✅ Contratos Públicos (Precio Neto)
+- ✅ Contratos Especiales/Proveedor (Precio editable)
+- ✅ Descuento manual configurable
+- ✅ Generación de PDF de contrato
 
-### 4. FUNCIONES CRÍTICAS
-- ✅ Rutas configuradas correctamente
-- ✅ Cotizador con PRECIO NETO según preferencias guardadas
-- ✅ Opción Video 360 (+$3,000 MXN) en cotizador
-- ✅ Links de fotoshare.co inyectados
+### 4. COTIZADOR PÚBLICO
+- ✅ Formulario con datos cliente
+- ✅ Paquetes Base, Video 360, PicParty Live
+- ✅ Extras opcionales
+- ✅ Descarga PDF de cotización
 
-## Eventos Configurados
+## Eventos Configurados (Galería)
 | Evento   | Color   | Servicios      | URL Fotoshare                               |
 |----------|---------|----------------|---------------------------------------------|
 | PAULA    | #EC4899 | 📸 Fotos       | fotoshare.co/e/-AUAT_kcGz8xs9NmSU1gz       |
 | FERNANDA | #8B5CF6 | 📸 Fotos       | fotoshare.co/e/LuUlUt1awwHl_k0fD7K2M       |
 | RESIDEO  | #3B82F6 | 📸🎥 Fotos+360 | fotoshare.co/e/E8uvCS1AtuKMxXiOYUL1M       |
 
+## Test Results (Diciembre 2025)
+- PicPartyLive V2.1: 100% ✅
+  - PDF Download: PASS
+  - Form Fields: PASS
+  - Date Sorting: PASS  
+  - Event Type Badge: PASS
+
+## Known Issues
+- **CORS Logo en PDF**: El logo de PicParty puede no aparecer en el PDF debido a CORS. El PDF descarga correctamente.
+
+## Pending/Future Tasks (P1-P2)
+1. **Cloudinary Integration** - Subida de fotos a carpetas [Nombre]_[Fecha] (requiere API keys del usuario)
+2. **ZIP Download** - Descargar todas las fotos de un evento como .zip
+3. **Ruta /live-tv** - Feed público con fotos en tiempo real y rankings emoji
+
 ## Preferencias
 - `show_net_price: true` (PRECIO NETO activado)
 - `tax_rate: 0.16` (IVA 16%)
-
-## Test Results
-- Frontend: 100%
-- Backend: 92%
-- Integration: 100%
-
-## Next Steps
-1. Verificar iconos automáticos en Preview
-2. Replace deployment a adoca.net
