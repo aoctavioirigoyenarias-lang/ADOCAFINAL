@@ -1274,14 +1274,69 @@ const PicPartyLive = () => {
         )}
       </main>
 
-      {/* Footer con emojis temáticos */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm border-t border-white/10 py-2">
-        <div className="flex justify-center items-center gap-2">
-          <span className="text-sm">👸</span>
-          <p className="text-gray-500 text-xs">PicParty Live • adoca.net</p>
-          <span className="text-sm">✨</span>
+      {/* Footer con botón de ventas y privacidad */}
+      <footer className="fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur-sm border-t border-white/10 py-3">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col items-center gap-2">
+            {/* Botón de ventas */}
+            <Link to="/cotizador">
+              <Button 
+                size="sm" 
+                className="bg-gradient-to-r from-pink-500 to-fuchsia-500 hover:from-pink-600 hover:to-fuchsia-600 text-white font-bold shadow-lg"
+              >
+                ✨ ¡Quiero PICPARTYLIVE en mi fiesta!
+              </Button>
+            </Link>
+            {/* Footer info */}
+            <div className="flex items-center gap-3 text-xs">
+              <span className="text-gray-400">PICPARTYLIVE • adoca.net</span>
+              <button 
+                onClick={() => setShowPrivacyModal(true)}
+                className="text-cyan-400 hover:text-cyan-300 underline"
+              >
+                🔒 Seguridad y Privacidad
+              </button>
+            </div>
+          </div>
         </div>
       </footer>
+
+      {/* Modal de Privacidad */}
+      {showPrivacyModal && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <Card className="bg-slate-800 border-purple-500/50 max-w-md w-full max-h-[80vh] overflow-y-auto">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                🔒 Seguridad y Privacidad
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-gray-300 text-sm">
+              <div>
+                <h4 className="text-pink-400 font-bold mb-1">Control del Anfitrión</h4>
+                <p>Solo el anfitrión decide quién puede ver y subir fotos mediante códigos de acceso únicos.</p>
+              </div>
+              <div>
+                <h4 className="text-pink-400 font-bold mb-1">Fotos Privadas</h4>
+                <p>Las fotos solo son visibles para invitados autorizados con el código del evento.</p>
+              </div>
+              <div>
+                <h4 className="text-pink-400 font-bold mb-1">Sin Apps que Descargar</h4>
+                <p>Acceso directo desde cualquier navegador. Sin instalaciones ni registros.</p>
+              </div>
+              <div>
+                <h4 className="text-pink-400 font-bold mb-1">Protección de Datos</h4>
+                <p>Tus fotos se almacenan de forma segura. El anfitrión tiene control total para eliminar contenido.</p>
+              </div>
+              <Button 
+                className="w-full bg-purple-500 hover:bg-purple-600 mt-4"
+                onClick={() => setShowPrivacyModal(false)}
+              >
+                Entendido ✓
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
