@@ -1,0 +1,182 @@
+<analysis>**original_problem_statement:**
+The user's initial request was to repair an existing application at . The core requirements were:
+1.  **Route Configuration**: Set the root path () to load the Event Gallery component and move the 'PicParty Live' functionality to a secondary path ().
+2.  **Database Seeding**: Inject specific event links (for Paula, Fernanda, and Resideo) into the database.
+3.  **Pricing Logic**: Ensure all price calculations use the Net Price as defined in the user's preferences.
+4.  **Deployment**: Use 'Replace deployment' on the existing app instead of creating a new one.
+
+Over time, the project scope expanded dramatically. The agent discovered the original codebase was missing and had to rebuild the application from the ground up, leading to a series of iterative feature requests from the user.
+
+The final, consolidated requirements from the user are:
+-   **Admin Security**: Implement a login screen for the  route with credentials: , .
+-   **Branding**: Rebrand the site from ADOCA to PicParty using the official logo and a deep purple background theme.
+-   **Event Gallery**: The main page should show the last 5 events by default, use a 3-column grid for filtered results, and display a Buzón Vacío message when no events are found.
+-   **Admin Contracts Module**: Add a Contracts section in the admin panel to generate contract PDFs from scratch or from existing quotes. This module must support Public (net price) and Provider/Special (editable price) contract types and allow for a manual discount.
+-   **Database Separation**: Enforce a logical separation where Gallery events are for display only (iframe), and PicPartyLive events are interactive, generating Cloudinary folders and QR codes.
+-   **PicPartyLive Enhancements (V2.1)**:
+    -   Fix the QR code PDF generator to trigger a direct download instead of opening a blank tab. Ensure the QR code is high resolution.
+    -   Add 'Event Type' (dropdown) and 'Event Date' (selector) fields to the live event creation form.
+    -   Sort the list of live events by date in descending order.
+    -   Include the PicParty logo in the generated QR code PDF.
+-   **Cloudinary Integration**: Prepare the backend to use Cloudinary for photo storage (in folders named ) and to allow downloading all event photos as a ZIP file. This is to be implemented with placeholder credentials as the user has not provided them yet.
+
+**User's preferred language**: Spanish. The next agent MUST respond in Spanish.
+
+**what currently exists?**
+The application has been rebuilt from scratch as a React frontend and FastAPI backend application.
+-   The UI reflects the PicParty branding with a purple theme.
+-   The routing is configured as requested:  for the gallery,  for the live event view,  for quotes, and  for the management panel.
+-   The  panel is protected by a login screen and provides access to modules for managing gallery events, live sessions, quotes, and contracts. It also has a preferences section for setting the Net Price logic.
+-   The backend includes data models and API endpoints for all features, including , , , , and .
+-   The QR code generation feature is partially implemented in the admin panel; it shows a preview but the PDF download is broken.
+-   The codebase includes placeholders for Cloudinary API keys as requested by the user.
+
+**Last working item**:
+-   **Last item agent was working**: The agent was implementing the PicPartyLive V2.1 feature set, which involved correcting the QR code PDF download, adding new fields to the live session form, sorting the event list, and improving the PDF layout. The agent modified  and  but got stuck in a loop of editing and removing duplicate code without verifying the fix.
+-   **Status**: IN PROGRESS
+-   **Agent Testing Done**: N
+-   **Which testing method agent to use?** Frontend testing agent. The agent should test the entire flow within the  panel's Live tab: creating an event with the new fields, verifying it appears at the top of the sorted list, and confirming the Imprimir QR button downloads a correct, high-resolution PDF.
+-   **User Testing Done**: N
+
+**All Pending/In progress Issue list**:
+-   **Issue 1**: Fix QR Code PDF Generation (Priority: P0)
+-   **Issue 2**: Implement descending sort for Live Sessions (Priority: P1)
+
+**Issues Detail**:
+-   **Issue 1**:
+    -   **Description**: The Imprimir QR button in the admin panel opens a blank  page instead of downloading the PDF file. The user also requires the QR code within the PDF to be high resolution to avoid blurriness.
+    -   **Attempted fixes**: The agent modified the  function in  multiple times but did not resolve the issue. The approach of opening a new window is incorrect.
+    -   **Next debug checklist**:
+        1.  Locate the  function in .
+        2.  Refactor the logic to generate a high-resolution QR code on an off-screen canvas.
+        3.  Use  to create the PDF, add the PicParty logo, event name, and the high-resolution canvas image.
+        4.  Instead of , use the  method from  to trigger a direct file download.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is a critical feature for the user's PicPartyLive service, enabling them to provide printable QR codes for events.
+    -   **Status**: IN PROGRESS
+    -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** Frontend
+    -   **Blocked on other issue**: None
+
+-   **Issue 2**:
+    -   **Description**: The list of live sessions in the admin panel needs to be sorted by date, with the most recent events appearing at the top.
+    -   **Attempted fixes**: The agent added a  method within the JSX mapping, but its effectiveness was not confirmed.
+    -   **Next debug checklist**:
+        1.  In , ensure the  state array is sorted *before* the  function is called. The best place is right after the data is fetched or state is updated.
+        2.  Verify that  is a valid date string that can be parsed by .
+        3.  Use the logic: .
+    -   **Why fix this issue and what will be achieved with the fix?**: Fulfills a user requirement for better usability and organization in the admin panel.
+    -   **Status**: IN PROGRESS
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Frontend
+    -   **Blocked on other issue**: None
+
+**In progress Task List**:
+-   **Task 1**: Complete PicPartyLive V2.1 Feature Implementation (Priority: P0)
+    -   **Where to resume**: Resume work in  and . Consolidate all required changes: fix the PDF download, correctly implement the new form fields (, ), apply the descending sort, and add the event type badge to the list.
+    -   **What will be achieved with this?**: The PicPartyLive management module will be fully functional, meeting all user specifications from the last prompt.
+    -   **Status**: IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?** Frontend
+    -   **Blocked on something**: None
+
+**Upcoming and Future Tasks**
+-   **Upcoming Tasks**:
+    -   **(P1) Cloudinary Integration**: Implement file upload logic in  and  using the placeholder environment variables for Cloudinary keys. Ensure files are saved to folders named .
+    -   **(P1) ZIP Download Feature**: Create a new backend endpoint and a corresponding frontend button in the admin panel to allow downloading all photos from a Cloudinary event folder as a single  file.
+-   **Future Tasks**:
+    -   **(P2)  Route**: Develop the public-facing  page to display a real-time feed of photos with emoji-based rankings.
+
+**Completed work in this session**
+-   **Application Rebuild**: Successfully reconstructed the entire application from a basic template.
+-   **Admin Panel**: Implemented a comprehensive and secure () panel.
+    -   **Authentication**: Secure login with JWT (/).
+    -   **Modules**: Created separate management tabs for Gallery Events, Live Sessions, Quotes, and Contracts.
+-   **Quote & Contract System**:
+    -   Built a public quote form () that generates a PDF.
+    -   Created an internal Contracts module in the admin panel to create and manage contracts with custom pricing.
+-   **Branding & UI**: Applied the PicParty logo and purple theme across the application.
+-   **PicPartyLive Core**:
+    -   Established the  route.
+    -   Implemented QR code generation and preview within the admin panel.
+-   **Logical Separation**: Differentiated backend logic for Gallery vs. PicPartyLive events.
+
+**Earlier issues found/mentioned but not fixed**
+-   There are no outstanding issues from earlier in the session; all were either resolved or superseded by the user's evolving requests. The main initial issue was the missing codebase, which was addressed by rebuilding the application.
+
+**Known issue recurrence from previous fork**
+-   N/A
+
+**Code Architecture**
+
+
+**Key Technical Concepts**
+-   **Frontend**: React, React Router, Tailwind CSS, Axios
+-   **Backend**: FastAPI, Python
+-   **Database**: MongoDB
+-   **Authentication**: JWT using Passlib and python-jose
+-   **Document Generation**:  and  for client-side PDF and QR code creation.
+
+**key DB schema**
+-   : 
+-   : 
+-   : 
+-   : 
+-   : 
+
+**changes in tech stack**
+-   None.
+
+**All files of reference**
+-   : The single source for all backend logic, API endpoints, and Pydantic models. Has been modified extensively.
+-   : A critical, monolithic file containing the UI and logic for the entire admin dashboard. It handles login, state for all tabs, and generation of documents. It is the primary file to edit for the pending tasks.
+-   : Defines the main application routes (, , , ).
+-   : Contains the customer-facing quote form.
+
+**Areas that need refactoring**:
+-    is over 1000 lines long and handles too many responsibilities (authentication, state management for four different modules, UI rendering). It should be broken down into smaller, reusable components (e.g., , , ) and potentially use a state management solution like React Context to manage state more effectively.
+
+**key api endpoints**
+-    (POST): Admin login.
+-    (GET, POST, DELETE): CRUD for gallery events.
+-    (GET, POST): CRUD for live sessions.
+-    (POST): Create a new contract.
+-    (POST): Submit a quote from the public form.
+
+**Critical Info for New Agent**
+-   The user has a very limited credit balance. You must be highly efficient. Combine all required changes into single, well-planned actions. Do not ask for clarification; use the detailed prompts provided by the user.
+-   The user's original codebase was **never** available in this environment. Do not try to find or restore it. The current application is a complete rebuild.
+-   Proceed with **Opción A** for Cloudinary: implement all logic but use placeholder environment variables for the keys. Do not ask the user for the keys.
+-   The file  is extremely large and complex. Be very careful when making changes to avoid introducing new bugs. The previous agent struggled with duplicate code in this file.
+
+**documents and test reports created in this job**
+-   
+
+**Last 10 User Messages and any pending HUMAN messages**
+The last user message (197) was a detailed prompt to implement PicPartyLive V2.1. The agent acknowledged and began implementation (198-229) but did not complete or verify it. There are no pending messages from the user. The agent must now complete the implementation of prompt 197.
+
+**Project Health Check:**
+-   **Broken**:
+    -   The QR Code PDF download feature in the Admin Panel is non-functional (triggers an  page).
+-   **Mocked**:
+    -   Cloudinary integration is stubbed out with placeholders for API keys.
+    -   The associated ZIP download feature is not yet implemented.
+
+**3rd Party Integrations**
+-   **Cloudinary**: Planned for photo storage. Will require User API Keys (, , ). The codebase is prepared for this but the functionality is inactive.
+-   **MongoDB**: Active and used as the primary database.
+
+**Testing status**
+-   **Testing agent used after significant changes**: YES (but not for the most recent, unfinished changes).
+-   **Troubleshoot agent used after agent stuck in loop**: NO
+-   **Test files created**: None.
+-   **Known regressions**: The QR code PDF download functionality is a regression.
+
+**Credentials to test flow:**
+-   **Admin Panel Access**:
+    -   **URL**: 
+    -   **Usuario**: 
+    -   **Password**: 
+
+**What agent forgot to execute**
+-   The agent did not complete the full set of requirements from the user's last prompt (PICPARTYLIVE V2.1), leaving the QR PDF download broken and the implementation of sorting/new fields unverified.
+-   The agent has not implemented the Download as ZIP feature for event photos.
+-   The agent has not created the  route.</analysis>
