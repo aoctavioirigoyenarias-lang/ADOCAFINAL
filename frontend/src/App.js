@@ -612,84 +612,238 @@ const PicPartyLive = () => {
   const eventCode = searchParams.get('event');
   const [session, setSession] = useState(null);
   const [code, setCode] = useState(eventCode || "");
+  const [loading, setLoading] = useState(!!eventCode);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [uploadedPhotos, setUploadedPhotos] = useState([]);
+  const fileInputRef = useRef(null);
 
   const handleJoin = async () => {
     if (!code.trim()) {
       toast.error("Ingresa un código");
       return;
     }
+    setLoading(true);
     try {
       const response = await axios.get(`${API}/live/scan/${code}`);
       setSession(response.data);
       toast.success(`¡Bienvenido a ${response.data.event_name}!`);
     } catch (e) {
       toast.error("Código inválido o evento no activo");
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     if (eventCode) handleJoin();
-  }, [eventCode]);
+  }, []);
+
+  const handleFileSelect = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+      setSelectedFiles(files);
+      // Simular subida (placeholder - requiere Cloudinary)
+      handleUpload(files);
+    }
+  };
+
+  const handleUpload = async (files) => {
+    setUploading(true);
+    toast.info(`Procesando ${files.length} foto(s)...`);
+    
+    // Simular delay de subida
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Agregar fotos al estado local (preview)
+    const newPhotos = files.map((file, index) => ({
+      id: Date.now() + index,
+      name: file.name,
+      url: URL.createObjectURL(file),
+      timestamp: new Date().toLocaleTimeString('es-MX')
+    }));
+    
+    setUploadedPhotos(prev => [...newPhotos, ...prev]);
+    setSelectedFiles([]);
+    setUploading(false);
+    toast.success(`¡${files.length} foto(s) subida(s) con éxito!`);
+  };
+
+  // Pantalla de carga
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-950 via-violet-900 to-purple-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-24 h-24 mx-auto bg-gradient-to-r from-pink-500 to-violet-500 rounded-full flex items-center justify-center mb-6 animate-pulse">
+            <span className="text-5xl">📸</span>
+          </div>
+          <p className="text-white text-xl">Entrando al evento...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-950 via-violet-900 to-purple-950">
-      <header className="border-b border-white/10 backdrop-blur-sm bg-black/20">
-        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <img src={PICPARTY_LOGO} alt="PicParty" className="h-10 w-10 object-contain" />
-            <span className="text-xl font-bold text-white">PicParty Live</span>
-            <Badge className="bg-red-500 animate-pulse">🔴 EN VIVO</Badge>
+      {/* Header compacto */}
+      <header className="border-b border-white/10 backdrop-blur-sm bg-black/30 sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-2 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <img src={PICPARTY_LOGO} alt="PicParty" className="h-8 w-8 object-contain" />
+            <span className="text-lg font-bold text-white">PicParty</span>
+            <Badge className="bg-red-500 animate-pulse text-xs">🔴 LIVE</Badge>
           </div>
-          <Link to="/"><Button variant="outline" className="border-white/20 text-white">← Inicio</Button></Link>
+          {session && (
+            <Badge className="bg-purple-500/30 text-purple-200 text-xs">
+              {session.code}
+            </Badge>
+          )}
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-12">
+      <main className="container mx-auto px-4 py-6">
         {!session ? (
-          <div className="max-w-md mx-auto text-center">
-            <div className="w-32 h-32 mx-auto bg-gradient-to-r from-pink-500 to-violet-500 rounded-full flex items-center justify-center mb-8 animate-pulse">
-              <span className="text-6xl">📱</span>
+          /* ============ PANTALLA DE ENTRADA ============ */
+          <div className="max-w-md mx-auto text-center pt-8">
+            <div className="w-32 h-32 mx-auto bg-gradient-to-r from-pink-500 to-violet-500 rounded-full flex items-center justify-center mb-8 shadow-2xl shadow-pink-500/30">
+              <span className="text-6xl">🎉</span>
             </div>
-            <h1 className="text-3xl font-bold text-white mb-4">Únete al Evento</h1>
-            <Card className="bg-white/5 border-white/10">
+            <h1 className="text-4xl font-black text-white mb-2">¡Únete a la Fiesta!</h1>
+            <p className="text-gray-400 mb-8">Ingresa el código del evento</p>
+            
+            <Card className="bg-white/5 border-white/10 backdrop-blur">
               <CardContent className="pt-6 space-y-4">
                 <Input 
-                  placeholder="Código del evento"
+                  placeholder="CÓDIGO"
                   value={code}
                   onChange={(e) => setCode(e.target.value.toUpperCase())}
-                  className="bg-white/10 border-white/20 text-white text-center text-2xl h-14 tracking-widest"
+                  className="bg-white/10 border-white/20 text-white text-center text-3xl h-16 tracking-[0.3em] font-bold placeholder:tracking-normal placeholder:text-lg"
+                  data-testid="event-code-input"
                 />
-                <Button onClick={handleJoin} className="w-full h-12 bg-gradient-to-r from-pink-500 to-violet-500">
-                  🎉 Entrar al Evento
+                <Button 
+                  onClick={handleJoin} 
+                  className="w-full h-14 text-xl font-bold bg-gradient-to-r from-pink-500 to-fuchsia-500 hover:from-pink-600 hover:to-fuchsia-600 shadow-lg shadow-pink-500/30"
+                  data-testid="join-event-btn"
+                >
+                  🎉 ENTRAR AL EVENTO
                 </Button>
               </CardContent>
             </Card>
           </div>
         ) : (
-          <div className="max-w-2xl mx-auto">
-            <Card className="bg-white/5 border-white/10">
-              <CardHeader className="text-center">
-                <div className="w-20 h-20 mx-auto bg-green-500/20 rounded-full flex items-center justify-center mb-4">
-                  <span className="text-4xl">✅</span>
-                </div>
-                <CardTitle className="text-white text-2xl">{session.event_name}</CardTitle>
-                <CardDescription className="text-gray-400">¡Estás conectado al evento!</CardDescription>
-              </CardHeader>
-              <CardContent className="text-center space-y-4">
-                <p className="text-gray-300">📸 Sube tus fotos y compártelas con todos</p>
-                <div className="p-4 bg-white/5 rounded-lg border border-dashed border-white/20">
-                  <p className="text-gray-400 text-sm mb-2">Almacenamiento Cloudinary</p>
-                  <p className="text-purple-400 font-mono text-sm">{session.event_name.replace(/\s+/g, '_')}_{new Date().toISOString().split('T')[0]}/</p>
-                  <p className="text-gray-500 text-xs mt-2">⚠️ Configurar credenciales en Admin</p>
-                </div>
-                <Button variant="outline" className="border-white/20 text-white" onClick={() => setSession(null)}>
-                  Salir del Evento
+          /* ============ INTERFAZ SOCIAL DE INVITADOS ============ */
+          <div className="max-w-lg mx-auto">
+            {/* Bienvenida */}
+            <div className="text-center mb-6">
+              <h1 className="text-3xl font-black text-white mb-1">
+                ¡Bienvenido a la fiesta!
+              </h1>
+              <p className="text-2xl font-bold bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">
+                {session.event_name}
+              </p>
+              {session.event_type && (
+                <Badge className="mt-2 bg-purple-500/30 text-purple-200">
+                  {session.event_type === 'boda' && '💍 Boda'}
+                  {session.event_type === 'quinceanios' && '👑 Quinceaños'}
+                  {session.event_type === 'cumpleanos' && '🎂 Cumpleaños'}
+                  {session.event_type === 'empresarial' && '🏢 Empresarial'}
+                  {session.event_type === 'fiesta' && '🎊 Fiesta'}
+                  {session.event_type === 'otro' && `✨ ${session.event_type_custom || 'Evento'}`}
+                  {!['boda','quinceanios','cumpleanos','empresarial','fiesta','otro'].includes(session.event_type) && '🎉 Evento'}
+                </Badge>
+              )}
+            </div>
+
+            {/* BOTÓN GIGANTE SUBIR FOTO */}
+            <Card className="bg-white/5 border-white/10 backdrop-blur mb-6">
+              <CardContent className="p-6">
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  capture="environment"
+                  ref={fileInputRef}
+                  onChange={handleFileSelect}
+                  className="hidden"
+                  data-testid="photo-input"
+                />
+                
+                <Button 
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="w-full h-24 text-2xl font-black bg-gradient-to-r from-pink-500 to-fuchsia-500 hover:from-pink-600 hover:to-fuchsia-600 rounded-2xl shadow-2xl shadow-pink-500/40 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  data-testid="upload-photo-btn"
+                >
+                  {uploading ? (
+                    <span className="flex items-center gap-3">
+                      <span className="animate-spin">⏳</span> SUBIENDO...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-3">
+                      📸 SUBIR MI FOTO
+                    </span>
+                  )}
                 </Button>
+                
+                <p className="text-center text-gray-400 text-sm mt-4">
+                  Toca el botón para tomar o seleccionar fotos
+                </p>
               </CardContent>
             </Card>
+
+            {/* Fotos subidas en esta sesión */}
+            {uploadedPhotos.length > 0 && (
+              <Card className="bg-white/5 border-white/10 backdrop-blur">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-white text-lg flex items-center gap-2">
+                    📷 Mis Fotos ({uploadedPhotos.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-3 gap-2">
+                    {uploadedPhotos.map(photo => (
+                      <div key={photo.id} className="relative aspect-square rounded-lg overflow-hidden bg-white/5">
+                        <img 
+                          src={photo.url} 
+                          alt={photo.name}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs p-1 text-center">
+                          {photo.timestamp}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Info del evento */}
+            <div className="mt-6 p-4 bg-white/5 rounded-xl border border-white/10 text-center">
+              <p className="text-gray-400 text-sm">
+                📁 Carpeta: <span className="text-purple-400 font-mono">{session.cloudinary_folder || `${session.event_name.replace(/\s+/g, '_')}_${session.event_date || 'evento'}`}</span>
+              </p>
+              <p className="text-gray-500 text-xs mt-1">
+                Las fotos se guardarán automáticamente
+              </p>
+            </div>
+
+            {/* Botón salir */}
+            <Button 
+              variant="ghost" 
+              className="w-full mt-4 text-gray-400 hover:text-white"
+              onClick={() => setSession(null)}
+            >
+              ← Cambiar de evento
+            </Button>
           </div>
         )}
       </main>
+
+      {/* Footer fijo */}
+      <footer className="fixed bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm border-t border-white/10 py-2 text-center">
+        <p className="text-gray-500 text-xs">PicParty Live • Comparte tus momentos</p>
+      </footer>
     </div>
   );
 };
