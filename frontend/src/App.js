@@ -1394,15 +1394,85 @@ const AdminPanel = () => {
                 <CardTitle className="text-white">Crear Sesión Live</CardTitle>
                 <CardDescription className="text-gray-400">Genera: QR + Carpeta Cloudinary [Nombre]_[Fecha]</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="flex gap-3">
-                  <Input placeholder="CÓDIGO (ej: BODA-PEDRO)" value={newSession.code} onChange={(e) => setNewSession({...newSession, code: e.target.value.toUpperCase().replace(/\s+/g, '-')})} className="bg-slate-700 border-white/10 text-white" />
-                  <Input placeholder="Nombre del evento" value={newSession.event_name} onChange={(e) => setNewSession({...newSession, event_name: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
-                  <div className="flex items-center gap-2">
-                    <Checkbox checked={newSession.is_vip} onCheckedChange={(c) => setNewSession({...newSession, is_vip: c})} />
-                    <Label className="text-white">VIP</Label>
+              <CardContent className="space-y-4">
+                {/* Fila 1: Código y Nombre */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-white text-sm">Código del Evento *</Label>
+                    <Input 
+                      placeholder="ej: BODA-PEDRO" 
+                      value={newSession.code} 
+                      onChange={(e) => setNewSession({...newSession, code: e.target.value.toUpperCase().replace(/\s+/g, '-')})} 
+                      className="bg-slate-700 border-white/10 text-white mt-1" 
+                    />
                   </div>
-                  <Button onClick={createLiveSession} className="bg-cyan-500">Crear</Button>
+                  <div>
+                    <Label className="text-white text-sm">Nombre del Evento *</Label>
+                    <Input 
+                      placeholder="Boda de Pedro y María" 
+                      value={newSession.event_name} 
+                      onChange={(e) => setNewSession({...newSession, event_name: e.target.value})} 
+                      className="bg-slate-700 border-white/10 text-white mt-1" 
+                    />
+                  </div>
+                </div>
+                
+                {/* Fila 2: Tipo de Evento y Fecha */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-white text-sm">Tipo de Evento *</Label>
+                    <Select 
+                      value={newSession.event_type} 
+                      onValueChange={(v) => setNewSession({...newSession, event_type: v, event_type_custom: v === "otro" ? newSession.event_type_custom : ""})}
+                    >
+                      <SelectTrigger className="bg-slate-700 border-white/10 text-white mt-1">
+                        <SelectValue placeholder="Selecciona tipo" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {eventTypes.map(type => (
+                          <SelectItem key={type.value} value={type.value}>
+                            {type.emoji} {type.label.replace(type.emoji, '').trim()}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-white text-sm">Fecha del Evento *</Label>
+                    <Input 
+                      type="date" 
+                      value={newSession.event_date} 
+                      onChange={(e) => setNewSession({...newSession, event_date: e.target.value})} 
+                      className="bg-slate-700 border-white/10 text-white mt-1" 
+                    />
+                  </div>
+                </div>
+                
+                {/* Campo personalizado si es "Otro" */}
+                {newSession.event_type === "otro" && (
+                  <div>
+                    <Label className="text-white text-sm">Especifica el tipo de evento</Label>
+                    <Input 
+                      placeholder="ej: Graduación, Bautizo, etc." 
+                      value={newSession.event_type_custom} 
+                      onChange={(e) => setNewSession({...newSession, event_type_custom: e.target.value})} 
+                      className="bg-slate-700 border-white/10 text-white mt-1" 
+                    />
+                  </div>
+                )}
+                
+                {/* Fila 3: VIP y Botón */}
+                <div className="flex items-center justify-between pt-2">
+                  <div className="flex items-center gap-2">
+                    <Checkbox 
+                      checked={newSession.is_vip} 
+                      onCheckedChange={(c) => setNewSession({...newSession, is_vip: c})} 
+                    />
+                    <Label className="text-yellow-400">⭐ Evento VIP</Label>
+                  </div>
+                  <Button onClick={createLiveSession} className="bg-cyan-500 hover:bg-cyan-600 px-6">
+                    ✓ Crear Sesión Live
+                  </Button>
                 </div>
               </CardContent>
             </Card>
