@@ -1489,13 +1489,17 @@ const AdminPanel = () => {
   };
 
   const createLiveSession = async () => {
-    if (!newSession.code || !newSession.event_name || !newSession.event_date) { 
-      toast.error("Código, nombre y fecha son requeridos"); 
+    if (!newSession.event_name || !newSession.event_date) { 
+      toast.error("Nombre y fecha son requeridos"); 
       return; 
     }
+    
+    // Generar código automático de 4 dígitos
+    const autoCode = generateUniqueCode();
+    
     try {
       const params = new URLSearchParams({
-        code: newSession.code,
+        code: autoCode,
         event_name: newSession.event_name,
         event_type: newSession.event_type,
         event_date: newSession.event_date,
@@ -1506,13 +1510,13 @@ const AdminPanel = () => {
       }
       
       await axios.post(`${API}/live/sessions/create?${params.toString()}`);
-      toast.success("Sesión creada con éxito");
+      toast.success(`✅ Sesión creada - Código: ${autoCode}`);
       setNewSession({ 
-        code: "", event_name: "", event_type: "boda", 
+        event_name: "", event_type: "boda", 
         event_type_custom: "", event_date: "", is_vip: false, vip_pass: "" 
       });
       fetchData();
-    } catch (e) { toast.error(e.response?.data?.detail || "Error"); }
+    } catch (e) { toast.error(e.response?.data?.detail || "Error al crear sesión"); }
   };
 
   // ============ EDICIÓN DE SESIONES LIVE ============
