@@ -1890,7 +1890,7 @@ const AdminPanel = () => {
           <TabsList className="bg-slate-800 border border-white/10">
             <TabsTrigger value="contracts" className="data-[state=active]:bg-green-500">📄 Contratos ({contracts.length})</TabsTrigger>
             <TabsTrigger value="events" className="data-[state=active]:bg-purple-500">📸 Galería Pro ({events.length})</TabsTrigger>
-            <TabsTrigger value="live" className="data-[state=active]:bg-cyan-500">🔴 PicPartyLive ({liveSessions.length})</TabsTrigger>
+            <TabsTrigger value="live" className="data-[state=active]:bg-cyan-500">🔴 PICPARTYLIVE ({liveSessions.length})</TabsTrigger>
             <TabsTrigger value="cloudinary" className="data-[state=active]:bg-orange-500">☁️ Cloudinary</TabsTrigger>
           </TabsList>
 
