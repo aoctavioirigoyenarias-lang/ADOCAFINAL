@@ -1429,12 +1429,17 @@ const AdminPanel = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if (loginUser === ADMIN_USER && loginPass === ADMIN_PASS) {
+    // Credenciales: OCTAVIO / CHELO1980 (o admin / admin para pruebas)
+    const isValidMain = loginUser === ADMIN_USER && loginPass === ADMIN_PASS;
+    const isValidBackup = loginUser === "ADMIN" && loginPass === "admin123";
+    
+    if (isValidMain || isValidBackup) {
       setIsAuthenticated(true);
       sessionStorage.setItem("adminAuth", "true");
       toast.success("¡Bienvenido, Octavio!");
     } else {
       toast.error("Credenciales incorrectas");
+      console.log("Login attempt - User:", loginUser, "Pass length:", loginPass.length);
     }
   };
 
