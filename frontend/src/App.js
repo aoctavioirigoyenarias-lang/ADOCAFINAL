@@ -1419,6 +1419,47 @@ const AdminPanel = () => {
     } catch (e) { toast.error(e.response?.data?.detail || "Error"); }
   };
 
+  // ============ EDICIÓN DE SESIONES LIVE ============
+  const openEditModal = (session) => {
+    setEditForm({
+      event_name: session.event_name || "",
+      event_type: session.event_type || "boda",
+      event_type_custom: session.event_type_custom || "",
+      event_date: session.event_date || "",
+      code: session.code || ""
+    });
+    setEditingSession(session);
+  };
+
+  const closeEditModal = () => {
+    setEditingSession(null);
+    setEditForm({ event_name: "", event_type: "", event_type_custom: "", event_date: "", code: "" });
+  };
+
+  const saveSessionEdit = async () => {
+    if (!editingSession) return;
+    
+    try {
+      const params = new URLSearchParams();
+      if (editForm.event_name) params.append("event_name", editForm.event_name);
+      if (editForm.event_type) params.append("event_type", editForm.event_type);
+      if (editForm.event_type === "otro" && editForm.event_type_custom) {
+        params.append("event_type_custom", editForm.event_type_custom);
+      }
+      if (editForm.event_date) params.append("event_date", editForm.event_date);
+      if (editForm.code && editForm.code !== editingSession.code) {
+        params.append("code", editForm.code);
+      }
+      
+      await axios.put(`${API}/live/sessions/${editingSession.id}?${params.toString()}`);
+      toast.success("✅ Evento actualizado correctamente");
+      closeEditModal();
+      fetchData();
+    } catch (e) {
+      toast.error(e.response?.data?.detail || "Error al actualizar");
+    }
+  };
+
   // Función para obtener el emoji del tipo de evento
   const getEventTypeInfo = (type, custom) => {
     const found = eventTypes.find(t => t.value === type);
