@@ -793,40 +793,112 @@ const AdminPanel = () => {
   };
 
   const createLiveSession = async () => {
-    if (!newSession.code || !newSession.event_name) { toast.error("Código y nombre requeridos"); return; }
+    if (!newSession.code || !newSession.event_name || !newSession.event_date) { 
+      toast.error("Código, nombre y fecha son requeridos"); 
+      return; 
+    }
     try {
-      await axios.post(`${API}/live/sessions/create?code=${newSession.code}&event_name=${encodeURIComponent(newSession.event_name)}`);
-      toast.success("Sesión creada");
-      setNewSession({ code: "", event_name: "", is_vip: false, vip_pass: "" });
+      const params = new URLSearchParams({
+        code: newSession.code,
+        event_name: newSession.event_name,
+        event_type: newSession.event_type,
+        event_date: newSession.event_date,
+        is_vip: newSession.is_vip
+      });
+      if (newSession.event_type === "otro" && newSession.event_type_custom) {
+        params.append("event_type_custom", newSession.event_type_custom);
+      }
+      
+      await axios.post(`${API}/live/sessions/create?${params.toString()}`);
+      toast.success("Sesión creada con éxito");
+      setNewSession({ 
+        code: "", event_name: "", event_type: "boda", 
+        event_type_custom: "", event_date: "", is_vip: false, vip_pass: "" 
+      });
       fetchData();
     } catch (e) { toast.error(e.response?.data?.detail || "Error"); }
   };
 
+  // Función para obtener el emoji del tipo de evento
+  const getEventTypeInfo = (type, custom) => {
+    const found = eventTypes.find(t => t.value === type);
+    if (type === "otro" && custom) {
+      return { emoji: "✨", label: custom };
+    }
+    return found || { emoji: "📸", label: "Evento" };
+  };
+
   const printQRPDF = async (session) => {
+    toast.info("Generando PDF de alta calidad...");
     const qrUrl = `https://${SITE_DOMAIN}/live?event=${session.code}`;
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
     const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
     
-    pdf.setFillColor(88, 28, 135);
-    pdf.rect(0, 0, pageWidth, 280, 'F');
+    // Fondo púrpura profundo
+    pdf.setFillColor(59, 7, 100);
+    pdf.rect(0, 0, pageWidth, pageHeight, 'F');
     
+    // === LOGO PICPARTY ARRIBA ===
     try {
       const logoImg = new Image();
       logoImg.crossOrigin = "anonymous";
       logoImg.src = PICPARTY_LOGO;
-      await new Promise(r => { logoImg.onload = r; setTimeout(r, 2000); });
-      pdf.addImage(logoImg, 'PNG', (pageWidth - 50) / 2, 15, 50, 50);
-    } catch(e) {}
+      await new Promise((resolve) => { 
+        logoImg.onload = resolve; 
+        setTimeout(resolve, 3000); 
+      });
+      pdf.addImage(logoImg, 'PNG', (pageWidth - 60) / 2, 20, 60, 60);
+    } catch(e) {
+      pdf.setFontSize(32);
+      pdf.setTextColor(255, 255, 255);
+      pdf.text("PICPARTY", pageWidth / 2, 50, { align: 'center' });
+    }
     
+    // Tipo de evento con emoji
+    const typeInfo = getEventTypeInfo(session.event_type, session.event_type_custom);
+    pdf.setFontSize(16);
+    pdf.setTextColor(236, 72, 153);
+    pdf.text(`${typeInfo.emoji} ${typeInfo.label.toUpperCase()}`, pageWidth / 2, 95, { align: 'center' });
+    
+    // === QR EN ALTA RESOLUCIÓN ===
+    try {
+      const QRCodeLib = await import('qrcode');
+      const qrCanvas = document.createElement('canvas');
+      // Canvas de alta resolución (1200px para impresión)
+      await QRCodeLib.toCanvas(qrCanvas, qrUrl, { 
+        width: 1200, 
+        margin: 2,
+        color: { dark: '#000000', light: '#FFFFFF' },
+        errorCorrectionLevel: 'H'
+      });
+      
+      // QR grande y centrado (130mm)
+      const qrSize = 130;
+      pdf.addImage(qrCanvas.toDataURL('image/png'), 'PNG', (pageWidth - qrSize) / 2, 105, qrSize, qrSize);
+    } catch(e) {
+      console.error("Error generando QR:", e);
+    }
+    
+    // === NOMBRE DEL EVENTO DEBAJO ===
     pdf.setFontSize(28);
     pdf.setTextColor(255, 255, 255);
-    pdf.text(session.event_name.toUpperCase(), pageWidth / 2, 85, { align: 'center' });
+    pdf.text(session.event_name.toUpperCase(), pageWidth / 2, 250, { align: 'center' });
     
+    // Fecha del evento
     pdf.setFontSize(14);
-    pdf.setTextColor(200, 200, 200);
-    pdf.text("Escanea el QR para ver las fotos", pageWidth / 2, 95, { align: 'center' });
+    pdf.setTextColor(180, 180, 180);
+    pdf.text(session.event_date || "", pageWidth / 2, 260, { align: 'center' });
     
-    const QRCodeLib = await import('qrcode');
+    // Footer
+    pdf.setFontSize(10);
+    pdf.setTextColor(120, 120, 120);
+    pdf.text("Escanea el código QR para ver y compartir fotos", pageWidth / 2, 272, { align: 'center' });
+    
+    // === DESCARGA DIRECTA (solución about:blank) ===
+    pdf.save(`QR_PicParty_${session.event_name.replace(/\s+/g, '_')}.pdf`);
+    toast.success("PDF descargado correctamente");
+  };
     const qrCanvas = document.createElement('canvas');
     await QRCodeLib.toCanvas(qrCanvas, qrUrl, { width: 1000, margin: 2 });
     pdf.addImage(qrCanvas.toDataURL('image/png'), 'PNG', (pageWidth - 120) / 2, 105, 120, 120);
