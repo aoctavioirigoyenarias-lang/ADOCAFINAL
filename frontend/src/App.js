@@ -886,11 +886,18 @@ const PicPartyLive = () => {
         {!session ? (
           /* ============ PANTALLA DE ENTRADA ============ */
           <div className="max-w-md mx-auto text-center pt-8">
+            {/* Barra de emojis decorativos */}
+            <div className="flex justify-center gap-2 mb-4 text-2xl">
+              {PICPARTY_EMOJIS.map((emoji, i) => (
+                <span key={i} className="animate-bounce" style={{ animationDelay: `${i * 0.1}s` }}>{emoji}</span>
+              ))}
+            </div>
+            
             <div className="w-28 h-28 mx-auto bg-gradient-to-r from-pink-500 to-violet-500 rounded-full flex items-center justify-center mb-6 shadow-2xl shadow-pink-500/30">
-              <span className="text-5xl">🎉</span>
+              <span className="text-5xl">👑</span>
             </div>
             <h1 className="text-3xl font-black text-white mb-2">¡Únete a la Fiesta!</h1>
-            <p className="text-gray-400 mb-6">Ingresa el código del evento</p>
+            <p className="text-gray-400 mb-6">Ingresa el código del evento ✨</p>
             
             {error && (
               <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg">
@@ -913,7 +920,7 @@ const PicPartyLive = () => {
                   className="w-full h-12 text-lg font-bold bg-gradient-to-r from-pink-500 to-fuchsia-500 hover:from-pink-600 hover:to-fuchsia-600 shadow-lg shadow-pink-500/30"
                   data-testid="join-event-btn"
                 >
-                  🎉 ENTRAR AL EVENTO
+                  👑 ENTRAR AL EVENTO
                 </Button>
               </CardContent>
             </Card>
@@ -921,10 +928,17 @@ const PicPartyLive = () => {
         ) : (
           /* ============ INTERFAZ DE INVITADOS ============ */
           <div className="max-w-lg mx-auto">
+            {/* Barra de emojis decorativos */}
+            <div className="flex justify-center gap-3 mb-3 text-xl">
+              {PICPARTY_EMOJIS.map((emoji, i) => (
+                <span key={i} className="opacity-70">{emoji}</span>
+              ))}
+            </div>
+            
             {/* Bienvenida */}
-            <div className="text-center mb-6">
+            <div className="text-center mb-5">
               <h1 className="text-2xl font-black text-white mb-1">
-                ¡Bienvenido a la fiesta!
+                ¡Bienvenido a la fiesta! 👸
               </h1>
               <p className="text-xl font-bold bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">
                 {session.event_name}
@@ -935,8 +949,8 @@ const PicPartyLive = () => {
                   {session.event_type === 'quinceanios' && '👑 Quinceaños'}
                   {session.event_type === 'cumpleanos' && '🎂 Cumpleaños'}
                   {session.event_type === 'empresarial' && '🏢 Empresarial'}
-                  {session.event_type === 'fiesta' && '🎊 Fiesta'}
-                  {session.event_type === 'publico' && '🎉 Evento Público'}
+                  {session.event_type === 'fiesta' && '💃 Fiesta'}
+                  {session.event_type === 'publico' && '✨ Evento Público'}
                   {session.event_type === 'otro' && `✨ ${session.event_type_custom || 'Evento'}`}
                 </Badge>
               )}
@@ -964,7 +978,7 @@ const PicPartyLive = () => {
                 >
                   {uploading ? (
                     <span className="flex flex-col items-center gap-1">
-                      <span>⏳ SUBIENDO... {uploadProgress}%</span>
+                      <span>✨ Subiendo {currentFileIndex}/{totalFiles}... {uploadProgress}%</span>
                       <div className="w-32 h-1 bg-white/30 rounded-full overflow-hidden">
                         <div 
                           className="h-full bg-white transition-all duration-300" 
