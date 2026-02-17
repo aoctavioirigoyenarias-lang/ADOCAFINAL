@@ -483,16 +483,47 @@ const Cotizador = () => {
                 <div className="flex items-center justify-between p-3 bg-cyan-500/10 border border-cyan-500/30 rounded">
                   <div>
                     <span className="text-cyan-300 font-semibold">🎥 Video 360°</span>
-                    <p className="text-gray-400 text-sm">+$3,000</p>
+                    <p className="text-gray-400 text-sm">+$3,000 (NETO)</p>
                   </div>
                   <Switch checked={includeVideo360} onCheckedChange={setIncludeVideo360} />
                 </div>
-                <div className="flex items-center justify-between p-3 bg-pink-500/10 border border-pink-500/30 rounded">
-                  <div>
-                    <span className="text-pink-300 font-semibold">🔴 PicParty Live</span>
-                    <p className="text-gray-400 text-sm">+$2,000</p>
+                
+                {/* Paquetes PicPartyLive con precios NETO */}
+                <div className="space-y-2">
+                  <p className="text-pink-300 font-semibold">🔴 PicParty Live</p>
+                  <div className="grid grid-cols-3 gap-2">
+                    <Button 
+                      variant={includeLive && livePackage === 700 ? "default" : "outline"}
+                      className={includeLive && livePackage === 700 ? "bg-pink-500 text-white" : "border-pink-500/30 text-pink-300"}
+                      onClick={() => { setIncludeLive(true); setLivePackage(700); }}
+                    >
+                      $700 MXN<br/><span className="text-xs">(NETO)</span>
+                    </Button>
+                    <Button 
+                      variant={includeLive && livePackage === 1000 ? "default" : "outline"}
+                      className={includeLive && livePackage === 1000 ? "bg-pink-500 text-white" : "border-pink-500/30 text-pink-300"}
+                      onClick={() => { setIncludeLive(true); setLivePackage(1000); }}
+                    >
+                      $1,000 MXN<br/><span className="text-xs">(NETO)</span>
+                    </Button>
+                    <Button 
+                      variant={includeLive && livePackage === 1500 ? "default" : "outline"}
+                      className={includeLive && livePackage === 1500 ? "bg-pink-500 text-white" : "border-pink-500/30 text-pink-300"}
+                      onClick={() => { setIncludeLive(true); setLivePackage(1500); }}
+                    >
+                      $1,500 MXN<br/><span className="text-xs">(NETO)</span>
+                    </Button>
                   </div>
-                  <Switch checked={includeLive} onCheckedChange={setIncludeLive} />
+                  {includeLive && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className="text-gray-400 text-xs"
+                      onClick={() => { setIncludeLive(false); setLivePackage(0); }}
+                    >
+                      ✕ Quitar PicParty Live
+                    </Button>
+                  )}
                 </div>
               </div>
 
