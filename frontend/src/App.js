@@ -3349,7 +3349,7 @@ function App() {
         <Routes>
           <Route path="/" element={<EventGallery />} />
           <Route path="/cotizador" element={<Cotizador />} />
-          <Route path="/picpartylive" element={<PicPartyLive />} />
+          <Route path="/picpartylive" element={<PicPartyLiveLanding />} />
           <Route path="/live" element={<PicPartyLive />} />
           <Route path="/admin" element={<AdminPanel />} />
         </Routes>
