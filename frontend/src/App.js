@@ -2386,6 +2386,10 @@ const AdminPanel = () => {
                                     })}
                                   </span>
                                 )}
+                                {/* Contador de fotos en tiempo real */}
+                                <Badge className="bg-pink-500/30 text-pink-300 text-xs animate-pulse">
+                                  📸 {photosCounts[session.code] || 0} fotos
+                                </Badge>
                               </div>
                               <p className="text-cyan-400 text-xs mt-2 font-mono">
                                 https://{SITE_DOMAIN}/live?code={session.code}
