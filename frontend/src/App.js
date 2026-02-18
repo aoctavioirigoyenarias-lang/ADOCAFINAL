@@ -910,6 +910,20 @@ const PicPartyLive = () => {
   const [downloadError, setDownloadError] = useState("");
   const [isDownloading, setIsDownloading] = useState(false);
   
+  // Detección de dispositivo para Smart View
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Detectar si es móvil al cargar
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768; // < 768px = móvil
+      setIsMobile(mobile);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
   // ID único para este invitado (anónimo)
   const [visitorId] = useState(() => {
     let id = localStorage.getItem('picparty_visitor_id');
