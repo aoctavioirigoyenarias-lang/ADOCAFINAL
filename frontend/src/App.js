@@ -302,25 +302,55 @@ const Cotizador = () => {
       return;
     }
     
-    const servicePrice = getServicePrice();
-    const livePrice = getLivePrice();
-    const total = servicePrice + livePrice;
+    // Calcular usando variables legacy (para compatibilidad con el JSX actual)
+    let subtotal = basePrice * hours;
+    subtotal += extras.length * 500;
+    if (includeVideo360) subtotal += 3000;
+    if (includeLive && livePackage > 0) subtotal += livePackage;
+    
+    const descuentoAmount = subtotal * (clientData.descuento / 100);
+    const netPrice = subtotal - descuentoAmount;
     
     const newFolio = generateFolio();
     setFolio(newFolio);
     setQuote({ 
-      servicePrice, 
-      livePrice, 
-      total,
+      subtotal, 
+      descuento: descuentoAmount, 
+      netPrice, 
+      descuentoPct: clientData.descuento, 
+      livePackage,
       mainService,
-      serviceHours,
-      livePackage: includeLive ? livePackage : 0
+      serviceHours
     });
     
     toast.success(`✅ Cotización generada - Folio: ${newFolio}`);
+    
+    // Guardar en backend
+    saveQuoteToBackend(newFolio, netPrice);
   };
 
-  // Guardar cotización en backend
+  const saveQuoteToBackend = async (newFolio, total) => {
+    try {
+      await axios.post(`${API}/quotes`, {
+        folio: newFolio,
+        cliente: clientData.nombre,
+        telefono: clientData.telefono || "N/A",
+        salon: clientData.salon || "N/A",
+        fecha_evento: clientData.fecha || "N/A",
+        servicio: includeVideo360 ? "Video 360°" : "Cabina de Fotos",
+        horas: hours,
+        precio_base: basePrice * hours,
+        extras: extras.length > 0 ? `${extras.length} extras` : "N/A",
+        video360: includeVideo360 ? "$3,000" : "No",
+        picpartylive: includeLive && livePackage > 0 ? `$${livePackage}` : "No",
+        descuento: clientData.descuento > 0 ? `${clientData.descuento}%` : "0%",
+        total: total,
+        created_at: new Date().toISOString()
+      });
+    } catch (e) { console.error("Error guardando cotización:", e); }
+  };
+
+  // Guardar cotización en backend (legacy - mantener para compatibilidad)
   const saveQuote = async () => {
     if (!quote || !folio) return;
     
