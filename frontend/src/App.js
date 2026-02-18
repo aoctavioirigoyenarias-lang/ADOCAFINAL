@@ -753,6 +753,86 @@ const PicPartyLive = () => {
     }
   };
 
+  // ============ FUNCIONES PARA PROYECCIÓN ============
+  
+  // Toggle pantalla completa
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().then(() => {
+        setIsFullscreen(true);
+      }).catch(err => console.log(err));
+    } else {
+      document.exitFullscreen().then(() => {
+        setIsFullscreen(false);
+      });
+    }
+  };
+
+  // Slideshow automático
+  useEffect(() => {
+    if (viewMode === "projection" && projectionEffect === "slideshow" && galleryPhotos.length > 0) {
+      const interval = setInterval(() => {
+        setCurrentSlideIndex(prev => (prev + 1) % galleryPhotos.length);
+      }, 5000); // Cambiar cada 5 segundos
+      return () => clearInterval(interval);
+    }
+  }, [viewMode, projectionEffect, galleryPhotos.length]);
+
+  // Detectar nuevas fotos para efecto Pop-up
+  const prevGalleryLength = useRef(galleryPhotos.length);
+  useEffect(() => {
+    if (viewMode === "projection" && projectionEffect === "popup") {
+      if (galleryPhotos.length > prevGalleryLength.current && galleryPhotos.length > 0) {
+        // Nueva foto detectada
+        const newPhoto = galleryPhotos[0]; // La más reciente está primero
+        setNewPhotoPopup(newPhoto);
+        // Ocultar después de 5 segundos
+        setTimeout(() => setNewPhotoPopup(null), 5000);
+      }
+      prevGalleryLength.current = galleryPhotos.length;
+    }
+  }, [galleryPhotos, viewMode, projectionEffect]);
+
+  // Polling más rápido en modo proyección (cada 3 segundos)
+  useEffect(() => {
+    if (viewMode === "projection" && session) {
+      const interval = setInterval(() => {
+        fetchGalleryPhotos(session.code);
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [viewMode, session]);
+
+  // Función para intentar descargar ZIP
+  const handleDownload = async () => {
+    if (downloadPassword !== "CHELO1980") {
+      setDownloadError("Contraseña incorrecta. Solo el administrador puede descargar.");
+      return;
+    }
+    
+    setIsDownloading(true);
+    setDownloadError("");
+    
+    try {
+      // Crear un zip con las URLs de las fotos
+      const photoUrls = galleryPhotos.map(p => p.cloudinary_url);
+      if (photoUrls.length === 0) {
+        toast.error("No hay fotos para descargar");
+        setIsDownloading(false);
+        return;
+      }
+      
+      // Por ahora, abrir galería de Cloudinary en nueva pestaña
+      const folderPath = session?.cloudinary_folder || `ADOCA/${session?.event_name}`;
+      window.open(`https://cloudinary.com/console/media_library/folders/${encodeURIComponent(folderPath)}`, '_blank');
+      toast.success("Abriendo galería en Cloudinary...");
+      setViewMode("menu");
+    } catch (err) {
+      toast.error("Error al descargar");
+    }
+    setIsDownloading(false);
+  };
+
   // Verificar sesión guardada al iniciar
   useEffect(() => {
     const initSession = async () => {
