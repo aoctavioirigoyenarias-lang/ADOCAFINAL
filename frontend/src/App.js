@@ -3130,11 +3130,10 @@ const AdminPanel = () => {
                 <div>
                   <Label className="text-white text-sm">Teléfono del Cliente * <span className="text-pink-400 text-xs">(Clave de descarga)</span></Label>
                   <Input 
-                    type="tel"
-                    placeholder="7-10 dígitos - Ej: 5512345678" 
-                    maxLength={10}
+                    type="text"
+                    placeholder="Ej: 6146010070" 
                     value={newSession.client_phone} 
-                    onChange={(e) => setNewSession({...newSession, client_phone: e.target.value.replace(/\D/g, '')})} 
+                    onChange={(e) => setNewSession({...newSession, client_phone: e.target.value})} 
                     className="bg-slate-700 border-white/10 text-white mt-1" 
                   />
                   <p className="text-gray-500 text-xs mt-1">Los últimos 4 dígitos serán la clave para descargar las fotos</p>
