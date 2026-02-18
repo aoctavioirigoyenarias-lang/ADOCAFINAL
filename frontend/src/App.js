@@ -1674,29 +1674,27 @@ const PicPartyLive = () => {
               <div className="max-w-2xl mx-auto px-4">
                 {/* Header del evento */}
                 <div className="text-center mb-8">
-                  <div className="flex justify-center gap-3 mb-3 text-2xl">
-                    {PICPARTY_EMOJIS.map((emoji, i) => (
-                      <span key={i} className="opacity-70">{emoji}</span>
-                    ))}
+                  <div className="w-20 h-20 mx-auto mb-4">
+                    <img src={PICPARTY_LOGO} alt="PicParty" className="w-full h-full object-contain" />
                   </div>
                   <h1 className="text-3xl font-black text-white mb-2">
-                    ¡Bienvenido a la fiesta! 👸
+                    Bienvenido
                   </h1>
                   <p className="text-2xl font-bold bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">
                     {session.event_name}
                   </p>
                   {session.event_type && (
                     <Badge className="mt-3 bg-purple-500/30 text-purple-200 text-base px-4 py-1">
-                      {session.event_type === 'boda' && '💍 Boda'}
-                      {session.event_type === 'quinceanios' && '👑 Quinceaños'}
-                      {session.event_type === 'cumpleanos' && '🎂 Cumpleaños'}
-                      {session.event_type === 'empresarial' && '🏢 Empresarial'}
-                      {session.event_type === 'fiesta' && '💃 Fiesta'}
-                      {session.event_type === 'publico' && '✨ Evento Público'}
-                      {session.event_type === 'otro' && `✨ ${session.event_type_custom || 'Evento'}`}
+                      {session.event_type === 'boda' && 'Boda'}
+                      {session.event_type === 'quinceanios' && 'Quinceaños'}
+                      {session.event_type === 'cumpleanos' && 'Cumpleaños'}
+                      {session.event_type === 'empresarial' && 'Empresarial'}
+                      {session.event_type === 'fiesta' && 'Fiesta'}
+                      {session.event_type === 'publico' && 'Evento Público'}
+                      {session.event_type === 'otro' && `${session.event_type_custom || 'Evento'}`}
                     </Badge>
                   )}
-                  <p className="text-gray-400 mt-3">📸 {galleryPhotos.length} fotos en la galería</p>
+                  <p className="text-gray-400 mt-3">{galleryPhotos.length} fotos en la galería</p>
                 </div>
 
                 {/* 3 BOTONES PRINCIPALES */}
