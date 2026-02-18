@@ -1660,194 +1660,31 @@ const PicPartyLive = () => {
             )}
           </>
         )}
-                      capture="environment"
-                      ref={fileInputRef}
-                      onChange={handleFileSelect}
-                      className="hidden"
-                      data-testid="photo-input"
-                    />
-                    
-                    <Button 
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={uploading}
-                      className="w-full h-20 text-xl font-black bg-gradient-to-r from-pink-500 to-fuchsia-500 hover:from-pink-600 hover:to-fuchsia-600 rounded-xl shadow-2xl shadow-pink-500/40 transition-all hover:scale-[1.02] active:scale-[0.98]"
-                      data-testid="upload-photo-btn"
-                    >
-                      {uploading ? (
-                        <span className="flex flex-col items-center gap-1">
-                          <span>✨ Subiendo {currentFileIndex}/{totalFiles}... {uploadProgress}%</span>
-                          <div className="w-32 h-1 bg-white/30 rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-white transition-all duration-300" 
-                              style={{ width: `${uploadProgress}%` }}
-                            />
-                          </div>
-                        </span>
-                      ) : (
-                        <span className="flex items-center gap-3">
-                          📸 SUBIR MI FOTO
-                        </span>
-                      )}
-                    </Button>
-                    
-                    <p className="text-center text-gray-400 text-xs mt-3">
-                      Toca para tomar o seleccionar hasta 10 fotos
-                    </p>
-                    
-                    {/* Aviso de almacenamiento */}
-                    <div className="mt-3 p-2 bg-green-500/10 border border-green-500/30 rounded-lg">
-                      <p className="text-green-300/80 text-xs text-center">
-                        ✓ Almacenamiento de fotos ILIMITADO. La resolución depende del celular del invitado.
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Mis fotos subidas */}
-                {uploadedPhotos.length > 0 && (
-                  <Card className="bg-white/5 border-white/10 backdrop-blur mb-4">
-                    <CardHeader className="py-3 px-4">
-                      <CardTitle className="text-white text-sm flex items-center gap-2">
-                        📷 Mis Fotos ({uploadedPhotos.length})
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="px-4 pb-4">
-                      <div className="grid grid-cols-3 gap-2">
-                        {uploadedPhotos.slice(0, 9).map(photo => (
-                          <div key={photo.id} className="relative aspect-square rounded-lg overflow-hidden bg-white/5">
-                            <img 
-                              src={photo.thumbnail || photo.url} 
-                              alt={photo.name}
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                      {uploadedPhotos.length > 9 && (
-                        <p className="text-center text-gray-400 text-xs mt-2">
-                          +{uploadedPhotos.length - 9} fotos más ✨
-                        </p>
-                      )}
-                    </CardContent>
-                  </Card>
-                )}
-              </>
-            ) : (
-              /* ============ MURO COLABORATIVO ============ */
-              <Card className="bg-white/5 border-white/10 backdrop-blur mb-4">
-                <CardHeader className="py-3 px-4">
-                  <CardTitle className="text-white text-sm flex items-center justify-between">
-                    <span>👑 Muro Colaborativo</span>
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      className="text-purple-300 text-xs"
-                      onClick={() => fetchGalleryPhotos(session.code)}
-                    >
-                      🔄 Actualizar
-                    </Button>
-                  </CardTitle>
-                  <p className="text-gray-400 text-xs">Fotos de todos los invitados</p>
-                </CardHeader>
-                <CardContent className="px-4 pb-4">
-                  {galleryPhotos.length === 0 ? (
-                    <div className="text-center py-8">
-                      <span className="text-4xl block mb-2">📸</span>
-                      <p className="text-gray-400">Aún no hay fotos</p>
-                      <p className="text-gray-500 text-sm">¡Sé el primero en subir!</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {galleryPhotos.map(photo => (
-                        <div key={photo.id} className="bg-white/5 rounded-xl overflow-hidden">
-                          {/* Imagen */}
-                          <div className="aspect-square relative">
-                            <img 
-                              src={photo.cloudinary_url} 
-                              alt="Foto del evento"
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                            />
-                          </div>
-                          
-                          {/* Barra de reacciones */}
-                          <div className="p-3 flex justify-around items-center bg-black/30">
-                            {PICPARTY_EMOJIS.map(emoji => (
-                              <button
-                                key={emoji}
-                                onClick={() => addReaction(photo.id, emoji)}
-                                className="flex flex-col items-center gap-1 hover:scale-110 transition-transform active:scale-95"
-                              >
-                                <span className="text-2xl">{emoji}</span>
-                                <span className="text-xs text-gray-300">
-                                  {photo.reactions?.[emoji] || 0}
-                                </span>
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Info de carpeta - Nueva estructura */}
-            <div className="p-3 bg-white/5 rounded-lg border border-white/10 text-center">
-              <p className="text-gray-400 text-xs">
-                📁 <span className="text-purple-400 font-mono text-[10px]">
-                  ADOCA/{(() => {
-                    const meses = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 
-                                   'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
-                    const d = session.event_date ? new Date(session.event_date + 'T12:00:00') : new Date();
-                    const mes = meses[d.getMonth()];
-                    const dia = String(d.getDate()).padStart(2, '0');
-                    const mesNum = String(d.getMonth() + 1).padStart(2, '0');
-                    const anio = String(d.getFullYear()).slice(-2);
-                    const tipo = (session.event_type || 'EVENTO').toUpperCase().replace('QUINCEANIOS', 'XV');
-                    const nombre = session.event_name.toUpperCase().replace(/\s+/g, '_').slice(0, 15);
-                    return `${mes}/${dia}-${mesNum}-${anio}/${tipo}_${nombre}`;
-                  })()}
-                </span>
-              </p>
-            </div>
-
-            {/* Cerrar sesión - redirige a landing */}
-            <Button 
-              variant="ghost" 
-              className="w-full mt-3 text-gray-400 hover:text-white text-sm"
-              onClick={handleLogout}
-            >
-              ← Salir del evento
-            </Button>
-          </div>
-        )}
       </main>
 
-      {/* Footer con botón de ventas y privacidad */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur-sm border-t border-white/10 py-3">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center gap-2">
-            {/* Botón de ventas */}
-            <Link to="/cotizador">
-              <Button 
-                size="sm" 
-                className="bg-gradient-to-r from-pink-500 to-fuchsia-500 hover:from-pink-600 hover:to-fuchsia-600 text-white font-bold shadow-lg"
-              >
-                ✨ ¡Quiero PICPARTYLIVE en mi fiesta!
-              </Button>
-            </Link>
-            {/* Footer info */}
-            <div className="flex items-center gap-3 text-xs">
-              <span className="text-gray-400">PICPARTYLIVE • adoca.net</span>
-              <button 
-                onClick={() => setShowPrivacyModal(true)}
-                className="text-cyan-400 hover:text-cyan-300 underline"
-              >
-                🔒 Seguridad y Privacidad
-              </button>
+      {/* Footer con botón de ventas y privacidad - Solo en modo menú y galería */}
+      {viewMode !== "projection" && (
+        <footer className="fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur-sm border-t border-white/10 py-3 z-40">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-col items-center gap-2">
+              {/* Botón de ventas */}
+              <Link to="/cotizador">
+                <Button 
+                  size="sm" 
+                  className="bg-gradient-to-r from-pink-500 to-fuchsia-500 hover:from-pink-600 hover:to-fuchsia-600 text-white font-bold shadow-lg"
+                >
+                  ✨ ¡Quiero PICPARTYLIVE en mi fiesta!
+                </Button>
+              </Link>
+              {/* Footer info */}
+              <div className="flex items-center gap-3 text-xs">
+                <span className="text-gray-400">PICPARTYLIVE • adoca.net</span>
+                <button 
+                  onClick={() => setShowPrivacyModal(true)}
+                  className="text-cyan-400 hover:text-cyan-300 underline"
+                >
+                  🔒 Seguridad y Privacidad
+                </button>
             </div>
           </div>
         </div>
