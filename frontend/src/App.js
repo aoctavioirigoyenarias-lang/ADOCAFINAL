@@ -1952,6 +1952,7 @@ const AdminPanel = () => {
     event_type: "boda",
     event_type_custom: "",
     event_date: "",
+    client_phone: "",
     is_vip: false, 
     vip_pass: "" 
   });
