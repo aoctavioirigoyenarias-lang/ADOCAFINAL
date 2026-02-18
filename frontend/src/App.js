@@ -3352,13 +3352,17 @@ const AdminPanel = () => {
             {contracts.length === 0 ? (
               <Card className="bg-slate-800/50 border-white/10 border-dashed">
                 <CardContent className="p-8 text-center">
-                  <span className="text-5xl block mb-4">📄</span>
+                  <div className="w-16 h-16 mx-auto mb-3 bg-slate-700 rounded-lg flex items-center justify-center">
+                    <svg className="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                  </div>
                   <p className="text-gray-400">No hay contratos creados</p>
-                  <p className="text-gray-500 text-sm">Crea tu primer contrato con el botón de arriba</p>
+                  <p className="text-gray-500 text-sm">Crea tu primer contrato con el boton de arriba</p>
                 </CardContent>
               </Card>
             ) : (
-              contracts.map(contract => (
+              [...contracts]
+                .sort((a, b) => new Date(a.event_date || '2099-12-31') - new Date(b.event_date || '2099-12-31'))
+                .map(contract => (
                 <Card key={contract.id} className="bg-slate-800 border-white/10">
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start">
@@ -3366,18 +3370,18 @@ const AdminPanel = () => {
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className="text-white font-bold">{contract.event_name}</h3>
                           <Badge className={contract.contract_type === "special" ? "bg-orange-500/20 text-orange-400" : "bg-green-500/20 text-green-400"}>
-                            {contract.contract_type === "special" ? "🤝 Especial" : "📋 Público"}
+                            {contract.contract_type === "special" ? "Especial" : "Publico"}
                           </Badge>
                           <Badge className="bg-purple-500/20 text-purple-400">{contract.status}</Badge>
                         </div>
-                        <p className="text-gray-400 text-sm">{contract.client_name} • {contract.client_phone}</p>
-                        <p className="text-gray-500 text-sm">{contract.salon} • {contract.event_date}</p>
+                        <p className="text-gray-400 text-sm">{contract.client_name} - {contract.client_phone}</p>
+                        <p className="text-gray-500 text-sm">{contract.salon} - {contract.event_date}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-green-400 font-bold text-2xl">${contract.net_price?.toLocaleString()}</p>
                         <p className="text-gray-500 text-sm">Precio Neto</p>
                         <div className="flex gap-2 mt-2">
-                          <Button size="sm" className="bg-blue-500" onClick={() => printContractPDF(contract)}>📄 PDF</Button>
+                          <Button size="sm" className="bg-blue-500" onClick={() => printContractPDF(contract)}>PDF</Button>
                           <Button size="sm" variant="destructive" onClick={() => deleteContract(contract.id)}>Eliminar</Button>
                         </div>
                       </div>
