@@ -1208,9 +1208,7 @@ const PicPartyLive = () => {
           }
         } catch {
           clearSessionStorage();
-          // SEGURIDAD: Redirigir a landing si no hay sesión válida
-          navigate('/');
-          return;
+          // No redirigir, la Landing Page se mostrará automáticamente
         }
       }
       setLoading(false);
