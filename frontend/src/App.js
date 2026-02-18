@@ -1819,19 +1819,21 @@ const PicPartyLive = () => {
                     <div className="text-5xl mb-2">📥</div>
                     <CardTitle className="text-white">Descargar Evento</CardTitle>
                     <CardDescription className="text-gray-400">
-                      Descarga todas las fotos del evento. Solo el administrador puede acceder.
+                      Descarga todas las fotos del evento. Usa los últimos 4 dígitos del teléfono del cliente.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <Label className="text-white">Contraseña de Administrador</Label>
+                      <Label className="text-white">Contraseña de Descarga</Label>
                       <Input 
                         type="password"
-                        placeholder="Ingresa la contraseña"
+                        placeholder="Últimos 4 dígitos del teléfono"
+                        maxLength={4}
                         value={downloadPassword}
-                        onChange={(e) => setDownloadPassword(e.target.value)}
-                        className="bg-white/10 border-white/20 text-white mt-1"
+                        onChange={(e) => setDownloadPassword(e.target.value.replace(/\D/g, ''))}
+                        className="bg-white/10 border-white/20 text-white mt-1 text-center text-xl tracking-widest"
                       />
+                      <p className="text-gray-500 text-xs mt-1">Ej: Si el teléfono es 5512345678, la clave es 5678</p>
                       {downloadError && (
                         <p className="text-red-400 text-sm mt-1">{downloadError}</p>
                       )}
