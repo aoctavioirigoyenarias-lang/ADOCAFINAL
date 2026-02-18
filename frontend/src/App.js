@@ -2061,20 +2061,7 @@ const PicPartyLive = () => {
                             className="w-full h-full object-cover"
                             loading="lazy"
                           />
-                          {/* Overlay con reacciones */}
-                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                            <div className="flex justify-center gap-1 flex-wrap">
-                              {PICPARTY_EMOJIS.map(emoji => (
-                                <button
-                                  key={emoji}
-                                  onClick={() => addReaction(photo.id, emoji)}
-                                  className="bg-white/20 hover:bg-white/40 rounded-full px-2 py-1 text-sm transition-all hover:scale-110"
-                                >
-                                  {emoji} {photo.reactions?.[emoji] || 0}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
+                          {/* Overlay limpio - sin reacciones para fotos protagonistas */}
                         </div>
                       </Card>
                     ))}
@@ -2496,11 +2483,12 @@ const AdminPanel = () => {
         pdf.text("PICPARTY", pageWidth / 2, 45, { align: 'center' });
       }
       
-      // Tipo de evento
+      // Tipo de evento (sin emojis para impresión limpia)
       const typeInfo = getEventTypeInfo(session.event_type, session.event_type_custom);
+      const cleanLabel = typeInfo.label.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]/gu, '').trim();
       pdf.setFontSize(18);
       pdf.setTextColor(236, 72, 153);
-      pdf.text(`${typeInfo.label.toUpperCase()}`, pageWidth / 2, 90, { align: 'center' });
+      pdf.text(cleanLabel.toUpperCase(), pageWidth / 2, 90, { align: 'center' });
       
       // === QR EN ALTA RESOLUCIÓN ===
       const QRCode = (await import('qrcode')).default;
