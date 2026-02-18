@@ -264,6 +264,14 @@ const Cotizador = () => {
     { horas: 5, precio: 4999 },
   ];
 
+  // Extra options para compatibilidad
+  const extraOptions = [
+    { id: "photobooth", label: "Photobooth", price: 500 },
+    { id: "props", label: "Props Premium", price: 500 },
+    { id: "album", label: "Álbum Impreso", price: 500 },
+    { id: "prints", label: "Impresiones Ilimitadas", price: 500 },
+  ];
+
   // Generar folio único
   const generateFolio = () => {
     const timestamp = Date.now().toString(36).toUpperCase();
