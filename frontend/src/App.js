@@ -711,6 +711,16 @@ const PicPartyLive = () => {
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const fileInputRef = useRef(null);
   
+  // NUEVOS ESTADOS para Interfaz Maestra
+  const [viewMode, setViewMode] = useState("menu"); // menu, gallery, projection, download
+  const [projectionEffect, setProjectionEffect] = useState("slideshow"); // slideshow, mosaic, popup
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [newPhotoPopup, setNewPhotoPopup] = useState(null);
+  const [downloadPassword, setDownloadPassword] = useState("");
+  const [downloadError, setDownloadError] = useState("");
+  const [isDownloading, setIsDownloading] = useState(false);
+  
   // ID único para este invitado (anónimo)
   const [visitorId] = useState(() => {
     let id = localStorage.getItem('picparty_visitor_id');
