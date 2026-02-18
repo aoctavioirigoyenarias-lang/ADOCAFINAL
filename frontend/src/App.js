@@ -644,12 +644,13 @@ const Cotizador = () => {
             </CardContent>
           </Card>
 
-          {/* PASO 2: Servicio Principal */}
+          {/* ========== PASO 3: Servicio Principal (Opcional) ========== */}
           <Card className="bg-white/5 border-white/10">
             <CardHeader className="pb-3">
               <CardTitle className="text-white text-lg flex items-center gap-2">
-                <span className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">2</span>
+                <span className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">3</span>
                 Servicio Principal
+                <Badge className="bg-cyan-500/20 text-cyan-300 text-xs">Opcional</Badge>
               </CardTitle>
               <CardDescription className="text-gray-400">Selecciona un servicio (opcional si solo quieres PICPARTYLIVE)</CardDescription>
             </CardHeader>
