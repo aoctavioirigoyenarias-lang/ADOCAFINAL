@@ -529,9 +529,9 @@ const Cotizador = () => {
                   />
                 </div>
                 <div>
-                  <Label className="text-white">Teléfono * <span className="text-pink-400 text-xs">(Obligatorio)</span></Label>
+                  <Label className="text-white">Teléfono</Label>
                   <Input 
-                    placeholder="10 dígitos" 
+                    placeholder="10 dígitos (opcional)" 
                     type="tel"
                     maxLength={10}
                     value={clientData.telefono}
@@ -539,7 +539,6 @@ const Cotizador = () => {
                     className="bg-white/10 border-white/20 text-white"
                     data-testid="cotizador-telefono"
                   />
-                  <p className="text-gray-500 text-xs mt-1">Los últimos 4 dígitos serán tu clave de descarga</p>
                 </div>
               </div>
               
@@ -552,6 +551,11 @@ const Cotizador = () => {
                     onChange={(e) => setClientData({...clientData, salon: e.target.value})}
                     className="bg-white/10 border-white/20 text-white"
                   />
+                  <p className="text-gray-400 text-xs mt-2 leading-relaxed">
+                    💡 Para que tus fotos brillen en grande, el lugar requiere buena conexión a internet. 
+                    Recuerda que la pantalla y el internet corren por cuenta del anfitrión o el salón. 
+                    ¡Nosotros ponemos la magia digital!
+                  </p>
                 </div>
                 <div>
                   <Label className="text-white">Fecha del Evento</Label>
