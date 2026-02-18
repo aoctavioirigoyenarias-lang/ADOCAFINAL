@@ -119,26 +119,27 @@ class Contract(BaseModel):
     event_date: str
     event_time: str  # Horario del evento
     service_time: str  # Horario del servicio
-    duration_hours: int
     # Tipo de contrato
     contract_type: str = "public"  # "public" = Precio Neto, "special" = Precio Especial
-    # Servicios
-    base_package: str = "standard"
-    base_price: float
-    include_cabina: bool = True  # Cabina de Fotos
-    include_video360: bool = False
-    include_key_moments: bool = False  # Key Moments
-    include_live: bool = False  # PicPartyLive
-    extras: List[str] = []
-    # Precios individuales
+    # Servicios - Cabina de Fotos (por horas)
+    include_cabina: bool = True
+    cabina_hours: int = 0
     price_cabina: float = 0
+    # Video 360 / Pic Motion 360 (por horas)
+    include_video360: bool = False
+    video360_hours: int = 0
     price_video360: float = 0
+    # Key Moments (por piezas)
+    include_key_moments: bool = False
+    key_moments_pieces: int = 0
     price_key_moments: float = 0
+    # PicPartyLive
+    include_live: bool = False
     price_live: float = 0
+    extras: List[str] = []
     # Precios totales
     subtotal: float
-    discount_percent: float = 0
-    discount_amount: float = 0
+    discount_amount: float = 0  # Descuento en PESOS ($)
     special_price: Optional[float] = None  # Solo para contratos especiales
     net_price: float
     # === CAMPOS ADMINISTRATIVOS (USO INTERNO - NO SE IMPRIMEN) ===
