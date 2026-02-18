@@ -1945,7 +1945,7 @@ const PicPartyLive = () => {
                               {PICPARTY_EMOJIS.map(emoji => (
                                 <button
                                   key={emoji}
-                                  onClick={() => addReaction(photo._id, emoji)}
+                                  onClick={() => addReaction(photo.id, emoji)}
                                   className="bg-white/20 hover:bg-white/40 rounded-full px-2 py-1 text-sm transition-all hover:scale-110"
                                 >
                                   {emoji} {photo.reactions?.[emoji] || 0}
