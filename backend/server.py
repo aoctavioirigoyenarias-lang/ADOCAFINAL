@@ -163,6 +163,10 @@ class ContractCreate(BaseModel):
     discount_percent: float = 0
     special_price: Optional[float] = None
     notes: Optional[str] = None
+    # Campos administrativos
+    anticipo_status: str = "pendiente"
+    anticipo_amount: Optional[float] = None
+    costo_proveedor: Optional[float] = None
 
 # ============ COLORES AUTOMÁTICOS PARA PORTADAS ============
 AUTO_COLORS = [
