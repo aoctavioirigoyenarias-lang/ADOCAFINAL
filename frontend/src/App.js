@@ -2098,6 +2098,12 @@ const AdminPanel = () => {
       return; 
     }
     
+    // Validar teléfono (obligatorio)
+    if (!newSession.client_phone || newSession.client_phone.length < 10) {
+      toast.error("El teléfono del cliente es obligatorio (10 dígitos)");
+      return;
+    }
+    
     // Generar código automático de 4 dígitos
     const autoCode = generateUniqueCode();
     
@@ -2107,6 +2113,7 @@ const AdminPanel = () => {
         event_name: newSession.event_name,
         event_type: newSession.event_type,
         event_date: newSession.event_date,
+        client_phone: newSession.client_phone,
         is_vip: newSession.is_vip
       });
       if (newSession.event_type === "otro" && newSession.event_type_custom) {
@@ -2117,7 +2124,7 @@ const AdminPanel = () => {
       toast.success(`✅ Sesión creada - Código: ${autoCode}`);
       setNewSession({ 
         event_name: "", event_type: "boda", 
-        event_type_custom: "", event_date: "", is_vip: false, vip_pass: "" 
+        event_type_custom: "", event_date: "", client_phone: "", is_vip: false, vip_pass: "" 
       });
       fetchData();
     } catch (e) { toast.error(e.response?.data?.detail || "Error al crear sesión"); }
