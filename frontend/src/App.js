@@ -290,12 +290,6 @@ const Cotizador = () => {
       return;
     }
     
-    // Validar teléfono (obligatorio)
-    if (!clientData.telefono.trim() || clientData.telefono.length < 10) {
-      toast.error("El teléfono es obligatorio (mínimo 10 dígitos)");
-      return;
-    }
-    
     // Validar que haya seleccionado al menos un servicio
     if (!mainService && !includeLive) {
       toast.error("Selecciona al menos un servicio");
