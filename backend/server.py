@@ -463,20 +463,36 @@ async def get_contract(contract_id: str):
 @api_router.post("/contracts")
 async def create_contract(contract_data: ContractCreate):
     """Crear nuevo contrato - Público o Especial"""
-    # Calcular precios
-    subtotal = contract_data.base_price * contract_data.duration_hours
+    # Calcular precios por servicio
+    subtotal = 0
+    
+    # Cabina de Fotos (precio por hora * horas)
+    price_cabina = 0
+    if contract_data.include_cabina:
+        price_cabina = contract_data.price_cabina if contract_data.price_cabina > 0 else (contract_data.base_price * contract_data.duration_hours)
+        subtotal += price_cabina
+    
+    # Video 360
+    price_video360 = 0
+    if contract_data.include_video360:
+        price_video360 = contract_data.price_video360 if contract_data.price_video360 > 0 else 3000
+        subtotal += price_video360
+    
+    # Key Moments
+    price_key_moments = 0
+    if contract_data.include_key_moments:
+        price_key_moments = contract_data.price_key_moments if contract_data.price_key_moments > 0 else 2500
+        subtotal += price_key_moments
+    
+    # PicParty Live
+    price_live = 0
+    if contract_data.include_live:
+        price_live = contract_data.price_live if contract_data.price_live > 0 else 1000
+        subtotal += price_live
     
     # Extras
     extras_cost = len(contract_data.extras) * 500
     subtotal += extras_cost
-    
-    # Video 360
-    if contract_data.include_video360:
-        subtotal += 3000
-    
-    # PicParty Live
-    if contract_data.include_live:
-        subtotal += 2000
     
     # Descuento
     discount_amount = subtotal * (contract_data.discount_percent / 100)
@@ -494,6 +510,10 @@ async def create_contract(contract_data: ContractCreate):
     
     contract = Contract(
         **contract_data.model_dump(),
+        price_cabina=price_cabina,
+        price_video360=price_video360,
+        price_key_moments=price_key_moments,
+        price_live=price_live,
         subtotal=subtotal,
         discount_amount=discount_amount,
         net_price=net_price,
