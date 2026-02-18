@@ -1543,9 +1543,9 @@ const PicPartyLive = () => {
       <div className="min-h-screen bg-gradient-to-br from-purple-950 via-violet-900 to-purple-950 flex items-center justify-center">
         <div className="text-center">
           <div className="w-24 h-24 mx-auto bg-gradient-to-r from-pink-500 to-violet-500 rounded-full flex items-center justify-center mb-6 animate-pulse">
-            <span className="text-5xl">{PICPARTY_EMOJIS[Math.floor(Math.random() * PICPARTY_EMOJIS.length)]}</span>
+            <img src={PICPARTY_LOGO} alt="PicParty" className="w-16 h-16 object-contain" />
           </div>
-          <p className="text-white text-xl">Cargando... ✨</p>
+          <p className="text-white text-xl">Cargando...</p>
         </div>
       </div>
     );
