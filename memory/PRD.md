@@ -263,3 +263,18 @@ ADOCA/{{MES}}/{{FECHA}}/{{TIPO}}_{{NOMBRE}}/
 - ✅ Si no hay teléfono: "⚠️ Sin teléfono (descarga bloqueada)"
 - ✅ Teléfono obligatorio al crear eventos (validación 10 dígitos)
 
+### 36. PRIVACIDAD TOTAL (Febrero 2026)
+- ✅ Eliminados hints de credenciales del login
+- ✅ Header admin: "🔐 Sesión activa" (no muestra nombre de usuario)
+- ✅ Toast de login: "🔐 Acceso autorizado" (no muestra nombre)
+- ✅ Ninguna credencial visible en la interfaz
+
+### 37. BOTÓN LIVE → LANDING DE VENTAS
+- ✅ Ruta /picpartylive redirige a PicPartyLiveLanding (ventas)
+- ✅ Ruta /live redirige a PicPartyLive (galería con código)
+- ✅ Precios NETO visibles: $700, $1,000, $1,500
+
+### 38. ORDEN DE SESIONES POR FECHA DE CREACIÓN
+- ✅ Sesiones ordenadas por `created_at` descendente
+- ✅ Evento más reciente aparece primero en la lista
+
