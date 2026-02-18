@@ -161,21 +161,21 @@ class ContractCreate(BaseModel):
     event_date: str
     event_time: str
     service_time: str
-    duration_hours: int
     contract_type: str = "public"
-    base_package: str = "standard"
-    base_price: float
+    # Servicios con precios del catálogo
     include_cabina: bool = True
-    include_video360: bool = False
-    include_key_moments: bool = False
-    include_live: bool = False
-    extras: List[str] = []
-    # Precios individuales
+    cabina_hours: int = 0
     price_cabina: float = 0
+    include_video360: bool = False
+    video360_hours: int = 0
     price_video360: float = 0
+    include_key_moments: bool = False
+    key_moments_pieces: int = 0
     price_key_moments: float = 0
+    include_live: bool = False
     price_live: float = 0
-    discount_percent: float = 0
+    extras: List[str] = []
+    discount_amount: float = 0  # Descuento en PESOS ($)
     special_price: Optional[float] = None
     notes: Optional[str] = None
     # Campos administrativos (no se imprimen)
