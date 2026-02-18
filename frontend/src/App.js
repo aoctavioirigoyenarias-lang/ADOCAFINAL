@@ -586,7 +586,7 @@ const Cotizador = () => {
           <Card className="bg-white/5 border-white/10">
             <CardHeader className="pb-3">
               <CardTitle className="text-white text-lg flex items-center gap-2">
-                <span className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">1</span>
+                <span className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">2</span>
                 Datos del Cliente
               </CardTitle>
             </CardHeader>
