@@ -2259,7 +2259,9 @@ const AdminPanel = () => {
     event_name: "", salon: "", event_date: "", event_time: "", service_time: "",
     duration_hours: 4, contract_type: "public", base_package: "standard",
     base_price: 5000, include_video360: false, include_live: false,
-    extras: [], discount_percent: 0, special_price: null, notes: ""
+    extras: [], discount_percent: 0, special_price: null, notes: "",
+    // Campos administrativos (uso interno)
+    anticipo_status: "pendiente", anticipo_amount: null, costo_proveedor: null
   });
   const [contractPreview, setContractPreview] = useState(null);
   
