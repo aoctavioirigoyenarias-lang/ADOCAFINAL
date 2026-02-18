@@ -2446,7 +2446,7 @@ const AdminPanel = () => {
   };
 
   const printQRPDF = async (session) => {
-    toast.info("Generando PDF de alta calidad...");
+    toast.info("Generando PDF optimizado para impresión...");
     
     try {
       const qrUrl = `https://${SITE_DOMAIN}/live?code=${session.code}`;
@@ -2454,11 +2454,11 @@ const AdminPanel = () => {
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
       
-      // Fondo púrpura profundo
-      pdf.setFillColor(59, 7, 100);
+      // === FONDO BLANCO PARA IMPRESIÓN B&W ===
+      pdf.setFillColor(255, 255, 255);
       pdf.rect(0, 0, pageWidth, pageHeight, 'F');
       
-      // === LOGO PICPARTY ARRIBA ===
+      // === LOGO PICPARTY - Esquina superior izquierda fija ===
       try {
         const logoImg = new Image();
         logoImg.crossOrigin = "anonymous";
@@ -2469,22 +2469,36 @@ const AdminPanel = () => {
           setTimeout(resolve, 3000); 
         });
         if (logoImg.complete && logoImg.naturalWidth > 0) {
-          pdf.addImage(logoImg, 'PNG', (pageWidth - 60) / 2, 15, 60, 60);
+          // Logo fijo 40mm ancho, proporción mantenida
+          pdf.addImage(logoImg, 'PNG', 15, 10, 40, 40);
         }
       } catch(e) {
-        pdf.setFontSize(32);
-        pdf.setTextColor(255, 255, 255);
-        pdf.text("PICPARTY", pageWidth / 2, 45, { align: 'center' });
+        pdf.setFontSize(20);
+        pdf.setTextColor(30, 30, 30);
+        pdf.setFont(undefined, 'bold');
+        pdf.text("PICPARTY", 15, 35);
       }
       
-      // Tipo de evento (sin emojis para impresión limpia)
+      // === ENCABEZADO - Línea decorativa gris claro ===
+      pdf.setDrawColor(200, 200, 200);
+      pdf.setLineWidth(0.5);
+      pdf.line(15, 55, pageWidth - 15, 55);
+      
+      // Tipo de evento (sin emojis, texto gris oscuro)
       const typeInfo = getEventTypeInfo(session.event_type, session.event_type_custom);
       const cleanLabel = typeInfo.label.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]/gu, '').trim();
-      pdf.setFontSize(18);
-      pdf.setTextColor(236, 72, 153);
-      pdf.text(cleanLabel.toUpperCase(), pageWidth / 2, 90, { align: 'center' });
+      pdf.setFontSize(14);
+      pdf.setTextColor(100, 100, 100);
+      pdf.setFont(undefined, 'normal');
+      pdf.text(cleanLabel.toUpperCase(), pageWidth / 2, 68, { align: 'center' });
       
-      // === QR EN ALTA RESOLUCIÓN ===
+      // === NOMBRE DEL EVENTO - Negro, prominente ===
+      pdf.setFontSize(28);
+      pdf.setTextColor(20, 20, 20);
+      pdf.setFont(undefined, 'bold');
+      pdf.text(session.event_name.toUpperCase(), pageWidth / 2, 85, { align: 'center' });
+      
+      // === QR EN ALTA RESOLUCIÓN - B&W NÍTIDO ===
       const QRCode = (await import('qrcode')).default;
       const qrCanvas = document.createElement('canvas');
       qrCanvas.width = 1200;
@@ -2497,32 +2511,39 @@ const AdminPanel = () => {
         errorCorrectionLevel: 'H'
       });
       
-      const qrSize = 120;
+      const qrSize = 100;
       const qrDataUrl = qrCanvas.toDataURL('image/png');
-      pdf.addImage(qrDataUrl, 'PNG', (pageWidth - qrSize) / 2, 100, qrSize, qrSize);
+      pdf.addImage(qrDataUrl, 'PNG', (pageWidth - qrSize) / 2, 95, qrSize, qrSize);
       
-      // Nombre del evento
-      pdf.setFontSize(26);
-      pdf.setTextColor(255, 255, 255);
-      pdf.text(session.event_name.toUpperCase(), pageWidth / 2, 235, { align: 'center' });
+      // === CÓDIGO DEL EVENTO ===
+      pdf.setFontSize(16);
+      pdf.setTextColor(50, 50, 50);
+      pdf.setFont(undefined, 'bold');
+      pdf.text(`Código: ${session.code}`, pageWidth / 2, 205, { align: 'center' });
       
       // Fecha del evento
       if (session.event_date) {
-        pdf.setFontSize(14);
-        pdf.setTextColor(200, 200, 200);
+        pdf.setFontSize(12);
+        pdf.setTextColor(80, 80, 80);
+        pdf.setFont(undefined, 'normal');
         const formattedDate = new Date(session.event_date + 'T12:00:00').toLocaleDateString('es-MX', { 
           weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
         });
-        pdf.text(formattedDate, pageWidth / 2, 245, { align: 'center' });
+        pdf.text(formattedDate, pageWidth / 2, 215, { align: 'center' });
       }
       
-      // Footer
+      // === INSTRUCCIONES - Recuadro gris claro 10% ===
+      pdf.setFillColor(245, 245, 245);
+      pdf.roundedRect(20, 225, pageWidth - 40, 25, 3, 3, 'F');
       pdf.setFontSize(11);
-      pdf.setTextColor(150, 150, 150);
-      pdf.text("Escanea el código QR para ver y compartir fotos", pageWidth / 2, 262, { align: 'center' });
+      pdf.setTextColor(60, 60, 60);
+      pdf.text("Escanea el código QR con tu celular", pageWidth / 2, 235, { align: 'center' });
+      pdf.text("para ver y compartir fotos del evento", pageWidth / 2, 243, { align: 'center' });
+      
+      // Footer
       pdf.setFontSize(9);
-      pdf.setTextColor(100, 100, 100);
-      pdf.text(`adoca.net | Código: ${session.code}`, pageWidth / 2, 270, { align: 'center' });
+      pdf.setTextColor(150, 150, 150);
+      pdf.text("adoca.net | PicParty - Cabina Fotográfica", pageWidth / 2, 265, { align: 'center' });
       
       // === DESCARGA FORZADA CON BLOB URL ===
       const fileName = `QR_PicParty_${session.event_name.replace(/\s+/g, '_')}_${session.event_date || 'evento'}.pdf`;
