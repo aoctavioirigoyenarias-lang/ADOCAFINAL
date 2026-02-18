@@ -750,6 +750,19 @@ const Cotizador = () => {
             <CardContent className="space-y-4">
               {/* Desglose */}
               <div className="space-y-2 text-gray-300">
+                {/* PICPARTYLIVE primero en el resumen */}
+                {includeLive && (
+                  <div className="flex justify-between items-center py-2 border-b border-white/10">
+                    <span className="text-pink-400">
+                      🔴 PICPARTYLIVE 
+                      <span className="text-xs ml-2 opacity-70">
+                        ({mainService ? "Combo" : "Solo"})
+                      </span>
+                    </span>
+                    <span className="font-bold">{formatCurrency(getLivePrice())}</span>
+                  </div>
+                )}
+                
                 {mainService && serviceHours > 0 && (
                   <div className="flex justify-between items-center py-2 border-b border-white/10">
                     <span className={mainService === "cabina" ? "text-pink-300" : "text-cyan-300"}>
@@ -759,22 +772,19 @@ const Cotizador = () => {
                   </div>
                 )}
                 
-                {includeLive && livePackage > 0 && (
-                  <div className="flex justify-between items-center py-2 border-b border-white/10">
-                    <span className="text-pink-400">
-                      🔴 PICPARTYLIVE 
-                      <span className="text-xs ml-2 opacity-70">
-                        ({livePackage === 700 ? "Súper Precio" : livePackage === 1000 ? "Promo Expo" : "Normal"})
-                      </span>
-                    </span>
-                    <span className="font-bold">{formatCurrency(livePackage)}</span>
-                  </div>
-                )}
-                
                 {!mainService && !includeLive && (
                   <p className="text-gray-500 text-center py-4">Selecciona al menos un servicio</p>
                 )}
               </div>
+              
+              {/* Banner de ahorro en el resumen */}
+              {includeLive && mainService && (
+                <div className="p-3 bg-green-500/20 border border-green-500/50 rounded-lg">
+                  <p className="text-green-400 text-center font-bold">
+                    💰 ¡AHORRO DE $800 APLICADO!
+                  </p>
+                </div>
+              )}
               
               {/* Subtotal y descuento */}
               {(mainService || includeLive) && (
