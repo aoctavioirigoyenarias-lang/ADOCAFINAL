@@ -1685,10 +1685,11 @@ const PicPartyLive = () => {
                 >
                   🔒 Seguridad y Privacidad
                 </button>
+              </div>
             </div>
           </div>
-        </div>
-      </footer>
+        </footer>
+      )}
 
       {/* Modal de Privacidad */}
       {showPrivacyModal && (
