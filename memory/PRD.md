@@ -181,5 +181,68 @@ ADOCA/{{MES}}/{{FECHA}}/{{TIPO}}_{{NOMBRE}}/
 - QR PDF Download: 100% ✅
 
 ## Próximas Tareas (Backlog)
-- P1: Descarga ZIP de todas las fotos de un evento
+- P2: Descarga ZIP de todas las fotos de un evento (actualmente abre Cloudinary)
 - P2: Ruta `/live-tv` para proyectores con feed animado
+
+## ACTUALIZACIÓN DICIEMBRE 2025 - Reconstrucción Cotizador y Smart View
+
+### 25. COTIZADOR RECONSTRUIDO CON PRECIOS REALES
+- ✅ **Cabina de Fotos**: 2h ($2,699), 3h ($3,299), 4h ($3,799), 5h ($4,699) NETO
+- ✅ **Video 360°**: 2h ($3,299), 3h ($3,899), 4h ($4,499), 5h ($4,999) NETO
+- ✅ **PICPARTYLIVE**: $700 (Súper Precio con servicio), $1,000 (Promo Expo), $1,500 (Normal)
+- ✅ Interface mobile-first con botones de selección de horas
+- ✅ Cálculo automático de subtotal, descuento y total NETO
+- ✅ Descarga de PDF con folio único
+
+### 26. GENERACIÓN DE FOLIO ÚNICO
+- ✅ Formato: COT-{timestamp}-{random} (ej: COT-MLRF1QBG-O6D)
+- ✅ Se genera al calcular cotización
+- ✅ Se guarda en backend con todos los datos del cliente
+
+### 27. VALIDACIÓN DE TELÉFONO OBLIGATORIO
+- ✅ Campo teléfono marcado como obligatorio en cotizador
+- ✅ Validación mínimo 10 dígitos
+- ✅ Mensaje: "Los últimos 4 dígitos serán tu clave de descarga"
+
+### 28. SEGURIDAD DE DESCARGA ACTUALIZADA
+- ✅ **Ya NO se usa CHELO1980** para descargar fotos
+- ✅ La clave son los **últimos 4 dígitos del teléfono del cliente**
+- ✅ Campo client_phone agregado al modelo LiveSession
+- ✅ Input de descarga solo acepta 4 dígitos numéricos
+
+### 29. LANDING PAGE DE VENTAS EN /live
+- ✅ Se muestra cuando se accede a /live SIN código
+- ✅ Hero section con badge PICPARTYLIVE animado
+- ✅ CTA: "✨ Quiero PICPARTYLIVE en mi fiesta"
+- ✅ Botón demo con código 9022
+- ✅ Features: Sin Apps, Proyección en Vivo, Almacenamiento Ilimitado
+- ✅ Sección de precios NETO ($700, $1,000, $1,500)
+
+### 30. SMART VIEW (Móvil vs PC)
+- ✅ **Móvil (< 768px)**: Va directamente a la galería/subida de fotos
+- ✅ **PC/Tablet (>= 768px)**: Muestra el menú maestro (Proyectar, Galería, Descargar)
+- ✅ Detección automática de dispositivo al unirse al evento
+
+### 31. CAMPO TELÉFONO EN ADMIN
+- ✅ "Teléfono del Cliente *" con etiqueta "(Clave de descarga)"
+- ✅ Placeholder: "10 dígitos - Ej: 5512345678"
+- ✅ Nota: "Los últimos 4 dígitos serán la clave para descargar las fotos"
+- ✅ Validación obligatoria al crear sesión Live
+
+### 32. ENDPOINT /api/quotes
+- ✅ POST /api/quotes - Crear cotización con folio
+- ✅ GET /api/quotes - Listar todas las cotizaciones
+- ✅ GET /api/quotes/{folio} - Obtener por folio
+- ✅ Campos: folio, cliente, telefono, servicio, horas, precios, descuento, total
+
+## Test Results (Diciembre 2025 - Reconstrucción)
+- Cotizador Precios Cabina: 100% ✅
+- Cotizador Precios Video 360: 100% ✅
+- Cotizador Precios PICPARTYLIVE: 100% ✅
+- Validación Teléfono: 100% ✅
+- Generación Folio: 100% ✅
+- Landing Page /live: 100% ✅
+- Smart View: 100% ✅
+- Campo Teléfono Admin: 100% ✅
+- Endpoint /api/quotes: 100% ✅
+
