@@ -1516,9 +1516,42 @@ const AdminPanel = () => {
       setLiveSessions(sessionsRes.data);
       setPreferences(prefsRes.data);
       setContracts(contractsRes.data);
+      
+      // Obtener conteo de fotos para cada sesión
+      fetchPhotosCounts(sessionsRes.data);
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
   };
+  
+  // Obtener conteo de fotos por evento (para actualización en tiempo real)
+  const fetchPhotosCounts = async (sessions) => {
+    const counts = {};
+    try {
+      await Promise.all(
+        sessions.map(async (session) => {
+          try {
+            const res = await axios.get(`${API}/live/photos/${session.code}`);
+            counts[session.code] = res.data?.length || 0;
+          } catch {
+            counts[session.code] = 0;
+          }
+        })
+      );
+      setPhotosCounts(counts);
+    } catch (e) {
+      console.error("Error fetching photos counts:", e);
+    }
+  };
+  
+  // Actualizar conteo de fotos cada 10 segundos (real-time)
+  useEffect(() => {
+    if (isAuthenticated && liveSessions.length > 0) {
+      const interval = setInterval(() => {
+        fetchPhotosCounts(liveSessions);
+      }, 10000); // Cada 10 segundos
+      return () => clearInterval(interval);
+    }
+  }, [isAuthenticated, liveSessions]);
 
   const createEvent = async () => {
     if (!newEvent.name || !newEvent.date) { toast.error("Nombre y fecha requeridos"); return; }
