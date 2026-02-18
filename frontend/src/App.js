@@ -791,13 +791,13 @@ const Cotizador = () => {
                 <>
                   <div className="flex justify-between text-white pt-2">
                     <span>Subtotal</span>
-                    <span>{formatCurrency(getServicePrice() + (includeLive ? livePackage : 0))}</span>
+                    <span>{formatCurrency(getServicePrice() + getLivePrice())}</span>
                   </div>
                   
                   {clientData.descuento > 0 && (
                     <div className="flex justify-between text-orange-400">
                       <span>Descuento ({clientData.descuento}%)</span>
-                      <span>-{formatCurrency((getServicePrice() + (includeLive ? livePackage : 0)) * (clientData.descuento / 100))}</span>
+                      <span>-{formatCurrency((getServicePrice() + getLivePrice()) * (clientData.descuento / 100))}</span>
                     </div>
                   )}
                   
@@ -807,7 +807,7 @@ const Cotizador = () => {
                       <span className="text-purple-200 font-bold text-lg">TOTAL NETO</span>
                       <span className="text-white text-3xl font-black">
                         {formatCurrency(
-                          (getServicePrice() + (includeLive ? livePackage : 0)) * (1 - clientData.descuento / 100)
+                          (getServicePrice() + getLivePrice()) * (1 - clientData.descuento / 100)
                         )}
                       </span>
                     </div>
