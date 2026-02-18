@@ -2785,44 +2785,40 @@ const AdminPanel = () => {
     pdf.setDrawColor(200, 200, 200);
     
     // Cabina de Fotos
-    if (contract.include_cabina || contract.price_cabina > 0) {
-      const priceCabina = contract.price_cabina || (contract.base_price * contract.duration_hours);
+    if (contract.include_cabina && contract.price_cabina > 0) {
       pdf.text("Cabina de Fotos", margin + 3, y);
-      pdf.text(`${contract.duration_hours} horas de servicio`, pageWidth / 2 - 10, y);
-      pdf.text(formatCurrency(priceCabina), pageWidth - margin - 3, y, { align: 'right' });
+      pdf.text(`${contract.cabina_hours || '-'} horas de servicio`, pageWidth / 2 - 10, y);
+      pdf.text(formatCurrency(contract.price_cabina), pageWidth - margin - 3, y, { align: 'right' });
       y += 6;
       pdf.line(margin, y, pageWidth - margin, y);
       y += 4;
     }
     
-    // Video 360
-    if (contract.include_video360) {
-      const price360 = contract.price_video360 || 3000;
-      pdf.text("Video 360", margin + 3, y);
-      pdf.text("Experiencia 360 grados", pageWidth / 2 - 10, y);
-      pdf.text(formatCurrency(price360), pageWidth - margin - 3, y, { align: 'right' });
+    // Pic Motion 360
+    if (contract.include_video360 && contract.price_video360 > 0) {
+      pdf.text("Pic Motion 360", margin + 3, y);
+      pdf.text(`${contract.video360_hours || '-'} horas de servicio`, pageWidth / 2 - 10, y);
+      pdf.text(formatCurrency(contract.price_video360), pageWidth - margin - 3, y, { align: 'right' });
       y += 6;
       pdf.line(margin, y, pageWidth - margin, y);
       y += 4;
     }
     
     // Key Moments
-    if (contract.include_key_moments) {
-      const priceKM = contract.price_key_moments || 2500;
+    if (contract.include_key_moments && contract.price_key_moments > 0) {
       pdf.text("Key Moments", margin + 3, y);
-      pdf.text("Momentos clave del evento", pageWidth / 2 - 10, y);
-      pdf.text(formatCurrency(priceKM), pageWidth - margin - 3, y, { align: 'right' });
+      pdf.text(`${contract.key_moments_pieces || '-'} piezas`, pageWidth / 2 - 10, y);
+      pdf.text(formatCurrency(contract.price_key_moments), pageWidth - margin - 3, y, { align: 'right' });
       y += 6;
       pdf.line(margin, y, pageWidth - margin, y);
       y += 4;
     }
     
     // PicPartyLive
-    if (contract.include_live) {
-      const priceLive = contract.price_live || 1000;
+    if (contract.include_live && contract.price_live > 0) {
       pdf.text("PicPartyLive", margin + 3, y);
       pdf.text("Galeria digital en tiempo real", pageWidth / 2 - 10, y);
-      pdf.text(formatCurrency(priceLive), pageWidth - margin - 3, y, { align: 'right' });
+      pdf.text(formatCurrency(contract.price_live), pageWidth - margin - 3, y, { align: 'right' });
       y += 6;
       pdf.line(margin, y, pageWidth - margin, y);
       y += 4;
@@ -2847,8 +2843,8 @@ const AdminPanel = () => {
     pdf.text(formatCurrency(contract.subtotal), pageWidth - margin - 3, y, { align: 'right' });
     y += 6;
     
-    if (contract.discount_percent > 0) {
-      pdf.text(`Descuento (${contract.discount_percent}%):`, pageWidth - 80, y);
+    if (contract.discount_amount > 0) {
+      pdf.text("Descuento:", pageWidth - 80, y);
       pdf.text(`-$${Number(contract.discount_amount).toLocaleString('es-MX')}`, pageWidth - margin - 3, y, { align: 'right' });
       y += 6;
     }
