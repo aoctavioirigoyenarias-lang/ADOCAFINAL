@@ -811,6 +811,64 @@ async def get_photo_count(event_code: str):
     count = await db.event_photos.count_documents({"event_code": event_code})
     return {"event_code": event_code, "count": count}
 
+# ============ LIMPIEZA DE DEMOS EXPIRADAS ============
+
+@api_router.delete("/live/cleanup-demos")
+async def cleanup_expired_demos():
+    """Eliminar sesiones demo expiradas (más de 24 horas)"""
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Encontrar demos expiradas
+    expired_demos = await db.live_sessions.find({
+        "is_demo": True,
+        "demo_expires_at": {"$lt": now}
+    }).to_list(100)
+    
+    deleted_sessions = 0
+    deleted_photos = 0
+    
+    for demo in expired_demos:
+        # Eliminar fotos del demo
+        photo_result = await db.event_photos.delete_many({"event_code": demo["code"]})
+        deleted_photos += photo_result.deleted_count
+        
+        # Eliminar la sesión
+        await db.live_sessions.delete_one({"code": demo["code"]})
+        deleted_sessions += 1
+        logger.info(f"Demo expirada eliminada: {demo['code']}")
+    
+    return {
+        "message": "Limpieza completada",
+        "deleted_sessions": deleted_sessions,
+        "deleted_photos": deleted_photos
+    }
+
+# Tarea de limpieza automática cada hora
+async def cleanup_task():
+    """Tarea en background para limpiar demos expiradas"""
+    while True:
+        try:
+            await asyncio.sleep(3600)  # Esperar 1 hora
+            now = datetime.now(timezone.utc).isoformat()
+            
+            # Encontrar y eliminar demos expiradas
+            expired_demos = await db.live_sessions.find({
+                "is_demo": True,
+                "demo_expires_at": {"$lt": now}
+            }).to_list(100)
+            
+            for demo in expired_demos:
+                await db.event_photos.delete_many({"event_code": demo["code"]})
+                await db.live_sessions.delete_one({"code": demo["code"]})
+                logger.info(f"[AUTO-CLEANUP] Demo expirada eliminada: {demo['code']}")
+        except Exception as e:
+            logger.error(f"Error en limpieza automática: {e}")
+
+@app.on_event("startup")
+async def start_cleanup_task():
+    """Iniciar tarea de limpieza al arrancar"""
+    asyncio.create_task(cleanup_task())
+
 app.include_router(api_router)
 
 app.add_middleware(
