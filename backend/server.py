@@ -164,13 +164,20 @@ class ContractCreate(BaseModel):
     contract_type: str = "public"
     base_package: str = "standard"
     base_price: float
+    include_cabina: bool = True
     include_video360: bool = False
+    include_key_moments: bool = False
     include_live: bool = False
     extras: List[str] = []
+    # Precios individuales
+    price_cabina: float = 0
+    price_video360: float = 0
+    price_key_moments: float = 0
+    price_live: float = 0
     discount_percent: float = 0
     special_price: Optional[float] = None
     notes: Optional[str] = None
-    # Campos administrativos
+    # Campos administrativos (no se imprimen)
     anticipo_status: str = "pendiente"
     anticipo_amount: Optional[float] = None
     costo_proveedor: Optional[float] = None
