@@ -2176,11 +2176,9 @@ const AdminPanel = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // Credenciales: OCTAVIO / CHELO1980 (o admin / admin para pruebas)
     const isValidMain = loginUser === ADMIN_USER && loginPass === ADMIN_PASS;
-    const isValidBackup = loginUser === "ADMIN" && loginPass === "admin123";
     
-    if (isValidMain || isValidBackup) {
+    if (isValidMain) {
       setIsAuthenticated(true);
       sessionStorage.setItem("adminAuth", "true");
       toast.success("¡Bienvenido, Octavio!");
