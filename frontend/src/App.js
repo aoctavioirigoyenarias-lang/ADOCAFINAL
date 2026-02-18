@@ -1102,11 +1102,36 @@ const PicPartyLive = () => {
     }
   };
 
-  // Slideshow automático
+  // Estado para pre-carga de imágenes
+  const [preloadedImages, setPreloadedImages] = useState([]);
+  const [nextSlideIndex, setNextSlideIndex] = useState(1);
+  const [fadeState, setFadeState] = useState('visible'); // 'visible', 'fading'
+
+  // Pre-cargar imágenes para slideshow fluido
+  useEffect(() => {
+    if (galleryPhotos.length > 0) {
+      const preload = galleryPhotos.slice(0, 50).map(photo => {
+        const img = new Image();
+        img.src = photo.cloudinary_url;
+        return img;
+      });
+      setPreloadedImages(preload);
+    }
+  }, [galleryPhotos]);
+
+  // Slideshow automático con fade suave
   useEffect(() => {
     if (viewMode === "projection" && projectionEffect === "slideshow" && galleryPhotos.length > 0) {
       const interval = setInterval(() => {
-        setCurrentSlideIndex(prev => (prev + 1) % galleryPhotos.length);
+        setFadeState('fading');
+        setTimeout(() => {
+          setCurrentSlideIndex(prev => {
+            const next = (prev + 1) % galleryPhotos.length;
+            setNextSlideIndex((next + 1) % galleryPhotos.length);
+            return next;
+          });
+          setFadeState('visible');
+        }, 500); // Tiempo del fade
       }, 5000); // Cambiar cada 5 segundos
       return () => clearInterval(interval);
     }
