@@ -15,13 +15,24 @@ Plataforma de fotos en vivo para eventos (bodas, quinceaños, fiestas). Permite 
 - Ordenamiento por fecha de creación descendente (más recientes primero)
 - **PDFs optimizados para impresión B&W** (logo fijo, grises 10%, sin colores)
 
-### Sistema de Contratos
-- **Apartado Administrativo (Uso Interno)**:
+### Sistema de Contratos (2 páginas PDF)
+- **Servicios dinámicos**: Cabina de Fotos, Video 360, Key Moments, PicPartyLive
+- **Precios personalizables** por servicio
+- **Nota automática PicPartyLive**: "Internet y pantallas por cuenta del anfitrión"
+- **Cláusulas legales** incluidas:
+  1. PRECIOS NETOS - Todos los montos son NETO
+  2. ANTICIPO Y LIQUIDACION - Si anticipo es $0, pago antes del evento
+  3. CONDICIONES CLIMATICAS - Cliente protege el equipo, tiempo perdido no reembolsable
+  4. DAÑOS AL EQUIPO - Cliente responsable de daños
+  5. CANCELACION - 15 días anticipación
+  6. DERECHOS DE IMAGEN
+  7. VIGENCIA - 15 días
+- **Apartado Administrativo (NO se imprime)**:
   - Estatus de Anticipo: "Liquidado", "Pendiente", "Día del Evento"
   - Monto de Anticipo recibido
   - Costo Proveedor (gasto real)
   - Utilidad Neta automática (Precio Neto - Costo Proveedor)
-- PDF de contrato optimizado para impresión B&W
+- **Sección de firmas** al final del documento
 
 ### Cotizador (`/cotizador`)
 - PICPARTYLIVE como primera opción (Paso 1, con badge "RECOMENDADO")
@@ -45,12 +56,12 @@ Plataforma de fotos en vivo para eventos (bodas, quinceaños, fiestas). Permite 
 - Auto-limpieza después de 24 horas (apscheduler)
 
 ## PDFs Optimizados para Impresión B&W
-- **Logo PicParty**: Fijo en esquina superior izquierda (40mm ancho)
+- **Logo PicParty**: Fijo en esquina superior izquierda (35-40mm ancho)
 - **Cabeceras de tablas**: Gris claro 10% (RGB 245,245,245)
-- **Texto principal**: Negro (RGB 30,30,30)
-- **Total/Precio Neto**: Recuadro gris oscuro (RGB 60,60,60) con texto blanco
+- **Texto principal**: Gris Oxford (RGB 40,40,40)
+- **Total/Precio Neto**: Recuadro gris oscuro (RGB 50,50,50) con texto blanco
 - **Sin emojis**: Texto limpio sin caracteres especiales
-- **Sin acentos problemáticos**: Removidos para compatibilidad PDF
+- **Contratos**: 2 páginas con cláusulas legales y firmas
 
 ## Technical Stack
 - **Frontend**: React, React Router, Tailwind CSS, Shadcn/UI, jsPDF
@@ -69,14 +80,20 @@ Plataforma de fotos en vivo para eventos (bodas, quinceaños, fiestas). Permite 
 - `POST /api/demo-session` - Crear demo temporal
 
 ## Key DB Schema
-### Contract Model (actualizado)
+### Contract Model
 ```
 {
   client_name, client_phone, client_email,
   event_name, salon, event_date, event_time, service_time, duration_hours,
   contract_type: "public" | "special",
-  base_price, subtotal, discount_percent, discount_amount, net_price,
-  // Campos Administrativos
+  // Servicios
+  include_cabina, price_cabina,
+  include_video360, price_video360,
+  include_key_moments, price_key_moments,
+  include_live, price_live,
+  // Totales
+  subtotal, discount_percent, discount_amount, net_price,
+  // Campos Administrativos (NO SE IMPRIMEN)
   anticipo_status: "pendiente" | "liquidado" | "dia_evento",
   anticipo_amount: Number | null,
   costo_proveedor: Number | null,
@@ -99,4 +116,4 @@ Plataforma de fotos en vivo para eventos (bodas, quinceaños, fiestas). Permite 
 - Password: CHELO1980
 
 ## Last Updated
-December 2025 - PDFs B&W + Campos administrativos contratos
+December 2025 - Contrato legal 2 páginas con cláusulas completas
