@@ -85,6 +85,7 @@ class LiveSession(BaseModel):
     event_type: str = "boda"  # Tipo de evento
     event_type_custom: Optional[str] = None  # Si es "otro"
     event_date: str  # Fecha del evento
+    client_phone: Optional[str] = None  # Teléfono del cliente (últimos 4 dígitos = clave descarga)
     is_active: bool = True
     is_vip: bool = False
     vip_pass: Optional[str] = None
