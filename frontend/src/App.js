@@ -2608,10 +2608,31 @@ const AdminPanel = () => {
   // ============ FUNCIONES DE CONTRATOS ============
   
   const calculateContractPreview = () => {
-    let subtotal = contractForm.base_price * contractForm.duration_hours;
+    let subtotal = 0;
+    
+    // Cabina de Fotos
+    if (contractForm.include_cabina) {
+      const priceCabina = contractForm.price_cabina > 0 ? contractForm.price_cabina : (contractForm.base_price * contractForm.duration_hours);
+      subtotal += priceCabina;
+    }
+    
+    // Video 360
+    if (contractForm.include_video360) {
+      subtotal += contractForm.price_video360 || 3000;
+    }
+    
+    // Key Moments
+    if (contractForm.include_key_moments) {
+      subtotal += contractForm.price_key_moments || 2500;
+    }
+    
+    // PicPartyLive
+    if (contractForm.include_live) {
+      subtotal += contractForm.price_live || 1000;
+    }
+    
+    // Extras
     subtotal += contractForm.extras.length * 500;
-    if (contractForm.include_video360) subtotal += 3000;
-    if (contractForm.include_live) subtotal += 2000;
     
     const discountAmount = subtotal * (contractForm.discount_percent / 100);
     let netPrice;
@@ -2638,8 +2659,13 @@ const AdminPanel = () => {
         client_name: "", client_phone: "", client_email: "",
         event_name: "", salon: "", event_date: "", event_time: "", service_time: "",
         duration_hours: 4, contract_type: "public", base_package: "standard",
-        base_price: 5000, include_video360: false, include_live: false,
-        extras: [], discount_percent: 0, special_price: null, notes: ""
+        base_price: 5000,
+        include_cabina: true, price_cabina: 0,
+        include_video360: false, price_video360: 3000,
+        include_key_moments: false, price_key_moments: 2500,
+        include_live: false, price_live: 1000,
+        extras: [], discount_percent: 0, special_price: null, notes: "",
+        anticipo_status: "pendiente", anticipo_amount: null, costo_proveedor: null
       });
       setContractPreview(null);
       fetchData();
