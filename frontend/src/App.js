@@ -994,8 +994,18 @@ const PicPartyLive = () => {
 
   // Función para intentar descargar ZIP
   const handleDownload = async () => {
-    if (downloadPassword !== "CHELO1980") {
-      setDownloadError("Contraseña incorrecta. Solo el administrador puede descargar.");
+    // Validar contraseña: últimos 4 dígitos del teléfono del cliente
+    const clientPhone = session?.client_phone || "";
+    const last4Digits = clientPhone.slice(-4);
+    
+    // Si no hay teléfono configurado, mostrar mensaje
+    if (!clientPhone || clientPhone.length < 4) {
+      setDownloadError("Este evento no tiene contraseña configurada. Contacta al administrador.");
+      return;
+    }
+    
+    if (downloadPassword !== last4Digits) {
+      setDownloadError("Contraseña incorrecta. Usa los últimos 4 dígitos del teléfono del cliente.");
       return;
     }
     
