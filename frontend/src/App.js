@@ -2257,18 +2257,25 @@ const AdminPanel = () => {
   const [contractForm, setContractForm] = useState({
     client_name: "", client_phone: "", client_email: "",
     event_name: "", salon: "", event_date: "", event_time: "", service_time: "",
-    duration_hours: 4, contract_type: "public", base_package: "standard",
-    base_price: 5000,
-    // Servicios dinámicos
-    include_cabina: true, price_cabina: 0,
-    include_video360: false, price_video360: 3000,
-    include_key_moments: false, price_key_moments: 2500,
-    include_live: false, price_live: 1000,
-    extras: [], discount_percent: 0, special_price: null, notes: "",
+    contract_type: "public",
+    // Cabina de Fotos (por horas)
+    include_cabina: false, cabina_hours: 0, price_cabina: 0,
+    // Pic Motion 360 (por horas)
+    include_video360: false, video360_hours: 0, price_video360: 0,
+    // Key Moments (por piezas)
+    include_key_moments: false, key_moments_pieces: 0, price_key_moments: 0,
+    // PicPartyLive
+    include_live: false, price_live: 700,
+    extras: [], discount_amount: 0, special_price: null, notes: "",
     // Campos administrativos (uso interno - NO se imprimen)
     anticipo_status: "pendiente", anticipo_amount: null, costo_proveedor: null
   });
   const [contractPreview, setContractPreview] = useState(null);
+  
+  // CATÁLOGO DE PRECIOS NETOS
+  const CATALOGO_CABINA = { 2: 2699, 3: 3299, 4: 3799, 5: 4699 };
+  const CATALOGO_360 = { 2: 3299, 3: 3899, 4: 4499, 5: 4999 };
+  const CATALOGO_KEY_MOMENTS = { 80: 2999, 100: 3250, 140: 3499, 200: 4499 };
   
   // Estado para edición de sesiones Live
   const [editingSession, setEditingSession] = useState(null);
