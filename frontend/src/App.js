@@ -728,14 +728,14 @@ const Cotizador = () => {
                 <Input 
                   type="number" 
                   min="0" 
-                  max="50"
+                  max="100"
                   placeholder="0"
                   value={clientData.descuento || ""}
                   onChange={(e) => setClientData({...clientData, descuento: parseInt(e.target.value) || 0})}
                   className="bg-white/10 border-orange-500/30 text-orange-300 w-24 text-center"
                 />
                 <span className="text-orange-300">%</span>
-                <span className="text-gray-500 text-sm">Máximo 50%</span>
+                <span className="text-gray-500 text-sm">Negociación directa</span>
               </div>
             </CardContent>
           </Card>
