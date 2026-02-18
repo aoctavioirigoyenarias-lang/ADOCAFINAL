@@ -12,7 +12,8 @@ Plataforma de fotos en vivo para eventos (bodas, quinceaños, fiestas). Permite 
 - Últimos 4 dígitos del teléfono = clave de descarga
 - Botón "Sincronizar Cloudinary" para importar fotos externas
 - QR automático para cada evento
-- Ordenamiento por fecha descendente (más recientes primero)
+- Ordenamiento por fecha de creación descendente (más recientes primero)
+- **PDF de QR limpio sin emojis** para impresión profesional
 
 ### Cotizador (`/cotizador`)
 - PICPARTYLIVE como primera opción (Paso 1, con badge "RECOMENDADO")
@@ -24,7 +25,7 @@ Plataforma de fotos en vivo para eventos (bodas, quinceaños, fiestas). Permite 
 - Vista móvil: galería directa
 - Vista PC/Tablet: menú maestro (Proyectar, Ver Galería, Descargar)
 - Subida de fotos en tiempo real
-- Reacciones con emoji
+- **Galería limpia sin emojis de reacciones** - fotos protagonistas
 - Descarga protegida con clave (últimos 4 dígitos del teléfono)
 
 ### Landing Page (`/picpartylive`)
@@ -65,4 +66,4 @@ Plataforma de fotos en vivo para eventos (bodas, quinceaños, fiestas). Permite 
 - Password: CHELO1980
 
 ## Last Updated
-December 2025
+December 2025 - Limpieza de emojis para impresión profesional
