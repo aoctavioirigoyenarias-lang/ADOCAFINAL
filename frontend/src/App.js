@@ -2975,6 +2975,57 @@ const AdminPanel = () => {
                     <Textarea value={contractForm.notes} onChange={(e) => setContractForm({...contractForm, notes: e.target.value})} className="bg-slate-700 border-white/10 text-white" rows={2} />
                   </div>
 
+                  {/* === APARTADO DE PROVEEDOR (USO INTERNO) === */}
+                  <div className="p-4 bg-slate-900/50 border border-slate-600/50 rounded-lg">
+                    <h4 className="text-slate-400 font-bold text-sm mb-3 flex items-center gap-2">
+                      <span className="w-5 h-5 bg-slate-600 rounded flex items-center justify-center text-xs">i</span>
+                      APARTADO ADMINISTRATIVO (Uso Interno)
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {/* Estatus de Anticipo */}
+                      <div>
+                        <Label className="text-slate-400 text-xs">Estatus Anticipo</Label>
+                        <Select value={contractForm.anticipo_status} onValueChange={(v) => setContractForm({...contractForm, anticipo_status: v})}>
+                          <SelectTrigger className="bg-slate-800 border-slate-600 text-white mt-1">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="pendiente">Pendiente</SelectItem>
+                            <SelectItem value="liquidado">Liquidado</SelectItem>
+                            <SelectItem value="dia_evento">Día del Evento</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {/* Monto Anticipo */}
+                      <div>
+                        <Label className="text-slate-400 text-xs">Monto Anticipo</Label>
+                        <Input 
+                          type="number" 
+                          placeholder="$0" 
+                          value={contractForm.anticipo_amount || ""} 
+                          onChange={(e) => setContractForm({...contractForm, anticipo_amount: parseInt(e.target.value) || null})} 
+                          className="bg-slate-800 border-slate-600 text-white mt-1" 
+                        />
+                      </div>
+                      {/* Costo Proveedor */}
+                      <div>
+                        <Label className="text-slate-400 text-xs">Costo Proveedor</Label>
+                        <Input 
+                          type="number" 
+                          placeholder="Tu costo real" 
+                          value={contractForm.costo_proveedor || ""} 
+                          onChange={(e) => setContractForm({...contractForm, costo_proveedor: parseInt(e.target.value) || null})} 
+                          className="bg-slate-800 border-slate-600 text-white mt-1" 
+                        />
+                        {contractForm.costo_proveedor && contractPreview && (
+                          <p className="text-green-400 text-xs mt-1">
+                            Utilidad: ${(contractPreview.netPrice - contractForm.costo_proveedor).toLocaleString()}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Botones */}
                   <div className="flex gap-3">
                     <Button onClick={calculateContractPreview} variant="outline" className="border-white/20 text-white">
