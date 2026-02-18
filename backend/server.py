@@ -536,7 +536,8 @@ async def create_live_session_with_cloudinary(
     event_date: str = None,
     client_phone: str = None,
     is_vip: bool = False, 
-    vip_pass: str = None
+    vip_pass: str = None,
+    is_demo: str = None
 ):
     """Crear sesión Live con carpeta Cloudinary automática"""
     existing = await db.live_sessions.find_one({"code": code})
@@ -547,6 +548,12 @@ async def create_live_session_with_cloudinary(
     date_for_folder = event_date if event_date else datetime.now().strftime("%Y-%m-%d")
     cloudinary_folder = f"{event_name.replace(' ', '_')}_{date_for_folder}"
     
+    # Determinar si es demo (expira en 24 horas)
+    is_demo_session = is_demo == "true" or code.startswith("DEMO-")
+    demo_expires = None
+    if is_demo_session:
+        demo_expires = datetime.now(timezone.utc) + timedelta(hours=24)
+    
     session = LiveSession(
         code=code,
         event_name=event_name,
@@ -556,11 +563,15 @@ async def create_live_session_with_cloudinary(
         client_phone=client_phone,
         is_vip=is_vip,
         vip_pass=vip_pass if is_vip else None,
-        cloudinary_folder=cloudinary_folder
+        cloudinary_folder=cloudinary_folder,
+        is_demo=is_demo_session,
+        demo_expires_at=demo_expires
     )
     
     doc = session.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
+    if doc['demo_expires_at']:
+        doc['demo_expires_at'] = doc['demo_expires_at'].isoformat()
     await db.live_sessions.insert_one(doc)
     
     return session
