@@ -278,3 +278,15 @@ ADOCA/{{MES}}/{{FECHA}}/{{TIPO}}_{{NOMBRE}}/
 - ✅ Sesiones ordenadas por `created_at` descendente
 - ✅ Evento más reciente aparece primero en la lista
 
+### 39. AJUSTES FINALES COTIZADOR (Febrero 2026)
+- ✅ Teléfono NO obligatorio (placeholder: "10 dígitos (opcional)")
+- ✅ Eliminado aviso de "clave de descarga" del cotizador
+- ✅ Descuento sin tope (cambio de "Máximo 50%" a "Negociación directa")
+- ✅ Texto empático en campo Salón/Lugar sobre requisitos de internet/pantalla
+
+### 40. OPTIMIZACIÓN PROYECCIÓN SLIDESHOW/MOSAICO
+- ✅ Fade transitions suaves sin parpadeos negros
+- ✅ Pre-carga de imágenes para soporte de 50+ fotos
+- ✅ Contador de slides visible (ej: "12 / 45")
+- ✅ Animación fadeInMosaic para efecto mosaico
+
