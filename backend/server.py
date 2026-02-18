@@ -509,7 +509,7 @@ async def create_contract(contract_data: ContractCreate):
         utilidad_neta = net_price - contract_data.costo_proveedor
     
     contract = Contract(
-        **contract_data.model_dump(),
+        **{k: v for k, v in contract_data.model_dump().items() if k not in ['price_cabina', 'price_video360', 'price_key_moments', 'price_live']},
         price_cabina=price_cabina,
         price_video360=price_video360,
         price_key_moments=price_key_moments,
