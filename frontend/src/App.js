@@ -1632,11 +1632,33 @@ const PicPartyLive = () => {
         ) : (
           /* ============ INTERFAZ MAESTRA PICPARTYLIVE ============ */
           <>
-            {/* Banner DEMO para código 9022 */}
-            {session.code === '9022' && (
+            {/* Banner DEMO TEMPORAL (24 horas) */}
+            {(session.is_demo || session.code?.startsWith('DEMO-')) && (
+              <div className="max-w-4xl mx-auto mb-4 p-4 bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/50 rounded-lg">
+                <p className="text-amber-300 text-center font-semibold flex items-center justify-center gap-2">
+                  <span className="text-2xl">⏰</span>
+                  <span>
+                    <strong>Muestra temporal:</strong> Esta galería se borrará en 24 horas.<br/>
+                    <span className="text-amber-400">¡Contrata el plan completo por 6 meses!</span>
+                  </span>
+                </p>
+                <div className="text-center mt-2">
+                  <Button 
+                    size="sm"
+                    className="bg-pink-500 hover:bg-pink-600 text-white"
+                    onClick={() => window.open('/cotizador', '_blank')}
+                  >
+                    💰 Ver Precios
+                  </Button>
+                </div>
+              </div>
+            )}
+            
+            {/* Banner legado para código 9022 */}
+            {session.code === '9022' && !session.is_demo && (
               <div className="max-w-4xl mx-auto mb-4 p-3 bg-amber-500/20 border border-amber-500/50 rounded-lg animate-pulse">
                 <p className="text-amber-300 text-sm text-center font-semibold">
-                  ⚠️ Galería de Prueba: El contenido y las interacciones se eliminan automáticamente cada 24 horas.
+                  ⚠️ Galería de Prueba Pública: El contenido se comparte entre todos los visitantes.
                 </p>
               </div>
             )}
