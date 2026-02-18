@@ -3165,32 +3165,66 @@ const AdminPanel = () => {
                   </div>
 
                   {/* Paquete y Precio */}
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <Label className="text-white">Paquete Base</Label>
+                      <Label className="text-white">Precio Base Cabina (por hora)</Label>
                       <Select value={contractForm.base_price.toString()} onValueChange={(v) => setContractForm({...contractForm, base_price: parseInt(v)})}>
                         <SelectTrigger className="bg-slate-700 border-white/10 text-white"><SelectValue /></SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="3000">Básico - $3,000/hr</SelectItem>
-                          <SelectItem value="5000">Estándar - $5,000/hr</SelectItem>
+                          <SelectItem value="3000">Basico - $3,000/hr</SelectItem>
+                          <SelectItem value="5000">Estandar - $5,000/hr</SelectItem>
                           <SelectItem value="8000">Premium - $8,000/hr</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="flex items-center gap-4 pt-6">
-                      <div className="flex items-center gap-2">
-                        <Checkbox checked={contractForm.include_video360} onCheckedChange={(c) => setContractForm({...contractForm, include_video360: c})} />
-                        <Label className="text-cyan-400">🎥 Video 360° (+$3,000)</Label>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Checkbox checked={contractForm.include_live} onCheckedChange={(c) => setContractForm({...contractForm, include_live: c})} />
-                        <Label className="text-pink-400">🔴 Live (+$2,000)</Label>
-                      </div>
-                    </div>
                     <div>
-                      <Label className="text-orange-400">🏷️ Descuento (%)</Label>
+                      <Label className="text-orange-400">Descuento (%)</Label>
                       <Input type="number" min="0" max="50" value={contractForm.discount_percent} onChange={(e) => setContractForm({...contractForm, discount_percent: parseInt(e.target.value) || 0})} className="bg-slate-700 border-orange-500/30 text-orange-400" />
                     </div>
+                  </div>
+
+                  {/* === SERVICIOS DINAMICOS === */}
+                  <div className="p-4 bg-slate-800/50 border border-slate-600/50 rounded-lg">
+                    <Label className="text-white font-bold text-sm mb-3 block">SERVICIOS A CONTRATAR</Label>
+                    <div className="grid grid-cols-2 gap-4">
+                      {/* Cabina de Fotos */}
+                      <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded">
+                        <div className="flex items-center gap-2">
+                          <Checkbox checked={contractForm.include_cabina} onCheckedChange={(c) => setContractForm({...contractForm, include_cabina: c})} />
+                          <Label className="text-white">Cabina de Fotos</Label>
+                        </div>
+                        <span className="text-green-400 text-sm">${(contractForm.base_price * contractForm.duration_hours).toLocaleString()}</span>
+                      </div>
+                      {/* Video 360 */}
+                      <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded">
+                        <div className="flex items-center gap-2">
+                          <Checkbox checked={contractForm.include_video360} onCheckedChange={(c) => setContractForm({...contractForm, include_video360: c})} />
+                          <Label className="text-cyan-400">Video 360</Label>
+                        </div>
+                        <Input type="number" placeholder="3000" value={contractForm.price_video360 || ""} onChange={(e) => setContractForm({...contractForm, price_video360: parseInt(e.target.value) || 3000})} className="w-24 h-8 bg-slate-600 border-cyan-500/30 text-cyan-400 text-sm" disabled={!contractForm.include_video360} />
+                      </div>
+                      {/* Key Moments */}
+                      <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded">
+                        <div className="flex items-center gap-2">
+                          <Checkbox checked={contractForm.include_key_moments} onCheckedChange={(c) => setContractForm({...contractForm, include_key_moments: c})} />
+                          <Label className="text-purple-400">Key Moments</Label>
+                        </div>
+                        <Input type="number" placeholder="2500" value={contractForm.price_key_moments || ""} onChange={(e) => setContractForm({...contractForm, price_key_moments: parseInt(e.target.value) || 2500})} className="w-24 h-8 bg-slate-600 border-purple-500/30 text-purple-400 text-sm" disabled={!contractForm.include_key_moments} />
+                      </div>
+                      {/* PicPartyLive */}
+                      <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded">
+                        <div className="flex items-center gap-2">
+                          <Checkbox checked={contractForm.include_live} onCheckedChange={(c) => setContractForm({...contractForm, include_live: c})} />
+                          <Label className="text-pink-400">PicPartyLive</Label>
+                        </div>
+                        <Input type="number" placeholder="1000" value={contractForm.price_live || ""} onChange={(e) => setContractForm({...contractForm, price_live: parseInt(e.target.value) || 1000})} className="w-24 h-8 bg-slate-600 border-pink-500/30 text-pink-400 text-sm" disabled={!contractForm.include_live} />
+                      </div>
+                    </div>
+                    {contractForm.include_live && (
+                      <p className="text-yellow-400 text-xs mt-3 p-2 bg-yellow-500/10 rounded">
+                        Nota: PicPartyLive requiere que el anfitrion provea internet y pantallas.
+                      </p>
+                    )}
                   </div>
 
                   {/* Precio Especial (solo si es contrato especial) */}
