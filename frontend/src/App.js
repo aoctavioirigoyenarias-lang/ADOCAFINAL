@@ -230,10 +230,16 @@ const EventGallery = () => {
 
 // ============ COTIZADOR CON PDF ============
 const Cotizador = () => {
-  const [clientData, setClientData] = useState({ nombre: "", telefono: "", salon: "", fecha: "" });
+  const [clientData, setClientData] = useState({ nombre: "", telefono: "", salon: "", fecha: "", horario: "", descuento: 0 });
   const [quote, setQuote] = useState(null);
   const [folio, setFolio] = useState(null);
   const [saving, setSaving] = useState(false);
+  
+  // Variables legacy para compatibilidad
+  const [basePrice, setBasePrice] = useState(5000);
+  const [hours, setHours] = useState(4);
+  const [extras, setExtras] = useState([]);
+  const [includeVideo360, setIncludeVideo360] = useState(false);
   
   // Servicio principal
   const [mainService, setMainService] = useState(""); // "cabina" o "video360"
