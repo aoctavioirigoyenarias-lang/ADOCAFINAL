@@ -246,3 +246,14 @@ ADOCA/{{MES}}/{{FECHA}}/{{TIPO}}_{{NOMBRE}}/
 - Campo Teléfono Admin: 100% ✅
 - Endpoint /api/quotes: 100% ✅
 
+## ACTUALIZACIÓN FEBRERO 2026 - Ajustes de Privacidad
+
+### 33. CREDENCIALES ADMIN OCULTAS
+- ✅ Eliminados hints "Usuario: OCTAVIO" y "Contraseña: CHELO1980" del login
+- ✅ Eliminada credencial de backup (admin/admin123)
+- ✅ Login limpio sin exposición de credenciales
+
+### 34. FIX REACCIONES EMOJIS
+- ✅ Corregido: usaba `photo._id` (MongoDB) en lugar de `photo.id` (UUID)
+- ✅ Reacciones ahora funcionan correctamente en la galería
+
