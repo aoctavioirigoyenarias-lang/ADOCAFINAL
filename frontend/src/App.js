@@ -3055,7 +3055,7 @@ const AdminPanel = () => {
                   <Label className="text-white text-sm">Teléfono del Cliente * <span className="text-pink-400 text-xs">(Clave de descarga)</span></Label>
                   <Input 
                     type="tel"
-                    placeholder="10 dígitos - Ej: 5512345678" 
+                    placeholder="7-10 dígitos - Ej: 5512345678" 
                     maxLength={10}
                     value={newSession.client_phone} 
                     onChange={(e) => setNewSession({...newSession, client_phone: e.target.value.replace(/\D/g, '')})} 
