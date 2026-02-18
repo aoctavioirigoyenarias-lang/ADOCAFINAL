@@ -2618,30 +2618,27 @@ const AdminPanel = () => {
     let subtotal = 0;
     
     // Cabina de Fotos
-    if (contractForm.include_cabina) {
-      const priceCabina = contractForm.price_cabina > 0 ? contractForm.price_cabina : (contractForm.base_price * contractForm.duration_hours);
-      subtotal += priceCabina;
+    if (contractForm.include_cabina && contractForm.price_cabina > 0) {
+      subtotal += contractForm.price_cabina;
     }
     
-    // Video 360
-    if (contractForm.include_video360) {
-      subtotal += contractForm.price_video360 || 3000;
+    // Pic Motion 360
+    if (contractForm.include_video360 && contractForm.price_video360 > 0) {
+      subtotal += contractForm.price_video360;
     }
     
     // Key Moments
-    if (contractForm.include_key_moments) {
-      subtotal += contractForm.price_key_moments || 2500;
+    if (contractForm.include_key_moments && contractForm.price_key_moments > 0) {
+      subtotal += contractForm.price_key_moments;
     }
     
     // PicPartyLive
     if (contractForm.include_live) {
-      subtotal += contractForm.price_live || 1000;
+      subtotal += contractForm.price_live || 700;
     }
     
-    // Extras
-    subtotal += contractForm.extras.length * 500;
-    
-    const discountAmount = subtotal * (contractForm.discount_percent / 100);
+    // Descuento en PESOS ($)
+    const discountAmount = contractForm.discount_amount || 0;
     let netPrice;
     
     if (contractForm.contract_type === "special" && contractForm.special_price) {
@@ -2665,13 +2662,12 @@ const AdminPanel = () => {
       setContractForm({
         client_name: "", client_phone: "", client_email: "",
         event_name: "", salon: "", event_date: "", event_time: "", service_time: "",
-        duration_hours: 4, contract_type: "public", base_package: "standard",
-        base_price: 5000,
-        include_cabina: true, price_cabina: 0,
-        include_video360: false, price_video360: 3000,
-        include_key_moments: false, price_key_moments: 2500,
-        include_live: false, price_live: 1000,
-        extras: [], discount_percent: 0, special_price: null, notes: "",
+        contract_type: "public",
+        include_cabina: false, cabina_hours: 0, price_cabina: 0,
+        include_video360: false, video360_hours: 0, price_video360: 0,
+        include_key_moments: false, key_moments_pieces: 0, price_key_moments: 0,
+        include_live: false, price_live: 700,
+        extras: [], discount_amount: 0, special_price: null, notes: "",
         anticipo_status: "pendiente", anticipo_amount: null, costo_proveedor: null
       });
       setContractPreview(null);
