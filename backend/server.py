@@ -612,11 +612,11 @@ async def update_live_session(
     updated = await db.live_sessions.find_one({"id": session_id}, {"_id": 0})
     return updated
 
-# Obtener sesiones ordenadas por fecha descendente
+# Obtener sesiones ordenadas por fecha de creación descendente
 @api_router.get("/live/sessions/all")
 async def get_all_live_sessions_sorted():
-    """Obtener todas las sesiones ordenadas por fecha (más recientes primero)"""
-    sessions = await db.live_sessions.find({}, {"_id": 0}).sort("event_date", -1).to_list(100)
+    """Obtener todas las sesiones ordenadas por fecha de creación (más recientes primero)"""
+    sessions = await db.live_sessions.find({}, {"_id": 0}).sort("created_at", -1).to_list(100)
     return sessions
 
 # ============ MURO COLABORATIVO - FOTOS Y REACCIONES ============
