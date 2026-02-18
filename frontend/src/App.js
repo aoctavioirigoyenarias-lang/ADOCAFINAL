@@ -2687,7 +2687,7 @@ const AdminPanel = () => {
           <div className="flex items-center gap-3">
             <img src={PICPARTY_LOGO} alt="PicParty" className="h-10 w-10" />
             <span className="text-xl font-bold text-white">Admin</span>
-            <Badge className="bg-green-500/20 text-green-400">👤 OCTAVIO</Badge>
+            <Badge className="bg-green-500/20 text-green-400">🔐 Sesión activa</Badge>
           </div>
           <div className="flex gap-2">
             <Link to="/"><Button variant="outline" className="border-white/20 text-white">← Inicio</Button></Link>
