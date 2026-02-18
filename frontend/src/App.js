@@ -1781,32 +1781,55 @@ const PicPartyLive = () => {
                   <span className="text-white/80 text-sm">📸 {galleryPhotos.length} fotos</span>
                 </div>
 
-                {/* EFECTO SLIDESHOW */}
+                {/* EFECTO SLIDESHOW - Optimizado con fade suave */}
                 {projectionEffect === "slideshow" && galleryPhotos.length > 0 && (
-                  <div className="w-full h-full flex items-center justify-center p-8">
+                  <div className="w-full h-full flex items-center justify-center p-8 bg-black relative">
+                    {/* Imagen actual con fade */}
                     <img 
                       src={galleryPhotos[currentSlideIndex]?.cloudinary_url}
                       alt="Foto del evento"
-                      className="max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-opacity duration-1000"
-                      style={{ animation: 'fadeIn 1s ease-in-out' }}
+                      className="max-w-full max-h-full object-contain rounded-lg shadow-2xl absolute"
+                      style={{ 
+                        transition: 'opacity 0.5s ease-in-out',
+                        opacity: fadeState === 'visible' ? 1 : 0
+                      }}
                     />
+                    {/* Pre-carga de siguiente imagen (invisible) */}
+                    {galleryPhotos[nextSlideIndex] && (
+                      <img 
+                        src={galleryPhotos[nextSlideIndex]?.cloudinary_url}
+                        alt=""
+                        className="hidden"
+                        aria-hidden="true"
+                      />
+                    )}
+                    {/* Contador de slides */}
+                    <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-black/60 px-4 py-2 rounded-full">
+                      <span className="text-white/80 text-sm">
+                        {currentSlideIndex + 1} / {galleryPhotos.length}
+                      </span>
+                    </div>
                   </div>
                 )}
 
-                {/* EFECTO MOSAICO */}
+                {/* EFECTO MOSAICO - Optimizado con grid fluido */}
                 {projectionEffect === "mosaic" && (
-                  <div className="w-full h-full p-4 overflow-hidden">
+                  <div className="w-full h-full p-4 overflow-hidden bg-black">
                     <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 h-full auto-rows-fr">
-                      {galleryPhotos.slice(0, 24).map((photo, idx) => (
+                      {galleryPhotos.slice(0, 30).map((photo, idx) => (
                         <div 
-                          key={photo._id || idx} 
+                          key={photo.id || idx} 
                           className="relative overflow-hidden rounded-lg"
-                          style={{ animation: `fadeIn 0.5s ease-in-out ${idx * 0.1}s both` }}
+                          style={{ 
+                            opacity: 0,
+                            animation: `fadeInMosaic 0.6s ease-out ${idx * 0.05}s forwards`
+                          }}
                         >
                           <img 
                             src={photo.thumbnail_url || photo.cloudinary_url}
                             alt="Foto"
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                            loading="lazy"
                           />
                         </div>
                       ))}
