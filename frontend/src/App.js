@@ -228,20 +228,22 @@ const EventGallery = () => {
   );
 };
 
-// ============ COTIZADOR CON PDF ============
+// ============ COTIZADOR COMPLETO - PRECIOS REALES NETO ============
 const Cotizador = () => {
-  const [clientData, setClientData] = useState({ nombre: "", telefono: "", salon: "", fecha: "", horario: "", descuento: 0 });
+  // Datos del cliente - TELÉFONO OBLIGATORIO
+  const [clientData, setClientData] = useState({ 
+    nombre: "", 
+    telefono: "", 
+    salon: "", 
+    fecha: "", 
+    horario: "", 
+    descuento: 0 
+  });
+  
   const [quote, setQuote] = useState(null);
   const [folio, setFolio] = useState(null);
-  const [saving, setSaving] = useState(false);
   
-  // Variables legacy para compatibilidad
-  const [basePrice, setBasePrice] = useState(5000);
-  const [hours, setHours] = useState(4);
-  const [extras, setExtras] = useState([]);
-  const [includeVideo360, setIncludeVideo360] = useState(false);
-  
-  // Servicio principal
+  // Servicio principal seleccionado
   const [mainService, setMainService] = useState(""); // "cabina" o "video360"
   const [serviceHours, setServiceHours] = useState(0);
   
@@ -249,7 +251,7 @@ const Cotizador = () => {
   const [includeLive, setIncludeLive] = useState(false);
   const [livePackage, setLivePackage] = useState(0); // $700, $1000, $1500 NETO
   
-  // Precios de servicios
+  // PRECIOS REALES - Cabina de Fotos
   const cabinaPrecios = [
     { horas: 2, precio: 2699 },
     { horas: 3, precio: 3299 },
@@ -257,19 +259,12 @@ const Cotizador = () => {
     { horas: 5, precio: 4699 },
   ];
   
+  // PRECIOS REALES - Video 360°
   const video360Precios = [
     { horas: 2, precio: 3299 },
     { horas: 3, precio: 3899 },
     { horas: 4, precio: 4499 },
     { horas: 5, precio: 4999 },
-  ];
-
-  // Extra options para compatibilidad
-  const extraOptions = [
-    { id: "photobooth", label: "Photobooth", price: 500 },
-    { id: "props", label: "Props Premium", price: 500 },
-    { id: "album", label: "Álbum Impreso", price: 500 },
-    { id: "prints", label: "Impresiones Ilimitadas", price: 500 },
   ];
 
   // Generar folio único
@@ -287,111 +282,88 @@ const Cotizador = () => {
     return found ? found.precio : 0;
   };
 
-  // Obtener precio de PICPARTYLIVE según el servicio
-  const getLivePrice = () => {
-    if (!includeLive) return 0;
-    // Si tiene Cabina o 360: $700
-    if (mainService && livePackage === 700) return 700;
-    // Promo Expo o Regular
-    return livePackage;
-  };
-
+  // Calcular cotización
   const calculateQuote = () => {
-    if (!clientData.nombre) {
+    // Validar nombre
+    if (!clientData.nombre.trim()) {
       toast.error("El nombre es obligatorio");
       return;
     }
     
-    // Calcular usando variables legacy (para compatibilidad con el JSX actual)
-    let subtotal = basePrice * hours;
-    subtotal += extras.length * 500;
-    if (includeVideo360) subtotal += 3000;
-    if (includeLive && livePackage > 0) subtotal += livePackage;
+    // Validar teléfono (obligatorio)
+    if (!clientData.telefono.trim() || clientData.telefono.length < 10) {
+      toast.error("El teléfono es obligatorio (mínimo 10 dígitos)");
+      return;
+    }
+    
+    // Validar que haya seleccionado al menos un servicio
+    if (!mainService && !includeLive) {
+      toast.error("Selecciona al menos un servicio");
+      return;
+    }
+    
+    // Si seleccionó servicio principal, validar horas
+    if (mainService && !serviceHours) {
+      toast.error("Selecciona las horas del servicio");
+      return;
+    }
+    
+    // Calcular precios
+    const servicePrice = getServicePrice();
+    const livePrice = includeLive ? livePackage : 0;
+    const subtotal = servicePrice + livePrice;
     
     const descuentoAmount = subtotal * (clientData.descuento / 100);
-    const netPrice = subtotal - descuentoAmount;
+    const total = subtotal - descuentoAmount;
     
     const newFolio = generateFolio();
     setFolio(newFolio);
     setQuote({ 
+      servicePrice,
+      livePrice,
       subtotal, 
       descuento: descuentoAmount, 
-      netPrice, 
-      descuentoPct: clientData.descuento, 
-      livePackage,
+      total, 
+      descuentoPct: clientData.descuento,
       mainService,
-      serviceHours
+      serviceHours,
+      livePackage
     });
     
     toast.success(`✅ Cotización generada - Folio: ${newFolio}`);
     
     // Guardar en backend
-    saveQuoteToBackend(newFolio, netPrice);
+    saveQuoteToBackend(newFolio, servicePrice, livePrice, subtotal, descuentoAmount, total);
   };
 
-  const saveQuoteToBackend = async (newFolio, total) => {
+  const saveQuoteToBackend = async (newFolio, servicePrice, livePrice, subtotal, descuentoAmount, total) => {
     try {
       await axios.post(`${API}/quotes`, {
         folio: newFolio,
         cliente: clientData.nombre,
-        telefono: clientData.telefono || "N/A",
-        salon: clientData.salon || "N/A",
-        fecha_evento: clientData.fecha || "N/A",
-        servicio: includeVideo360 ? "Video 360°" : "Cabina de Fotos",
-        horas: hours,
-        precio_base: basePrice * hours,
-        extras: extras.length > 0 ? `${extras.length} extras` : "N/A",
-        video360: includeVideo360 ? "$3,000" : "No",
-        picpartylive: includeLive && livePackage > 0 ? `$${livePackage}` : "No",
-        descuento: clientData.descuento > 0 ? `${clientData.descuento}%` : "0%",
-        total: total,
-        created_at: new Date().toISOString()
+        telefono: clientData.telefono,
+        salon: clientData.salon || null,
+        fecha_evento: clientData.fecha || null,
+        servicio_principal: mainService || null,
+        horas: serviceHours || null,
+        precio_servicio: servicePrice,
+        picpartylive: includeLive ? (livePackage === 700 ? "Súper Precio" : livePackage === 1000 ? "Promo Expo" : "Regular") : "No",
+        picpartylive_precio: livePrice,
+        descuento_pct: clientData.descuento,
+        descuento_monto: descuentoAmount,
+        subtotal: subtotal,
+        total: total
       });
-    } catch (e) { console.error("Error guardando cotización:", e); }
-  };
-
-  // Guardar cotización en backend (legacy - mantener para compatibilidad)
-  const saveQuote = async () => {
-    if (!quote || !folio) return;
-    
-    setSaving(true);
-    try {
-      await axios.post(`${API}/quotes`, {
-        folio,
-        cliente: clientData.nombre,
-        telefono: clientData.telefono || "N/A",
-        salon: clientData.salon || "N/A",
-        fecha_evento: clientData.fecha || "N/A",
-        servicio: mainService === "cabina" ? "Cabina de Fotos" : mainService === "video360" ? "Video 360°" : "Solo PICPARTYLIVE",
-        horas: serviceHours,
-        precio_servicio: quote.servicePrice,
-        picpartylive: quote.livePackage > 0 ? `$${quote.livePackage}` : "No",
-        total: quote.total,
-        created_at: new Date().toISOString()
-      });
-      toast.success("📋 Cotización guardada para seguimiento");
-    } catch (e) {
-      console.error("Error guardando:", e);
+    } catch (e) { 
+      console.error("Error guardando cotización:", e); 
     }
-    setSaving(false);
   };
-
-  // Guardar automáticamente cuando se genera la cotización
-  useEffect(() => {
-    if (quote && folio) {
-      saveQuote();
-    }
-  }, [quote, folio]);
 
   const formatCurrency = (amount) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 0 }).format(amount);
 
   const downloadPDF = async () => {
-    if (!clientData.nombre) {
-      toast.error("Por favor ingresa tu nombre");
-      return;
-    }
-    if (!quote) {
-      toast.error("Primero calcula la cotización");
+    if (!quote || !folio) {
+      toast.error("Primero genera la cotización");
       return;
     }
 
@@ -430,7 +402,7 @@ const Cotizador = () => {
     pdf.setFont(undefined, 'normal');
     pdf.setFontSize(11);
     pdf.text(`Nombre: ${clientData.nombre}`, 20, y); y += 6;
-    if (clientData.telefono) { pdf.text(`Teléfono: ${clientData.telefono}`, 20, y); y += 6; }
+    pdf.text(`Teléfono: ${clientData.telefono}`, 20, y); y += 6;
     if (clientData.salon) { pdf.text(`Salón: ${clientData.salon}`, 20, y); y += 6; }
     if (clientData.fecha) { pdf.text(`Fecha del Evento: ${clientData.fecha}`, 20, y); y += 6; }
     
@@ -451,6 +423,7 @@ const Cotizador = () => {
     
     pdf.setFont(undefined, 'normal');
     
+    // Servicio principal
     if (quote.mainService && quote.serviceHours) {
       const serviceName = quote.mainService === "cabina" ? "Cabina de Fotos" : "Video 360°";
       pdf.text(`${serviceName} (${quote.serviceHours} horas)`, 25, y);
@@ -458,10 +431,11 @@ const Cotizador = () => {
       y += 7;
     }
     
-    if (quote.livePackage > 0) {
+    // PICPARTYLIVE
+    if (quote.livePrice > 0) {
       const pkgLabel = quote.livePackage === 700 ? "Súper Precio (con servicio)" : quote.livePackage === 1000 ? "Promo Expo" : "Regular";
       pdf.text(`PICPARTYLIVE - ${pkgLabel}`, 25, y);
-      pdf.text(formatCurrency(quote.livePackage), pageWidth - 45, y, { align: 'right' });
+      pdf.text(formatCurrency(quote.livePrice), pageWidth - 45, y, { align: 'right' });
       y += 7;
     }
     
@@ -469,6 +443,19 @@ const Cotizador = () => {
     pdf.setDrawColor(200, 200, 200);
     pdf.line(20, y, pageWidth - 20, y);
     y += 8;
+    
+    // Subtotal
+    pdf.text("Subtotal:", 25, y);
+    pdf.text(formatCurrency(quote.subtotal), pageWidth - 45, y, { align: 'right' });
+    y += 7;
+    
+    // Descuento si aplica
+    if (quote.descuentoPct > 0) {
+      pdf.setTextColor(220, 120, 50);
+      pdf.text(`Descuento (${quote.descuentoPct}%):`, 25, y);
+      pdf.text(`-${formatCurrency(quote.descuento)}`, pageWidth - 45, y, { align: 'right' });
+      y += 7;
+    }
     
     // Total Neto
     y += 3;
@@ -492,6 +479,16 @@ const Cotizador = () => {
     toast.success("PDF descargado correctamente");
   };
 
+  // Seleccionar servicio y horas
+  const selectService = (service, hours) => {
+    setMainService(service);
+    setServiceHours(hours);
+    // Si selecciona servicio principal, habilitar opción de $700 para PICPARTYLIVE
+    if (includeLive && livePackage !== 700) {
+      setLivePackage(700); // Auto-aplicar súper precio
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-950 via-violet-900 to-purple-950">
       <header className="border-b border-white/10 backdrop-blur-sm bg-black/20 sticky top-0 z-10">
@@ -504,43 +501,51 @@ const Cotizador = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8 max-w-5xl">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">Cotiza tu Evento</h1>
-          <Badge className="bg-green-500/20 text-green-400">✓ Precios Netos</Badge>
+      <main className="container mx-auto px-4 py-6 max-w-4xl">
+        <div className="text-center mb-6">
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Cotiza tu Evento</h1>
+          <Badge className="bg-green-500/20 text-green-400">Precios Netos</Badge>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Formulario */}
+        <div className="space-y-6">
+          {/* PASO 1: Datos del Cliente */}
           <Card className="bg-white/5 border-white/10">
-            <CardHeader>
-              <CardTitle className="text-white">Datos del Evento</CardTitle>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-white text-lg flex items-center gap-2">
+                <span className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">1</span>
+                Datos del Cliente
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label className="text-white">Nombre *</Label>
                   <Input 
-                    placeholder="Tu nombre" 
+                    placeholder="Tu nombre completo" 
                     value={clientData.nombre}
                     onChange={(e) => setClientData({...clientData, nombre: e.target.value})}
                     className="bg-white/10 border-white/20 text-white"
+                    data-testid="cotizador-nombre"
                   />
                 </div>
                 <div>
-                  <Label className="text-white">Teléfono *</Label>
+                  <Label className="text-white">Teléfono * <span className="text-pink-400 text-xs">(Obligatorio)</span></Label>
                   <Input 
                     placeholder="10 dígitos" 
+                    type="tel"
+                    maxLength={10}
                     value={clientData.telefono}
-                    onChange={(e) => setClientData({...clientData, telefono: e.target.value})}
+                    onChange={(e) => setClientData({...clientData, telefono: e.target.value.replace(/\D/g, '')})}
                     className="bg-white/10 border-white/20 text-white"
+                    data-testid="cotizador-telefono"
                   />
+                  <p className="text-gray-500 text-xs mt-1">Los últimos 4 dígitos serán tu clave de descarga</p>
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-white">Salón (opcional)</Label>
+                  <Label className="text-white">Salón / Lugar</Label>
                   <Input 
                     placeholder="Nombre del salón" 
                     value={clientData.salon}
@@ -549,203 +554,283 @@ const Cotizador = () => {
                   />
                 </div>
                 <div>
-                  <Label className="text-white">Horario (opcional)</Label>
+                  <Label className="text-white">Fecha del Evento</Label>
                   <Input 
-                    placeholder="ej: 6pm - 10pm" 
-                    value={clientData.horario}
-                    onChange={(e) => setClientData({...clientData, horario: e.target.value})}
+                    type="date"
+                    value={clientData.fecha}
+                    onChange={(e) => setClientData({...clientData, fecha: e.target.value})}
                     className="bg-white/10 border-white/20 text-white"
                   />
                 </div>
               </div>
+            </CardContent>
+          </Card>
 
-              <div className="pt-4 border-t border-white/10">
-                <Label className="text-white">Paquete Base</Label>
-                <Select value={basePrice.toString()} onValueChange={(v) => setBasePrice(parseInt(v))}>
-                  <SelectTrigger className="bg-white/10 border-white/20 text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="3000">$3,000 - Básico</SelectItem>
-                    <SelectItem value="5000">$5,000 - Estándar</SelectItem>
-                    <SelectItem value="8000">$8,000 - Premium</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label className="text-white">Horas</Label>
-                <Select value={hours.toString()} onValueChange={(v) => setHours(parseInt(v))}>
-                  <SelectTrigger className="bg-white/10 border-white/20 text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[2,3,4,5,6,8].map(h => <SelectItem key={h} value={h.toString()}>{h} horas</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-cyan-500/10 border border-cyan-500/30 rounded">
-                  <div>
-                    <span className="text-cyan-300 font-semibold">🎥 Video 360°</span>
-                    <p className="text-gray-400 text-sm">+$3,000 (NETO)</p>
-                  </div>
-                  <Switch checked={includeVideo360} onCheckedChange={setIncludeVideo360} />
-                </div>
-                
-                {/* Paquetes PICPARTYLIVE con precios NETO */}
-                <div className="space-y-2">
-                  <p className="text-pink-300 font-semibold">🔴 PICPARTYLIVE</p>
-                  <p className="text-gray-400 text-xs mb-2">Muro en vivo con almacenamiento ILIMITADO. Incluye software de proyección en tiempo real para pantallas o TV. No incluye equipo físico (pantallas/cableado).</p>
-                  <div className="grid grid-cols-3 gap-2">
+          {/* PASO 2: Servicio Principal */}
+          <Card className="bg-white/5 border-white/10">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-white text-lg flex items-center gap-2">
+                <span className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">2</span>
+                Servicio Principal
+              </CardTitle>
+              <CardDescription className="text-gray-400">Selecciona un servicio (opcional si solo quieres PICPARTYLIVE)</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Cabina de Fotos */}
+              <div className="space-y-2">
+                <p className="text-pink-300 font-semibold flex items-center gap-2">
+                  <span className="text-xl">📸</span> Cabina de Fotos
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  {cabinaPrecios.map(({ horas, precio }) => (
                     <Button 
-                      variant={includeLive && livePackage === 700 ? "default" : "outline"}
-                      className={`${includeLive && livePackage === 700 ? "bg-pink-500 text-white" : "border-pink-500/30 text-pink-300"} h-auto py-2`}
-                      onClick={() => { setIncludeLive(true); setLivePackage(700); }}
+                      key={`cabina-${horas}`}
+                      variant={mainService === "cabina" && serviceHours === horas ? "default" : "outline"}
+                      className={`h-auto py-3 ${mainService === "cabina" && serviceHours === horas ? "bg-pink-500 text-white border-pink-500" : "border-pink-500/30 text-pink-300 hover:bg-pink-500/20"}`}
+                      onClick={() => selectService("cabina", horas)}
+                      data-testid={`cabina-${horas}h`}
                     >
                       <div className="text-center">
-                        <span className="font-bold">$700</span><br/>
-                        <span className="text-[10px] opacity-80">Súper Precio</span><br/>
-                        <span className="text-[9px] opacity-60">Al contratar Cabina, 360 o Key Moments</span>
+                        <div className="font-bold">{horas}h</div>
+                        <div className="text-lg font-black">{formatCurrency(precio)}</div>
+                        <div className="text-[10px] opacity-70">NETO</div>
                       </div>
                     </Button>
-                    <Button 
-                      variant={includeLive && livePackage === 1000 ? "default" : "outline"}
-                      className={`${includeLive && livePackage === 1000 ? "bg-pink-500 text-white" : "border-pink-500/30 text-pink-300"} h-auto py-2`}
-                      onClick={() => { setIncludeLive(true); setLivePackage(1000); }}
-                    >
-                      <div className="text-center">
-                        <span className="font-bold">$1,000</span><br/>
-                        <span className="text-[10px] opacity-80">Promo Expo</span><br/>
-                        <span className="text-[9px] opacity-60">Precio temporal por tiempo limitado</span>
-                      </div>
-                    </Button>
-                    <Button 
-                      variant={includeLive && livePackage === 1500 ? "default" : "outline"}
-                      className={`${includeLive && livePackage === 1500 ? "bg-pink-500 text-white" : "border-pink-500/30 text-pink-300"} h-auto py-2`}
-                      onClick={() => { setIncludeLive(true); setLivePackage(1500); }}
-                    >
-                      <div className="text-center">
-                        <span className="font-bold">$1,500</span><br/>
-                        <span className="text-[10px] opacity-80">Precio Regular</span><br/>
-                        <span className="text-[9px] opacity-60">(NETO)</span>
-                      </div>
-                    </Button>
-                  </div>
-                  {includeLive && (
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      className="text-gray-400 text-xs"
-                      onClick={() => { setIncludeLive(false); setLivePackage(0); }}
-                    >
-                      ✕ Quitar PICPARTYLIVE
-                    </Button>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <Label className="text-white">Extras (+$500 c/u)</Label>
-                <div className="grid grid-cols-2 gap-2 mt-2">
-                  {extraOptions.map(opt => (
-                    <div key={opt.id} className="flex items-center space-x-2">
-                      <Checkbox 
-                        checked={extras.includes(opt.id)}
-                        onCheckedChange={(checked) => {
-                          setExtras(prev => checked ? [...prev, opt.id] : prev.filter(e => e !== opt.id));
-                        }}
-                        className="border-white/30"
-                      />
-                      <Label className="text-gray-300 text-sm">{opt.label}</Label>
-                    </div>
                   ))}
                 </div>
               </div>
 
-              <div className="p-3 bg-orange-500/10 border border-orange-500/30 rounded">
-                <Label className="text-orange-300">🏷️ Descuento (%)</Label>
+              {/* Video 360° */}
+              <div className="space-y-2 pt-4 border-t border-white/10">
+                <p className="text-cyan-300 font-semibold flex items-center gap-2">
+                  <span className="text-xl">🎥</span> Video 360°
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  {video360Precios.map(({ horas, precio }) => (
+                    <Button 
+                      key={`360-${horas}`}
+                      variant={mainService === "video360" && serviceHours === horas ? "default" : "outline"}
+                      className={`h-auto py-3 ${mainService === "video360" && serviceHours === horas ? "bg-cyan-500 text-white border-cyan-500" : "border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20"}`}
+                      onClick={() => selectService("video360", horas)}
+                      data-testid={`video360-${horas}h`}
+                    >
+                      <div className="text-center">
+                        <div className="font-bold">{horas}h</div>
+                        <div className="text-lg font-black">{formatCurrency(precio)}</div>
+                        <div className="text-[10px] opacity-70">NETO</div>
+                      </div>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Quitar servicio */}
+              {mainService && (
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  className="text-gray-400 text-xs"
+                  onClick={() => { setMainService(""); setServiceHours(0); }}
+                >
+                  ✕ Quitar servicio principal
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* PASO 3: PICPARTYLIVE */}
+          <Card className="bg-white/5 border-white/10 border-pink-500/30">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-white text-lg flex items-center gap-2">
+                <span className="bg-pink-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">3</span>
+                <span className="text-pink-400">🔴 PICPARTYLIVE</span> <Badge className="bg-pink-500/20 text-pink-300 text-xs">Adicional</Badge>
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Muro en vivo con almacenamiento ILIMITADO. Incluye software de proyección en tiempo real para pantallas o TV. No incluye equipo físico.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {/* $700 - Solo si tiene servicio */}
+                <Button 
+                  variant={includeLive && livePackage === 700 ? "default" : "outline"}
+                  className={`h-auto py-4 ${includeLive && livePackage === 700 ? "bg-pink-500 text-white" : "border-pink-500/30 text-pink-300"} ${!mainService ? 'opacity-50' : ''}`}
+                  onClick={() => { 
+                    if (mainService) {
+                      setIncludeLive(true); 
+                      setLivePackage(700); 
+                    } else {
+                      toast.error("Selecciona primero un servicio (Cabina o 360) para este precio");
+                    }
+                  }}
+                  data-testid="picpartylive-700"
+                >
+                  <div className="text-center">
+                    <span className="text-2xl font-black">$700</span>
+                    <div className="text-xs opacity-80 mt-1">Súper Precio</div>
+                    <div className="text-[10px] opacity-60 mt-1">Al contratar servicio</div>
+                    <Badge className="mt-2 bg-green-500/30 text-green-300 text-[9px]">NETO</Badge>
+                  </div>
+                </Button>
+                
+                {/* $1,000 - Promo Expo */}
+                <Button 
+                  variant={includeLive && livePackage === 1000 ? "default" : "outline"}
+                  className={`h-auto py-4 ${includeLive && livePackage === 1000 ? "bg-pink-500 text-white" : "border-pink-500/30 text-pink-300"}`}
+                  onClick={() => { setIncludeLive(true); setLivePackage(1000); }}
+                  data-testid="picpartylive-1000"
+                >
+                  <div className="text-center">
+                    <span className="text-2xl font-black">$1,000</span>
+                    <div className="text-xs opacity-80 mt-1">Promo Expo</div>
+                    <div className="text-[10px] opacity-60 mt-1">Precio temporal limitado</div>
+                    <Badge className="mt-2 bg-green-500/30 text-green-300 text-[9px]">NETO</Badge>
+                  </div>
+                </Button>
+                
+                {/* $1,500 - Normal */}
+                <Button 
+                  variant={includeLive && livePackage === 1500 ? "default" : "outline"}
+                  className={`h-auto py-4 ${includeLive && livePackage === 1500 ? "bg-pink-500 text-white" : "border-pink-500/30 text-pink-300"}`}
+                  onClick={() => { setIncludeLive(true); setLivePackage(1500); }}
+                  data-testid="picpartylive-1500"
+                >
+                  <div className="text-center">
+                    <span className="text-2xl font-black">$1,500</span>
+                    <div className="text-xs opacity-80 mt-1">Precio Normal</div>
+                    <div className="text-[10px] opacity-60 mt-1">Sin servicio adicional</div>
+                    <Badge className="mt-2 bg-green-500/30 text-green-300 text-[9px]">NETO</Badge>
+                  </div>
+                </Button>
+              </div>
+              
+              {includeLive && (
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  className="text-gray-400 text-xs mt-3"
+                  onClick={() => { setIncludeLive(false); setLivePackage(0); }}
+                >
+                  ✕ Quitar PICPARTYLIVE
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* PASO 4: Descuento (opcional) */}
+          <Card className="bg-white/5 border-white/10">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-white text-lg flex items-center gap-2">
+                <span className="bg-orange-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">4</span>
+                🏷️ Descuento
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-4">
                 <Input 
                   type="number" 
                   min="0" 
                   max="50"
-                  value={clientData.descuento}
+                  placeholder="0"
+                  value={clientData.descuento || ""}
                   onChange={(e) => setClientData({...clientData, descuento: parseInt(e.target.value) || 0})}
-                  className="bg-white/10 border-orange-500/30 text-orange-300 mt-1"
+                  className="bg-white/10 border-orange-500/30 text-orange-300 w-24 text-center"
                 />
+                <span className="text-orange-300">%</span>
+                <span className="text-gray-500 text-sm">Máximo 50%</span>
               </div>
-
-              <Button onClick={calculateQuote} className="w-full bg-purple-500 hover:bg-purple-600">
-                Calcular Cotización
-              </Button>
             </CardContent>
           </Card>
 
-          {/* Resultado */}
-          <Card className="bg-white/5 border-white/10">
-            <CardHeader>
-              <CardTitle className="text-white">Tu Cotización</CardTitle>
+          {/* RESUMEN Y COTIZACIÓN */}
+          <Card className="bg-gradient-to-br from-purple-900/50 to-pink-900/30 border-purple-500/30">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-white text-xl">Resumen de Cotización</CardTitle>
             </CardHeader>
-            <CardContent>
-              {quote ? (
-                <div className="space-y-4">
-                  <div className="space-y-2 text-gray-300">
-                    <div className="flex justify-between">
-                      <span>Fotografía ({hours}hrs)</span>
-                      <span>{formatCurrency(basePrice * hours)}</span>
-                    </div>
-                    {includeVideo360 && (
-                      <div className="flex justify-between text-cyan-400">
-                        <span>Video 360°</span>
-                        <span>{formatCurrency(3000)}</span>
-                      </div>
-                    )}
-                    {includeLive && (
-                      <div className="flex justify-between text-pink-400">
-                        <span>PICPARTYLIVE</span>
-                        <span>{formatCurrency(livePackage)}</span>
-                      </div>
-                    )}
-                    {extras.map(extra => {
-                      const opt = extraOptions.find(e => e.id === extra);
-                      return opt && (
-                        <div key={extra} className="flex justify-between">
-                          <span>{opt.label}</span>
-                          <span>{formatCurrency(500)}</span>
-                        </div>
-                      );
-                    })}
+            <CardContent className="space-y-4">
+              {/* Desglose */}
+              <div className="space-y-2 text-gray-300">
+                {mainService && serviceHours > 0 && (
+                  <div className="flex justify-between items-center py-2 border-b border-white/10">
+                    <span className={mainService === "cabina" ? "text-pink-300" : "text-cyan-300"}>
+                      {mainService === "cabina" ? "📸 Cabina de Fotos" : "🎥 Video 360°"} ({serviceHours}h)
+                    </span>
+                    <span className="font-bold">{formatCurrency(getServicePrice())}</span>
+                  </div>
+                )}
+                
+                {includeLive && livePackage > 0 && (
+                  <div className="flex justify-between items-center py-2 border-b border-white/10">
+                    <span className="text-pink-400">
+                      🔴 PICPARTYLIVE 
+                      <span className="text-xs ml-2 opacity-70">
+                        ({livePackage === 700 ? "Súper Precio" : livePackage === 1000 ? "Promo Expo" : "Normal"})
+                      </span>
+                    </span>
+                    <span className="font-bold">{formatCurrency(livePackage)}</span>
+                  </div>
+                )}
+                
+                {!mainService && !includeLive && (
+                  <p className="text-gray-500 text-center py-4">Selecciona al menos un servicio</p>
+                )}
+              </div>
+              
+              {/* Subtotal y descuento */}
+              {(mainService || includeLive) && (
+                <>
+                  <div className="flex justify-between text-white pt-2">
+                    <span>Subtotal</span>
+                    <span>{formatCurrency(getServicePrice() + (includeLive ? livePackage : 0))}</span>
                   </div>
                   
-                  <div className="border-t border-white/10 pt-4">
-                    <div className="flex justify-between text-white">
-                      <span>Subtotal</span>
-                      <span>{formatCurrency(quote.subtotal)}</span>
+                  {clientData.descuento > 0 && (
+                    <div className="flex justify-between text-orange-400">
+                      <span>Descuento ({clientData.descuento}%)</span>
+                      <span>-{formatCurrency((getServicePrice() + (includeLive ? livePackage : 0)) * (clientData.descuento / 100))}</span>
                     </div>
-                    {quote.descuentoPct > 0 && (
-                      <div className="flex justify-between text-orange-400 font-semibold">
-                        <span>Descuento ({quote.descuentoPct}%)</span>
-                        <span>-{formatCurrency(quote.descuento)}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="p-4 bg-purple-500/20 rounded-lg">
+                  )}
+                  
+                  {/* TOTAL */}
+                  <div className="p-4 bg-purple-500/30 rounded-lg mt-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-purple-300 font-bold text-lg">PRECIO NETO</span>
-                      <span className="text-white text-3xl font-black">{formatCurrency(quote.netPrice)}</span>
+                      <span className="text-purple-200 font-bold text-lg">TOTAL NETO</span>
+                      <span className="text-white text-3xl font-black">
+                        {formatCurrency(
+                          (getServicePrice() + (includeLive ? livePackage : 0)) * (1 - clientData.descuento / 100)
+                        )}
+                      </span>
                     </div>
                   </div>
-
-                  <Button onClick={downloadPDF} className="w-full bg-green-500 hover:bg-green-600 text-lg h-12">
-                    📄 Descargar Cotización PDF
-                  </Button>
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <span className="text-5xl mb-4 block">🧮</span>
-                  <p className="text-gray-400">Configura tu evento para ver la cotización</p>
+                </>
+              )}
+              
+              {/* Botones */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-4">
+                <Button 
+                  onClick={calculateQuote} 
+                  className="w-full bg-purple-500 hover:bg-purple-600 h-12 text-lg"
+                  disabled={!mainService && !includeLive}
+                  data-testid="generar-cotizacion-btn"
+                >
+                  Generar Cotización
+                </Button>
+                
+                <Button 
+                  onClick={downloadPDF} 
+                  className="w-full bg-green-500 hover:bg-green-600 h-12 text-lg"
+                  disabled={!quote}
+                  data-testid="descargar-pdf-btn"
+                >
+                  📄 Descargar PDF
+                </Button>
+              </div>
+              
+              {/* Folio generado */}
+              {folio && (
+                <div className="text-center pt-4 border-t border-white/10">
+                  <p className="text-gray-400 text-sm">Folio de cotización:</p>
+                  <p className="text-white text-xl font-mono font-bold">{folio}</p>
                 </div>
               )}
             </CardContent>
