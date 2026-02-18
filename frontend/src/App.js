@@ -317,9 +317,9 @@ const Cotizador = () => {
       return;
     }
     
-    // Calcular precios
+    // Calcular precios con nueva lógica
     const servicePrice = getServicePrice();
-    const livePrice = includeLive ? livePackage : 0;
+    const livePrice = getLivePrice();
     const subtotal = servicePrice + livePrice;
     
     const descuentoAmount = subtotal * (clientData.descuento / 100);
@@ -336,7 +336,7 @@ const Cotizador = () => {
       descuentoPct: clientData.descuento,
       mainService,
       serviceHours,
-      livePackage
+      livePackage: livePrice
     });
     
     toast.success(`✅ Cotización generada - Folio: ${newFolio}`);
