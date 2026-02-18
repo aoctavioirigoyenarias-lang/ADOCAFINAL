@@ -1066,6 +1066,13 @@ const PicPartyLive = () => {
           saveSessionToStorage(response.data);
           fetchGalleryPhotos(savedSession.code);
           toast.success(`¡Bienvenido de nuevo a ${response.data.event_name}!`);
+          
+          // SMART VIEW: Si es móvil, ir directo a galería
+          if (window.innerWidth < 768) {
+            setViewMode("gallery");
+          } else {
+            setViewMode("menu");
+          }
         } catch {
           clearSessionStorage();
           // SEGURIDAD: Redirigir a landing si no hay sesión válida
