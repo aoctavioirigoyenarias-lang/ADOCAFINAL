@@ -924,6 +924,7 @@ const PicPartyLive = () => {
     setCurrentFileIndex(0);
     
     const uploaded = [];
+    const errors = [];
     
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -939,7 +940,17 @@ const PicPartyLive = () => {
           emoji: PICPARTY_EMOJIS[Math.floor(Math.random() * PICPARTY_EMOJIS.length)]
         });
       } catch (err) {
-        toast.error(`Error subiendo ${file.name}`);
+        // Mensajes de error específicos
+        let errorMsg = `❌ Error subiendo ${file.name}`;
+        if (err.message === 'ARCHIVO_GRANDE') {
+          errorMsg = `📦 ${file.name}: Archivo muy pesado (máx 10MB)`;
+        } else if (err.message === 'TIMEOUT') {
+          errorMsg = `⏱️ ${file.name}: Tiempo de espera agotado`;
+        } else if (err.message === 'SIN_CONEXION') {
+          errorMsg = `📡 Error de conexión: Revisa tu internet`;
+        }
+        errors.push(errorMsg);
+        toast.error(errorMsg, { duration: 5000 });
       }
     }
     
@@ -947,7 +958,29 @@ const PicPartyLive = () => {
       setUploadedPhotos(prev => [...uploaded, ...prev]);
       // Actualizar galería colaborativa
       if (session) fetchGalleryPhotos(session.code);
-      toast.success(`¡${uploaded.length} foto(s) subida(s)! ${PICPARTY_EMOJIS[Math.floor(Math.random() * PICPARTY_EMOJIS.length)]}`);
+      
+      // Mensaje de éxito claro y visible
+      if (uploaded.length === 1) {
+        toast.success("✅ ¡Foto subida con éxito! Mírala en la pantalla. 📺", { 
+          duration: 5000,
+          style: { background: '#10B981', color: 'white', fontWeight: 'bold' }
+        });
+      } else {
+        toast.success(`✅ ¡${uploaded.length} fotos subidas con éxito! Míralas en la pantalla. 📺`, { 
+          duration: 5000,
+          style: { background: '#10B981', color: 'white', fontWeight: 'bold' }
+        });
+      }
+    }
+    
+    // Si hubo errores pero también éxitos, mostrar resumen
+    if (errors.length > 0 && uploaded.length > 0) {
+      toast.warning(`${uploaded.length} subidas, ${errors.length} con error`, { duration: 4000 });
+    }
+    
+    // Si todas fallaron
+    if (errors.length > 0 && uploaded.length === 0) {
+      toast.error("❌ No se pudo subir ninguna foto. Intenta de nuevo.", { duration: 5000 });
     }
     
     setUploading(false);
