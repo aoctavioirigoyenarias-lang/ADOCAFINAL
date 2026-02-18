@@ -134,6 +134,11 @@ class Contract(BaseModel):
     discount_amount: float = 0
     special_price: Optional[float] = None  # Solo para contratos especiales
     net_price: float
+    # === CAMPOS ADMINISTRATIVOS (USO INTERNO) ===
+    anticipo_status: str = "pendiente"  # "liquidado", "pendiente", "dia_evento"
+    anticipo_amount: Optional[float] = None  # Monto del anticipo recibido
+    costo_proveedor: Optional[float] = None  # Costo real del servicio
+    utilidad_neta: Optional[float] = None  # Cálculo: net_price - costo_proveedor
     # Estado
     status: str = "draft"  # draft, confirmed, completed, cancelled
     notes: Optional[str] = None
