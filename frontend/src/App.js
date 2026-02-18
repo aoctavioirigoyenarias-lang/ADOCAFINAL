@@ -230,39 +230,120 @@ const EventGallery = () => {
 
 // ============ COTIZADOR CON PDF ============
 const Cotizador = () => {
-  const [clientData, setClientData] = useState({ nombre: "", telefono: "", salon: "", horario: "", descuento: 0 });
+  const [clientData, setClientData] = useState({ nombre: "", telefono: "", salon: "", fecha: "" });
   const [quote, setQuote] = useState(null);
-  const [basePrice, setBasePrice] = useState(5000);
-  const [hours, setHours] = useState(4);
-  const [extras, setExtras] = useState([]);
-  const [includeVideo360, setIncludeVideo360] = useState(false);
+  const [folio, setFolio] = useState(null);
+  const [saving, setSaving] = useState(false);
+  
+  // Servicio principal
+  const [mainService, setMainService] = useState(""); // "cabina" o "video360"
+  const [serviceHours, setServiceHours] = useState(0);
+  
+  // ADD-ON PICPARTYLIVE
   const [includeLive, setIncludeLive] = useState(false);
   const [livePackage, setLivePackage] = useState(0); // $700, $1000, $1500 NETO
   
-  const extraOptions = [
-    { id: "photobooth", label: "Photobooth", price: 500 },
-    { id: "props", label: "Props Premium", price: 500 },
-    { id: "album", label: "Álbum Impreso", price: 500 },
-    { id: "prints", label: "Impresiones Ilimitadas", price: 500 },
+  // Precios de servicios
+  const cabinaPrecios = [
+    { horas: 2, precio: 2699 },
+    { horas: 3, precio: 3299 },
+    { horas: 4, precio: 3799 },
+    { horas: 5, precio: 4699 },
+  ];
+  
+  const video360Precios = [
+    { horas: 2, precio: 3299 },
+    { horas: 3, precio: 3899 },
+    { horas: 4, precio: 4499 },
+    { horas: 5, precio: 4999 },
   ];
 
-  const calculateQuote = () => {
-    let subtotal = basePrice * hours;
-    subtotal += extras.length * 500;
-    if (includeVideo360) subtotal += 3000;
-    if (includeLive && livePackage > 0) subtotal += livePackage; // Usar el paquete seleccionado
-    
-    const descuentoAmount = subtotal * (clientData.descuento / 100);
-    const netPrice = subtotal - descuentoAmount;
-    
-    setQuote({ subtotal, descuento: descuentoAmount, netPrice, descuentoPct: clientData.descuento, livePackage });
+  // Generar folio único
+  const generateFolio = () => {
+    const timestamp = Date.now().toString(36).toUpperCase();
+    const random = Math.random().toString(36).substring(2, 5).toUpperCase();
+    return `COT-${timestamp}-${random}`;
   };
 
-  const formatCurrency = (amount) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
+  // Obtener precio del servicio principal
+  const getServicePrice = () => {
+    if (!mainService || !serviceHours) return 0;
+    const precios = mainService === "cabina" ? cabinaPrecios : video360Precios;
+    const found = precios.find(p => p.horas === serviceHours);
+    return found ? found.precio : 0;
+  };
+
+  // Obtener precio de PICPARTYLIVE según el servicio
+  const getLivePrice = () => {
+    if (!includeLive) return 0;
+    // Si tiene Cabina o 360: $700
+    if (mainService && livePackage === 700) return 700;
+    // Promo Expo o Regular
+    return livePackage;
+  };
+
+  const calculateQuote = () => {
+    if (!clientData.nombre) {
+      toast.error("El nombre es obligatorio");
+      return;
+    }
+    
+    const servicePrice = getServicePrice();
+    const livePrice = getLivePrice();
+    const total = servicePrice + livePrice;
+    
+    const newFolio = generateFolio();
+    setFolio(newFolio);
+    setQuote({ 
+      servicePrice, 
+      livePrice, 
+      total,
+      mainService,
+      serviceHours,
+      livePackage: includeLive ? livePackage : 0
+    });
+    
+    toast.success(`✅ Cotización generada - Folio: ${newFolio}`);
+  };
+
+  // Guardar cotización en backend
+  const saveQuote = async () => {
+    if (!quote || !folio) return;
+    
+    setSaving(true);
+    try {
+      await axios.post(`${API}/quotes`, {
+        folio,
+        cliente: clientData.nombre,
+        telefono: clientData.telefono || "N/A",
+        salon: clientData.salon || "N/A",
+        fecha_evento: clientData.fecha || "N/A",
+        servicio: mainService === "cabina" ? "Cabina de Fotos" : mainService === "video360" ? "Video 360°" : "Solo PICPARTYLIVE",
+        horas: serviceHours,
+        precio_servicio: quote.servicePrice,
+        picpartylive: quote.livePackage > 0 ? `$${quote.livePackage}` : "No",
+        total: quote.total,
+        created_at: new Date().toISOString()
+      });
+      toast.success("📋 Cotización guardada para seguimiento");
+    } catch (e) {
+      console.error("Error guardando:", e);
+    }
+    setSaving(false);
+  };
+
+  // Guardar automáticamente cuando se genera la cotización
+  useEffect(() => {
+    if (quote && folio) {
+      saveQuote();
+    }
+  }, [quote, folio]);
+
+  const formatCurrency = (amount) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 0 }).format(amount);
 
   const downloadPDF = async () => {
-    if (!clientData.nombre || !clientData.telefono) {
-      toast.error("Por favor ingresa nombre y teléfono");
+    if (!clientData.nombre) {
+      toast.error("Por favor ingresa tu nombre");
       return;
     }
     if (!quote) {
@@ -289,7 +370,9 @@ const Cotizador = () => {
     
     pdf.setFontSize(28);
     pdf.setTextColor(255, 255, 255);
-    pdf.text("COTIZACIÓN", pageWidth - 20, 30, { align: 'right' });
+    pdf.text("COTIZACIÓN", pageWidth - 20, 25, { align: 'right' });
+    pdf.setFontSize(12);
+    pdf.text(`Folio: ${folio}`, pageWidth - 20, 38, { align: 'right' });
     
     // Info del cliente
     pdf.setFontSize(12);
@@ -303,9 +386,9 @@ const Cotizador = () => {
     pdf.setFont(undefined, 'normal');
     pdf.setFontSize(11);
     pdf.text(`Nombre: ${clientData.nombre}`, 20, y); y += 6;
-    pdf.text(`Teléfono: ${clientData.telefono}`, 20, y); y += 6;
+    if (clientData.telefono) { pdf.text(`Teléfono: ${clientData.telefono}`, 20, y); y += 6; }
     if (clientData.salon) { pdf.text(`Salón: ${clientData.salon}`, 20, y); y += 6; }
-    if (clientData.horario) { pdf.text(`Horario: ${clientData.horario}`, 20, y); y += 6; }
+    if (clientData.fecha) { pdf.text(`Fecha del Evento: ${clientData.fecha}`, 20, y); y += 6; }
     
     y += 10;
     pdf.setFontSize(14);
@@ -319,52 +402,29 @@ const Cotizador = () => {
     pdf.setFontSize(10);
     pdf.setFont(undefined, 'bold');
     pdf.text("Concepto", 25, y);
-    pdf.text("Precio", pageWidth - 45, y, { align: 'right' });
+    pdf.text("Precio Neto", pageWidth - 45, y, { align: 'right' });
     y += 10;
     
     pdf.setFont(undefined, 'normal');
-    pdf.text(`Servicio Fotográfico (${hours} horas)`, 25, y);
-    pdf.text(formatCurrency(basePrice * hours), pageWidth - 45, y, { align: 'right' });
-    y += 7;
     
-    if (includeVideo360) {
-      pdf.text("Video 360°", 25, y);
-      pdf.text(formatCurrency(3000) + " (NETO)", pageWidth - 45, y, { align: 'right' });
+    if (quote.mainService && quote.serviceHours) {
+      const serviceName = quote.mainService === "cabina" ? "Cabina de Fotos" : "Video 360°";
+      pdf.text(`${serviceName} (${quote.serviceHours} horas)`, 25, y);
+      pdf.text(formatCurrency(quote.servicePrice), pageWidth - 45, y, { align: 'right' });
       y += 7;
     }
-    if (includeLive && livePackage > 0) {
-      const pkgLabel = livePackage === 700 ? "Súper Precio" : livePackage === 1000 ? "Promo Expo" : "Regular";
+    
+    if (quote.livePackage > 0) {
+      const pkgLabel = quote.livePackage === 700 ? "Súper Precio (con servicio)" : quote.livePackage === 1000 ? "Promo Expo" : "Regular";
       pdf.text(`PICPARTYLIVE - ${pkgLabel}`, 25, y);
-      pdf.text(formatCurrency(livePackage) + " (NETO)", pageWidth - 45, y, { align: 'right' });
+      pdf.text(formatCurrency(quote.livePackage), pageWidth - 45, y, { align: 'right' });
       y += 7;
     }
-    extras.forEach(extra => {
-      const opt = extraOptions.find(e => e.id === extra);
-      if (opt) {
-        pdf.text(opt.label, 25, y);
-        pdf.text(formatCurrency(500), pageWidth - 45, y, { align: 'right' });
-        y += 7;
-      }
-    });
     
     y += 5;
     pdf.setDrawColor(200, 200, 200);
     pdf.line(20, y, pageWidth - 20, y);
     y += 8;
-    
-    pdf.text("Subtotal:", 25, y);
-    pdf.text(formatCurrency(quote.subtotal), pageWidth - 45, y, { align: 'right' });
-    y += 7;
-    
-    // Descuento en naranja
-    if (quote.descuentoPct > 0) {
-      pdf.setTextColor(234, 88, 12);
-      pdf.setFont(undefined, 'bold');
-      pdf.text(`Descuento (${quote.descuentoPct}%):`, 25, y);
-      pdf.text(`-${formatCurrency(quote.descuento)}`, pageWidth - 45, y, { align: 'right' });
-      y += 7;
-      pdf.setTextColor(50, 50, 50);
-    }
     
     // Total Neto
     y += 3;
@@ -373,30 +433,30 @@ const Cotizador = () => {
     pdf.setTextColor(255, 255, 255);
     pdf.setFontSize(14);
     pdf.setFont(undefined, 'bold');
-    pdf.text("PRECIO NETO:", 25, y + 3);
-    pdf.text(formatCurrency(quote.netPrice), pageWidth - 45, y + 3, { align: 'right' });
+    pdf.text("TOTAL NETO:", 25, y + 3);
+    pdf.text(formatCurrency(quote.total), pageWidth - 45, y + 3, { align: 'right' });
     
     // Footer
     y = 250;
     pdf.setFontSize(9);
     pdf.setTextColor(150, 150, 150);
     pdf.setFont(undefined, 'normal');
-    pdf.text("* Precios netos. Cotización válida por 15 días.", pageWidth / 2, y, { align: 'center' });
+    pdf.text("* Todos los precios son NETOS. Cotización válida por 15 días.", pageWidth / 2, y, { align: 'center' });
     pdf.text("PicParty - Cabina Fotográfica | adoca.net", pageWidth / 2, y + 5, { align: 'center' });
     
-    pdf.save(`Cotizacion_PicParty_${clientData.nombre.replace(/\s+/g, '_')}.pdf`);
+    pdf.save(`Cotizacion_${folio}.pdf`);
     toast.success("PDF descargado correctamente");
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-950 via-violet-900 to-purple-950">
-      <header className="border-b border-white/10 backdrop-blur-sm bg-black/20">
+      <header className="border-b border-white/10 backdrop-blur-sm bg-black/20 sticky top-0 z-10">
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-          <Link to="/" className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-2">
             <img src={PICPARTY_LOGO} alt="PicParty" className="h-10 w-10 object-contain" />
-            <span className="text-xl font-bold text-white">Cotizador</span>
+            <span className="text-lg font-bold text-white">Cotizador</span>
           </Link>
-          <Link to="/"><Button variant="outline" className="border-white/20 text-white">← Inicio</Button></Link>
+          <Link to="/"><Button variant="outline" size="sm" className="border-white/20 text-white">← Inicio</Button></Link>
         </div>
       </header>
 
