@@ -821,6 +821,92 @@ async def get_photo_count(event_code: str):
     count = await db.event_photos.count_documents({"event_code": event_code})
     return {"event_code": event_code, "count": count}
 
+# ============ SINCRONIZAR FOTOS DE CLOUDINARY ============
+
+@api_router.post("/live/sync-cloudinary/{event_code}")
+async def sync_cloudinary_photos(event_code: str, folder_path: str = None):
+    """Sincronizar fotos de una carpeta de Cloudinary con la base de datos"""
+    try:
+        # Buscar la sesión para obtener la carpeta de Cloudinary
+        session = await db.live_sessions.find_one({"code": event_code})
+        if not session:
+            raise HTTPException(status_code=404, detail="Sesión no encontrada")
+        
+        # Usar la carpeta proporcionada o la de la sesión
+        target_folder = folder_path or session.get("cloudinary_folder")
+        if not target_folder:
+            raise HTTPException(status_code=400, detail="No se especificó carpeta de Cloudinary")
+        
+        # Obtener recursos de Cloudinary
+        try:
+            result = cloudinary.api.resources(
+                type="upload",
+                prefix=target_folder,
+                max_results=500,
+                resource_type="image"
+            )
+        except Exception as e:
+            logger.error(f"Error consultando Cloudinary: {e}")
+            raise HTTPException(status_code=500, detail=f"Error consultando Cloudinary: {str(e)}")
+        
+        imported_count = 0
+        skipped_count = 0
+        
+        for resource in result.get("resources", []):
+            # Verificar si ya existe en la base de datos
+            existing = await db.event_photos.find_one({
+                "cloudinary_url": resource["secure_url"]
+            })
+            
+            if existing:
+                skipped_count += 1
+                continue
+            
+            # Crear el registro de la foto
+            photo_doc = {
+                "id": str(uuid.uuid4()),
+                "event_code": event_code,
+                "cloudinary_url": resource["secure_url"],
+                "thumbnail_url": resource["secure_url"].replace("/upload/", "/upload/w_300,h_300,c_fill/"),
+                "cloudinary_folder": target_folder,
+                "public_id": resource.get("public_id"),
+                "reactions": {},
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            
+            await db.event_photos.insert_one(photo_doc)
+            imported_count += 1
+        
+        # Actualizar la carpeta en la sesión si cambió
+        if folder_path and folder_path != session.get("cloudinary_folder"):
+            await db.live_sessions.update_one(
+                {"code": event_code},
+                {"$set": {"cloudinary_folder": folder_path}}
+            )
+        
+        return {
+            "message": "Sincronización completada",
+            "imported": imported_count,
+            "skipped": skipped_count,
+            "folder": target_folder
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error en sincronización: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/live/cloudinary-folders")
+async def list_cloudinary_folders(prefix: str = "ADOCA"):
+    """Listar carpetas disponibles en Cloudinary"""
+    try:
+        result = cloudinary.api.subfolders(prefix)
+        folders = [f["path"] for f in result.get("folders", [])]
+        return {"folders": folders, "prefix": prefix}
+    except Exception as e:
+        logger.error(f"Error listando carpetas: {e}")
+        return {"folders": [], "error": str(e)}
+
 # ============ LIMPIEZA DE DEMOS EXPIRADAS ============
 
 @api_router.delete("/live/cleanup-demos")
