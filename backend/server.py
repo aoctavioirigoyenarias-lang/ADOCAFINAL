@@ -125,16 +125,23 @@ class Contract(BaseModel):
     # Servicios
     base_package: str = "standard"
     base_price: float
+    include_cabina: bool = True  # Cabina de Fotos
     include_video360: bool = False
-    include_live: bool = False
+    include_key_moments: bool = False  # Key Moments
+    include_live: bool = False  # PicPartyLive
     extras: List[str] = []
-    # Precios
+    # Precios individuales
+    price_cabina: float = 0
+    price_video360: float = 0
+    price_key_moments: float = 0
+    price_live: float = 0
+    # Precios totales
     subtotal: float
     discount_percent: float = 0
     discount_amount: float = 0
     special_price: Optional[float] = None  # Solo para contratos especiales
     net_price: float
-    # === CAMPOS ADMINISTRATIVOS (USO INTERNO) ===
+    # === CAMPOS ADMINISTRATIVOS (USO INTERNO - NO SE IMPRIMEN) ===
     anticipo_status: str = "pendiente"  # "liquidado", "pendiente", "dia_evento"
     anticipo_amount: Optional[float] = None  # Monto del anticipo recibido
     costo_proveedor: Optional[float] = None  # Costo real del servicio
