@@ -3178,7 +3178,7 @@ const AdminPanel = () => {
               </Card>
             ) : (
               [...liveSessions]
-                .sort((a, b) => new Date(b.event_date || '1970-01-01') - new Date(a.event_date || '1970-01-01'))
+                .sort((a, b) => new Date(b.created_at || '1970-01-01') - new Date(a.created_at || '1970-01-01'))
                 .map(session => {
                   const typeInfo = getEventTypeInfo(session.event_type, session.event_type_custom);
                   return (
