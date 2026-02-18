@@ -467,36 +467,24 @@ async def create_contract(contract_data: ContractCreate):
     # Calcular precios por servicio
     subtotal = 0
     
-    # Cabina de Fotos (precio por hora * horas)
-    price_cabina = 0
-    if contract_data.include_cabina:
-        price_cabina = contract_data.price_cabina if contract_data.price_cabina > 0 else (contract_data.base_price * contract_data.duration_hours)
-        subtotal += price_cabina
+    # Cabina de Fotos
+    price_cabina = contract_data.price_cabina if contract_data.include_cabina else 0
+    subtotal += price_cabina
     
-    # Video 360
-    price_video360 = 0
-    if contract_data.include_video360:
-        price_video360 = contract_data.price_video360 if contract_data.price_video360 > 0 else 3000
-        subtotal += price_video360
+    # Video 360 / Pic Motion 360
+    price_video360 = contract_data.price_video360 if contract_data.include_video360 else 0
+    subtotal += price_video360
     
     # Key Moments
-    price_key_moments = 0
-    if contract_data.include_key_moments:
-        price_key_moments = contract_data.price_key_moments if contract_data.price_key_moments > 0 else 2500
-        subtotal += price_key_moments
+    price_key_moments = contract_data.price_key_moments if contract_data.include_key_moments else 0
+    subtotal += price_key_moments
     
     # PicParty Live
-    price_live = 0
-    if contract_data.include_live:
-        price_live = contract_data.price_live if contract_data.price_live > 0 else 1000
-        subtotal += price_live
+    price_live = contract_data.price_live if contract_data.include_live else 0
+    subtotal += price_live
     
-    # Extras
-    extras_cost = len(contract_data.extras) * 500
-    subtotal += extras_cost
-    
-    # Descuento
-    discount_amount = subtotal * (contract_data.discount_percent / 100)
+    # Descuento en PESOS ($)
+    discount_amount = contract_data.discount_amount
     
     # Precio final
     if contract_data.contract_type == "special" and contract_data.special_price is not None:
@@ -510,7 +498,7 @@ async def create_contract(contract_data: ContractCreate):
         utilidad_neta = net_price - contract_data.costo_proveedor
     
     contract = Contract(
-        **{k: v for k, v in contract_data.model_dump().items() if k not in ['price_cabina', 'price_video360', 'price_key_moments', 'price_live']},
+        **{k: v for k, v in contract_data.model_dump().items() if k not in ['price_cabina', 'price_video360', 'price_key_moments', 'price_live', 'discount_amount']},
         price_cabina=price_cabina,
         price_video360=price_video360,
         price_key_moments=price_key_moments,
