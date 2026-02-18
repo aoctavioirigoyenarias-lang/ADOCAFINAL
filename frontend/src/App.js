@@ -2181,7 +2181,7 @@ const AdminPanel = () => {
     if (isValidMain) {
       setIsAuthenticated(true);
       sessionStorage.setItem("adminAuth", "true");
-      toast.success("¡Bienvenido, Octavio!");
+      toast.success("🔐 Acceso autorizado");
     } else {
       toast.error("Credenciales incorrectas");
       console.log("Login attempt - User:", loginUser, "Pass length:", loginPass.length);
