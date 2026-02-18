@@ -532,6 +532,7 @@ async def create_live_session_with_cloudinary(
     event_type: str = "boda",
     event_type_custom: str = None,
     event_date: str = None,
+    client_phone: str = None,
     is_vip: bool = False, 
     vip_pass: str = None
 ):
@@ -550,6 +551,7 @@ async def create_live_session_with_cloudinary(
         event_type=event_type,
         event_type_custom=event_type_custom if event_type == "otro" else None,
         event_date=event_date or datetime.now().strftime("%Y-%m-%d"),
+        client_phone=client_phone,
         is_vip=is_vip,
         vip_pass=vip_pass if is_vip else None,
         cloudinary_folder=cloudinary_folder
