@@ -281,6 +281,22 @@ const Cotizador = () => {
     return found ? found.precio : 0;
   };
 
+  // LÓGICA DE PRECIO PICPARTYLIVE AUTOMÁTICA
+  // Si tiene Cabina o Video 360 = $700 NETO
+  // Si solo PICPARTYLIVE = $1,000 NETO
+  const getLivePrice = () => {
+    if (!includeLive) return 0;
+    return mainService ? 700 : 1000;
+  };
+
+  // Calcular ahorro cuando hay combo
+  const getAhorro = () => {
+    if (includeLive && mainService) {
+      return 1500 - 700; // Precio normal - precio combo = $800
+    }
+    return 0;
+  };
+
   // Calcular cotización
   const calculateQuote = () => {
     // Validar nombre
