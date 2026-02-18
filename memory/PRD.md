@@ -257,3 +257,9 @@ ADOCA/{{MES}}/{{FECHA}}/{{TIPO}}_{{NOMBRE}}/
 - ✅ Corregido: usaba `photo._id` (MongoDB) en lugar de `photo.id` (UUID)
 - ✅ Reacciones ahora funcionan correctamente en la galería
 
+### 35. VISUALIZACIÓN CLAVE DE DESCARGA EN ADMIN (Febrero 2026)
+- ✅ Badge naranja "🔑 Clave descarga: XXXX" en cada evento
+- ✅ Botón de copiar clave al portapapeles
+- ✅ Si no hay teléfono: "⚠️ Sin teléfono (descarga bloqueada)"
+- ✅ Teléfono obligatorio al crear eventos (validación 10 dígitos)
+
