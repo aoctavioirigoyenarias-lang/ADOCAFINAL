@@ -356,7 +356,7 @@ const Cotizador = () => {
         servicio_principal: mainService || null,
         horas: serviceHours || null,
         precio_servicio: servicePrice,
-        picpartylive: includeLive ? (livePackage === 700 ? "Súper Precio" : livePackage === 1000 ? "Promo Expo" : "Regular") : "No",
+        picpartylive: includeLive ? (mainService ? "Combo $700" : "Solo $1,000") : "No",
         picpartylive_precio: livePrice,
         descuento_pct: clientData.descuento,
         descuento_monto: descuentoAmount,
