@@ -722,6 +722,75 @@ async def delete_photo(photo_id: str):
         raise HTTPException(status_code=404, detail="Foto no encontrada")
     return {"message": "Foto eliminada"}
 
+# ============ COTIZACIONES CON FOLIO ============
+
+class QuoteData(BaseModel):
+    """Modelo para cotizaciones guardadas"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    folio: str
+    cliente: str
+    telefono: str
+    salon: Optional[str] = None
+    fecha_evento: Optional[str] = None
+    servicio_principal: Optional[str] = None  # "cabina" o "video360"
+    horas: Optional[int] = None
+    precio_servicio: float = 0
+    picpartylive: Optional[str] = None  # "No" o precio
+    picpartylive_precio: float = 0
+    descuento_pct: float = 0
+    descuento_monto: float = 0
+    subtotal: float
+    total: float
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class QuoteCreate(BaseModel):
+    folio: str
+    cliente: str
+    telefono: str
+    salon: Optional[str] = None
+    fecha_evento: Optional[str] = None
+    servicio_principal: Optional[str] = None
+    horas: Optional[int] = None
+    precio_servicio: float = 0
+    picpartylive: Optional[str] = None
+    picpartylive_precio: float = 0
+    descuento_pct: float = 0
+    descuento_monto: float = 0
+    subtotal: float
+    total: float
+
+@api_router.post("/quotes")
+async def create_quote(quote_data: QuoteCreate):
+    """Guardar una cotización con folio único"""
+    quote = QuoteData(**quote_data.model_dump())
+    doc = quote.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.quotes.insert_one(doc)
+    return {"id": quote.id, "folio": quote.folio, "message": "Cotización guardada"}
+
+@api_router.get("/quotes")
+async def get_quotes():
+    """Obtener todas las cotizaciones"""
+    quotes = await db.quotes.find({}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return quotes
+
+@api_router.get("/quotes/{folio}")
+async def get_quote_by_folio(folio: str):
+    """Obtener cotización por folio"""
+    quote = await db.quotes.find_one({"folio": folio}, {"_id": 0})
+    if not quote:
+        raise HTTPException(status_code=404, detail="Cotización no encontrada")
+    return quote
+
+# ============ CONTADOR DE FOTOS POR EVENTO ============
+
+@api_router.get("/live/photos/count/{event_code}")
+async def get_photo_count(event_code: str):
+    """Obtener cantidad de fotos de un evento"""
+    count = await db.event_photos.count_documents({"event_code": event_code})
+    return {"event_code": event_code, "count": count}
+
 app.include_router(api_router)
 
 app.add_middleware(
