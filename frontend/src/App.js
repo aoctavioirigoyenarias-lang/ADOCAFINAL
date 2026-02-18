@@ -1475,6 +1475,11 @@ const PicPartyLive = () => {
       </div>
     );
   }
+  
+  // Si no hay código en URL, ni sesión guardada, mostrar Landing Page de Ventas
+  if (!eventCode && !session) {
+    return <PicPartyLiveLanding />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-950 via-violet-900 to-purple-950">
