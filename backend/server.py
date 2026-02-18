@@ -10,6 +10,8 @@ from typing import List, Optional
 import uuid
 from datetime import datetime, timezone, timedelta
 import asyncio
+import cloudinary
+import cloudinary.api
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -18,6 +20,14 @@ load_dotenv(ROOT_DIR / '.env')
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
+
+# Cloudinary configuration
+cloudinary.config(
+    cloud_name = "dpvliv2wl",
+    api_key = os.environ.get('CLOUDINARY_API_KEY', ''),
+    api_secret = os.environ.get('CLOUDINARY_API_SECRET', ''),
+    secure = True
+)
 
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
