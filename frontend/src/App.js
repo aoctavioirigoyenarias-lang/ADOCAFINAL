@@ -2684,128 +2684,329 @@ const AdminPanel = () => {
   const printContractPDF = async (contract) => {
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
     const pageWidth = pdf.internal.pageSize.getWidth();
-    const formatCurrency = (amt) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amt);
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 20;
+    const formatCurrency = (amt) => `$${Number(amt).toLocaleString('es-MX')} NETO`;
     
-    // === HEADER B&W - Gris claro 10% ===
+    // ==================== PÁGINA 1 ====================
+    
+    // === HEADER - Gris claro 10% ===
     pdf.setFillColor(245, 245, 245);
-    pdf.rect(0, 0, pageWidth, 55, 'F');
+    pdf.rect(0, 0, pageWidth, 45, 'F');
     
-    // Logo fijo esquina izquierda
+    // Logo fijo esquina izquierda (40mm max, proporción mantenida)
     try {
       const logoImg = new Image();
       logoImg.crossOrigin = "anonymous";
       logoImg.src = PICPARTY_LOGO;
       await new Promise(r => { logoImg.onload = r; setTimeout(r, 2000); });
-      pdf.addImage(logoImg, 'PNG', 15, 8, 40, 40);
-    } catch(e) {}
+      pdf.addImage(logoImg, 'PNG', margin, 5, 35, 35);
+    } catch(e) {
+      pdf.setFontSize(16);
+      pdf.setTextColor(50, 50, 50);
+      pdf.setFont(undefined, 'bold');
+      pdf.text("PICPARTY", margin, 25);
+    }
     
-    pdf.setFontSize(24);
-    pdf.setTextColor(30, 30, 30);
+    // Título del contrato
+    pdf.setFontSize(20);
+    pdf.setTextColor(40, 40, 40); // Gris Oxford
     pdf.setFont(undefined, 'bold');
-    pdf.text("CONTRATO DE SERVICIOS", pageWidth - 20, 25, { align: 'right' });
-    pdf.setFontSize(12);
+    pdf.text("CONTRATO DE SERVICIOS", pageWidth - margin, 20, { align: 'right' });
+    pdf.setFontSize(10);
     pdf.setTextColor(80, 80, 80);
     pdf.setFont(undefined, 'normal');
-    pdf.text(contract.contract_type === "special" ? "PROVEEDOR / ESPECIAL" : "PUBLICO", pageWidth - 20, 35, { align: 'right' });
-    pdf.text(`#${contract.id.substring(0, 8).toUpperCase()}`, pageWidth - 20, 45, { align: 'right' });
+    pdf.text(`Folio: ${contract.id.substring(0, 8).toUpperCase()}`, pageWidth - margin, 30, { align: 'right' });
+    pdf.text(`Fecha: ${new Date().toLocaleDateString('es-MX')}`, pageWidth - margin, 37, { align: 'right' });
     
-    let y = 70;
-    pdf.setTextColor(50, 50, 50);
+    let y = 55;
     
-    // Datos del cliente
-    pdf.setFontSize(14);
-    pdf.setFont(undefined, 'bold');
-    pdf.text("DATOS DEL CLIENTE", 20, y);
-    y += 8;
+    // === DATOS DEL CLIENTE ===
+    pdf.setFillColor(245, 245, 245);
+    pdf.rect(margin, y, pageWidth - (margin * 2), 8, 'F');
     pdf.setFontSize(11);
-    pdf.setFont(undefined, 'normal');
-    pdf.text(`Nombre: ${contract.client_name}`, 20, y); y += 6;
-    pdf.text(`Telefono: ${contract.client_phone}`, 20, y); y += 6;
-    if (contract.client_email) { pdf.text(`Email: ${contract.client_email}`, 20, y); y += 6; }
-    
-    y += 8;
+    pdf.setTextColor(40, 40, 40);
     pdf.setFont(undefined, 'bold');
-    pdf.setFontSize(14);
-    pdf.text("DATOS DEL EVENTO", 20, y);
-    y += 8;
-    pdf.setFontSize(11);
-    pdf.setFont(undefined, 'normal');
-    pdf.text(`Evento: ${contract.event_name}`, 20, y); y += 6;
-    pdf.text(`Salon: ${contract.salon}`, 20, y); y += 6;
-    pdf.text(`Fecha: ${contract.event_date}`, 20, y); y += 6;
-    pdf.text(`Horario Evento: ${contract.event_time || 'Por definir'}`, 20, y); y += 6;
-    pdf.text(`Horario Servicio: ${contract.service_time || 'Por definir'}`, 20, y); y += 6;
-    pdf.text(`Duracion: ${contract.duration_hours} horas`, 20, y); y += 6;
+    pdf.text("DATOS DEL CLIENTE", margin + 3, y + 6);
+    y += 12;
     
-    y += 8;
-    pdf.setFont(undefined, 'bold');
-    pdf.setFontSize(14);
-    pdf.text("DESGLOSE DE SERVICIOS", 20, y);
-    y += 10;
-    
-    // Cabecera tabla gris claro 10%
-    pdf.setFillColor(240, 240, 240);
-    pdf.rect(20, y - 5, pageWidth - 40, 8, 'F');
     pdf.setFontSize(10);
-    pdf.setTextColor(50, 50, 50);
-    pdf.text("Concepto", 25, y);
-    pdf.text("Precio", pageWidth - 45, y, { align: 'right' });
+    pdf.setFont(undefined, 'normal');
+    pdf.text(`Nombre: ${contract.client_name}`, margin, y);
+    pdf.text(`Telefono: ${contract.client_phone}`, pageWidth / 2, y);
+    y += 6;
+    if (contract.client_email) {
+      pdf.text(`Email: ${contract.client_email}`, margin, y);
+      y += 6;
+    }
+    y += 4;
+    
+    // === DATOS DEL EVENTO ===
+    pdf.setFillColor(245, 245, 245);
+    pdf.rect(margin, y, pageWidth - (margin * 2), 8, 'F');
+    pdf.setFont(undefined, 'bold');
+    pdf.setFontSize(11);
+    pdf.text("DATOS DEL EVENTO", margin + 3, y + 6);
+    y += 12;
+    
+    pdf.setFontSize(10);
+    pdf.setFont(undefined, 'normal');
+    pdf.text(`Evento: ${contract.event_name}`, margin, y);
+    y += 6;
+    pdf.text(`Salon: ${contract.salon}`, margin, y);
+    pdf.text(`Fecha: ${contract.event_date}`, pageWidth / 2, y);
+    y += 6;
+    pdf.text(`Horario del Evento: ${contract.event_time || 'Por definir'}`, margin, y);
+    pdf.text(`Horario del Servicio: ${contract.service_time || 'Por definir'}`, pageWidth / 2, y);
+    y += 10;
+    
+    // === SERVICIOS CONTRATADOS ===
+    pdf.setFillColor(245, 245, 245);
+    pdf.rect(margin, y, pageWidth - (margin * 2), 8, 'F');
+    pdf.setFont(undefined, 'bold');
+    pdf.setFontSize(11);
+    pdf.text("SERVICIOS CONTRATADOS", margin + 3, y + 6);
+    y += 12;
+    
+    // Cabecera tabla
+    pdf.setFillColor(230, 230, 230);
+    pdf.rect(margin, y, pageWidth - (margin * 2), 7, 'F');
+    pdf.setFontSize(9);
+    pdf.setFont(undefined, 'bold');
+    pdf.text("Servicio", margin + 3, y + 5);
+    pdf.text("Detalles", pageWidth / 2 - 10, y + 5);
+    pdf.text("Precio NETO", pageWidth - margin - 3, y + 5, { align: 'right' });
     y += 10;
     
     pdf.setFont(undefined, 'normal');
-    pdf.text(`Servicio Fotografico (${contract.duration_hours} hrs)`, 25, y);
-    pdf.text(formatCurrency(contract.base_price * contract.duration_hours), pageWidth - 45, y, { align: 'right' });
-    y += 7;
+    pdf.setDrawColor(200, 200, 200);
     
+    // Cabina de Fotos
+    if (contract.include_cabina || contract.price_cabina > 0) {
+      const priceCabina = contract.price_cabina || (contract.base_price * contract.duration_hours);
+      pdf.text("Cabina de Fotos", margin + 3, y);
+      pdf.text(`${contract.duration_hours} horas de servicio`, pageWidth / 2 - 10, y);
+      pdf.text(formatCurrency(priceCabina), pageWidth - margin - 3, y, { align: 'right' });
+      y += 6;
+      pdf.line(margin, y, pageWidth - margin, y);
+      y += 4;
+    }
+    
+    // Video 360
     if (contract.include_video360) {
-      pdf.text("Video 360", 25, y);
-      pdf.text(formatCurrency(3000), pageWidth - 45, y, { align: 'right' });
-      y += 7;
-    }
-    if (contract.include_live) {
-      pdf.text("PICPARTYLIVE", 25, y);
-      pdf.text(formatCurrency(2000), pageWidth - 45, y, { align: 'right' });
-      y += 7;
+      const price360 = contract.price_video360 || 3000;
+      pdf.text("Video 360", margin + 3, y);
+      pdf.text("Experiencia 360 grados", pageWidth / 2 - 10, y);
+      pdf.text(formatCurrency(price360), pageWidth - margin - 3, y, { align: 'right' });
+      y += 6;
+      pdf.line(margin, y, pageWidth - margin, y);
+      y += 4;
     }
     
+    // Key Moments
+    if (contract.include_key_moments) {
+      const priceKM = contract.price_key_moments || 2500;
+      pdf.text("Key Moments", margin + 3, y);
+      pdf.text("Momentos clave del evento", pageWidth / 2 - 10, y);
+      pdf.text(formatCurrency(priceKM), pageWidth - margin - 3, y, { align: 'right' });
+      y += 6;
+      pdf.line(margin, y, pageWidth - margin, y);
+      y += 4;
+    }
+    
+    // PicPartyLive
+    if (contract.include_live) {
+      const priceLive = contract.price_live || 1000;
+      pdf.text("PicPartyLive", margin + 3, y);
+      pdf.text("Galeria digital en tiempo real", pageWidth / 2 - 10, y);
+      pdf.text(formatCurrency(priceLive), pageWidth - margin - 3, y, { align: 'right' });
+      y += 6;
+      pdf.line(margin, y, pageWidth - margin, y);
+      y += 4;
+    }
+    
+    // Nota especial PicPartyLive
+    if (contract.include_live) {
+      pdf.setFontSize(8);
+      pdf.setTextColor(100, 100, 100);
+      pdf.setFont(undefined, 'italic');
+      pdf.text("* PicPartyLive: Internet y pantallas corren por cuenta del anfitrion.", margin + 3, y);
+      pdf.setFont(undefined, 'normal');
+      pdf.setTextColor(40, 40, 40);
+      y += 8;
+    }
+    
+    y += 4;
+    
+    // === TOTALES ===
+    pdf.setFontSize(10);
+    pdf.text("Subtotal:", pageWidth - 80, y);
+    pdf.text(formatCurrency(contract.subtotal), pageWidth - margin - 3, y, { align: 'right' });
+    y += 6;
+    
+    if (contract.discount_percent > 0) {
+      pdf.text(`Descuento (${contract.discount_percent}%):`, pageWidth - 80, y);
+      pdf.text(`-$${Number(contract.discount_amount).toLocaleString('es-MX')}`, pageWidth - margin - 3, y, { align: 'right' });
+      y += 6;
+    }
+    
+    // TOTAL NETO - Recuadro gris oscuro
+    y += 2;
+    pdf.setFillColor(50, 50, 50);
+    pdf.rect(pageWidth / 2, y, pageWidth / 2 - margin, 12, 'F');
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(12);
+    pdf.setFont(undefined, 'bold');
+    pdf.text("TOTAL NETO:", pageWidth / 2 + 5, y + 8);
+    pdf.text(formatCurrency(contract.net_price), pageWidth - margin - 5, y + 8, { align: 'right' });
+    
+    y += 20;
+    pdf.setTextColor(40, 40, 40);
+    
+    // === CONDICIONES DE PAGO ===
+    pdf.setFillColor(245, 245, 245);
+    pdf.rect(margin, y, pageWidth - (margin * 2), 8, 'F');
+    pdf.setFontSize(11);
+    pdf.setFont(undefined, 'bold');
+    pdf.text("CONDICIONES DE PAGO", margin + 3, y + 6);
+    y += 12;
+    
+    pdf.setFontSize(9);
+    pdf.setFont(undefined, 'normal');
+    
+    const anticipoMonto = contract.anticipo_amount || 0;
+    const saldoPendiente = contract.net_price - anticipoMonto;
+    
+    pdf.text(`Anticipo recibido: $${anticipoMonto.toLocaleString('es-MX')} NETO`, margin, y);
     y += 5;
-    pdf.setDrawColor(180, 180, 180);
-    pdf.line(20, y, pageWidth - 20, y);
+    pdf.text(`Saldo pendiente: $${saldoPendiente.toLocaleString('es-MX')} NETO`, margin, y);
     y += 8;
     
-    pdf.text("Subtotal:", 25, y);
-    pdf.text(formatCurrency(contract.subtotal), pageWidth - 45, y, { align: 'right' });
-    y += 7;
-    
-    // Descuento gris oscuro
-    if (contract.discount_percent > 0) {
-      pdf.setTextColor(100, 100, 100);
+    if (anticipoMonto === 0) {
       pdf.setFont(undefined, 'bold');
-      pdf.text(`DESCUENTO (${contract.discount_percent}%):`, 25, y);
-      pdf.text(`-${formatCurrency(contract.discount_amount)}`, pageWidth - 45, y, { align: 'right' });
-      y += 10;
-      pdf.setTextColor(50, 50, 50);
+      pdf.text("IMPORTANTE: El pago total debe realizarse ANTES de iniciar el evento.", margin, y);
+      y += 5;
+      pdf.text("El servicio podra ser cancelado en el momento si no se liquida previamente.", margin, y);
+      pdf.setFont(undefined, 'normal');
+      y += 8;
     }
     
-    // Precio Neto Final - Recuadro gris oscuro
-    pdf.setFillColor(60, 60, 60);
-    pdf.rect(20, y - 5, pageWidth - 40, 14, 'F');
-    pdf.setTextColor(255, 255, 255);
-    pdf.setFontSize(14);
+    // ==================== PÁGINA 2 ====================
+    pdf.addPage();
+    y = 25;
+    
+    // === CLÁUSULAS DEL CONTRATO ===
+    pdf.setFillColor(245, 245, 245);
+    pdf.rect(margin, y, pageWidth - (margin * 2), 8, 'F');
+    pdf.setFontSize(11);
     pdf.setFont(undefined, 'bold');
-    pdf.text("PRECIO NETO FINAL:", 25, y + 4);
-    pdf.text(formatCurrency(contract.net_price), pageWidth - 45, y + 4, { align: 'right' });
+    pdf.setTextColor(40, 40, 40);
+    pdf.text("CLAUSULAS DEL CONTRATO", margin + 3, y + 6);
+    y += 14;
+    
+    pdf.setFontSize(8);
+    pdf.setFont(undefined, 'normal');
+    const lineHeight = 4.5;
+    const textWidth = pageWidth - (margin * 2);
+    
+    // Cláusula 1 - Precios
+    pdf.setFont(undefined, 'bold');
+    pdf.text("1. PRECIOS NETOS", margin, y);
+    y += lineHeight;
+    pdf.setFont(undefined, 'normal');
+    const clausula1 = "Todos los precios indicados en este contrato son NETOS, es decir, representan el monto final a pagar sin cargos adicionales. No incluyen servicios no especificados en este documento.";
+    const lines1 = pdf.splitTextToSize(clausula1, textWidth);
+    pdf.text(lines1, margin, y);
+    y += lines1.length * lineHeight + 4;
+    
+    // Cláusula 2 - Anticipo
+    pdf.setFont(undefined, 'bold');
+    pdf.text("2. ANTICIPO Y LIQUIDACION", margin, y);
+    y += lineHeight;
+    pdf.setFont(undefined, 'normal');
+    const clausula2 = "El anticipo garantiza la reserva de la fecha. Si el anticipo es $0, el pago total debera realizarse antes de iniciar el servicio. En caso de no liquidar, PicParty se reserva el derecho de cancelar el servicio sin responsabilidad alguna. Los anticipos NO son reembolsables.";
+    const lines2 = pdf.splitTextToSize(clausula2, textWidth);
+    pdf.text(lines2, margin, y);
+    y += lines2.length * lineHeight + 4;
+    
+    // Cláusula 3 - Clima
+    pdf.setFont(undefined, 'bold');
+    pdf.text("3. CONDICIONES CLIMATICAS", margin, y);
+    y += lineHeight;
+    pdf.setFont(undefined, 'normal');
+    const clausula3 = "El cliente es responsable de proveer un espacio techado y protegido para el equipo fotografico. En caso de lluvia, viento o condiciones adversas que pongan en riesgo el equipo, PicParty podra suspender temporalmente el servicio. El tiempo perdido por condiciones climaticas NO es reembolsable. Cualquier dano al equipo ocasionado por exposicion a los elementos sera cobrado a precio NETO de reposicion.";
+    const lines3 = pdf.splitTextToSize(clausula3, textWidth);
+    pdf.text(lines3, margin, y);
+    y += lines3.length * lineHeight + 4;
+    
+    // Cláusula 4 - Daños
+    pdf.setFont(undefined, 'bold');
+    pdf.text("4. DANOS AL EQUIPO", margin, y);
+    y += lineHeight;
+    pdf.setFont(undefined, 'normal');
+    const clausula4 = "El cliente sera responsable de cualquier dano fisico ocasionado al equipo por parte de sus invitados o terceros durante el evento. Los danos tecnicos seran evaluados y cobrados a precio NETO de reparacion o reposicion segun corresponda.";
+    const lines4 = pdf.splitTextToSize(clausula4, textWidth);
+    pdf.text(lines4, margin, y);
+    y += lines4.length * lineHeight + 4;
+    
+    // Cláusula 5 - Cancelación
+    pdf.setFont(undefined, 'bold');
+    pdf.text("5. CANCELACION", margin, y);
+    y += lineHeight;
+    pdf.setFont(undefined, 'normal');
+    const clausula5 = "Las cancelaciones deben notificarse con al menos 15 dias de anticipacion. Cancelaciones con menos de 7 dias de anticipacion perderan el 100% del anticipo. PicParty podra cancelar el servicio en caso de fuerza mayor, reembolsando el anticipo recibido.";
+    const lines5 = pdf.splitTextToSize(clausula5, textWidth);
+    pdf.text(lines5, margin, y);
+    y += lines5.length * lineHeight + 4;
+    
+    // Cláusula 6 - Derechos de imagen
+    pdf.setFont(undefined, 'bold');
+    pdf.text("6. DERECHOS DE IMAGEN", margin, y);
+    y += lineHeight;
+    pdf.setFont(undefined, 'normal');
+    const clausula6 = "PicParty podra utilizar fotografias del evento con fines promocionales y de portafolio, respetando la privacidad de los asistentes. El cliente puede solicitar por escrito la exclusion de uso comercial de las imagenes.";
+    const lines6 = pdf.splitTextToSize(clausula6, textWidth);
+    pdf.text(lines6, margin, y);
+    y += lines6.length * lineHeight + 4;
+    
+    // Cláusula 7 - Vigencia
+    pdf.setFont(undefined, 'bold');
+    pdf.text("7. VIGENCIA", margin, y);
+    y += lineHeight;
+    pdf.setFont(undefined, 'normal');
+    const clausula7 = "Este contrato tiene una vigencia de 15 dias naturales a partir de su emision. Pasado este plazo sin firma, los precios y disponibilidad estan sujetos a cambio.";
+    const lines7 = pdf.splitTextToSize(clausula7, textWidth);
+    pdf.text(lines7, margin, y);
+    y += lines7.length * lineHeight + 8;
+    
+    // === FIRMAS ===
+    y = pageHeight - 60;
+    pdf.setDrawColor(150, 150, 150);
+    pdf.setLineWidth(0.3);
+    
+    // Firma Cliente
+    pdf.line(margin, y, margin + 70, y);
+    pdf.setFontSize(9);
+    pdf.text("EL CLIENTE", margin + 20, y + 5);
+    pdf.setFontSize(8);
+    pdf.text(contract.client_name, margin, y + 10);
+    
+    // Firma PicParty
+    pdf.line(pageWidth - margin - 70, y, pageWidth - margin, y);
+    pdf.setFontSize(9);
+    pdf.text("PICPARTY", pageWidth - margin - 40, y + 5);
+    pdf.setFontSize(8);
+    pdf.text("Representante Autorizado", pageWidth - margin - 70, y + 10);
     
     // Footer
-    y = 255;
-    pdf.setFontSize(9);
+    y = pageHeight - 15;
+    pdf.setFontSize(7);
     pdf.setTextColor(150, 150, 150);
-    pdf.setFont(undefined, 'normal');
-    pdf.text("* Precios Netos. Contrato valido por 15 dias.", pageWidth / 2, y, { align: 'center' });
-    pdf.text("PicParty - Cabina Fotografica | adoca.net", pageWidth / 2, y + 5, { align: 'center' });
+    pdf.text("PicParty - Cabina Fotografica | adoca.net | Todos los precios son NETOS", pageWidth / 2, y, { align: 'center' });
+    pdf.text(`Contrato generado: ${new Date().toLocaleString('es-MX')}`, pageWidth / 2, y + 4, { align: 'center' });
     
     pdf.save(`Contrato_PicParty_${contract.client_name.replace(/\s+/g, '_')}.pdf`);
-    toast.success("Contrato PDF descargado");
+    toast.success("Contrato PDF de 2 paginas descargado");
   };
 
   // LOGIN SCREEN
