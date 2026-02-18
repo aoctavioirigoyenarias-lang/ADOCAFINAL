@@ -492,10 +492,6 @@ const Cotizador = () => {
   const selectService = (service, hours) => {
     setMainService(service);
     setServiceHours(hours);
-    // Si selecciona servicio principal, habilitar opción de $700 para PICPARTYLIVE
-    if (includeLive && livePackage !== 700) {
-      setLivePackage(700); // Auto-aplicar súper precio
-    }
   };
 
   return (
@@ -517,7 +513,76 @@ const Cotizador = () => {
         </div>
 
         <div className="space-y-6">
-          {/* PASO 1: Datos del Cliente */}
+          {/* ========== PASO 1: PICPARTYLIVE (PRIORIDAD) ========== */}
+          <Card className="bg-gradient-to-br from-pink-900/30 to-purple-900/30 border-pink-500/50">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-white text-xl flex items-center gap-2">
+                <span className="bg-pink-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                <span className="text-pink-400">🔴 PICPARTYLIVE</span>
+                <Badge className="bg-pink-500/30 text-pink-200 text-xs ml-2">RECOMENDADO</Badge>
+              </CardTitle>
+              <CardDescription className="text-gray-300">
+                Muro en vivo con almacenamiento ILIMITADO por 6 meses. Software de proyección en tiempo real. ¡Cero aplicaciones!
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex gap-4">
+                <Button 
+                  variant={includeLive ? "default" : "outline"}
+                  className={`flex-1 h-16 text-lg ${includeLive ? "bg-pink-500 hover:bg-pink-600 text-white" : "border-pink-500/50 text-pink-300 hover:bg-pink-500/20"}`}
+                  onClick={() => setIncludeLive(!includeLive)}
+                  data-testid="picpartylive-toggle"
+                >
+                  {includeLive ? "✓ PICPARTYLIVE Incluido" : "Agregar PICPARTYLIVE"}
+                </Button>
+              </div>
+              
+              {/* Precio dinámico */}
+              {includeLive && (
+                <div className="p-4 bg-black/30 rounded-lg">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-white font-semibold">
+                        {mainService ? "🎉 ¡COMBO ACTIVO!" : "PICPARTYLIVE Solo"}
+                      </p>
+                      <p className="text-gray-400 text-sm">
+                        {mainService 
+                          ? "Al agregar Cabina o Video 360° abajo" 
+                          : "Agrega un servicio abajo para precio especial"}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-3xl font-black text-pink-400">
+                        {formatCurrency(getLivePrice())}
+                      </span>
+                      <span className="text-gray-400 text-xs block">NETO</span>
+                    </div>
+                  </div>
+                  
+                  {/* BANNER DE AHORRO */}
+                  {mainService && (
+                    <div className="mt-3 p-3 bg-green-500/20 border border-green-500/50 rounded-lg animate-pulse">
+                      <p className="text-green-400 text-center font-bold text-lg">
+                        💰 ¡ESTÁS GANANDO $800 DE DESCUENTO!
+                      </p>
+                      <p className="text-green-300 text-center text-xs">
+                        Precio normal $1,500 → Tu precio $700
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {!includeLive && (
+                <p className="text-gray-500 text-sm text-center">
+                  Precio: <strong className="text-pink-400">$1,000 NETO</strong> solo, 
+                  o <strong className="text-green-400">$700 NETO</strong> con Cabina/360
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* ========== PASO 2: Datos del Cliente ========== */}
           <Card className="bg-white/5 border-white/10">
             <CardHeader className="pb-3">
               <CardTitle className="text-white text-lg flex items-center gap-2">
