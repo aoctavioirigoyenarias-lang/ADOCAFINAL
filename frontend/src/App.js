@@ -2059,8 +2059,10 @@ const PicPartyLive = () => {
                     ))}
                     {galleryPhotos.length === 0 && (
                       <div className="col-span-full text-center py-12">
-                        <div className="text-5xl mb-3">📷</div>
-                        <p className="text-gray-400">No hay fotos aún. ¡Sé el primero en subir!</p>
+                        <div className="w-16 h-16 mx-auto mb-3">
+                          <img src={PICPARTY_LOGO} alt="PicParty" className="w-full h-full object-contain opacity-50" />
+                        </div>
+                        <p className="text-gray-400">No hay fotos aún. Sé el primero en subir.</p>
                       </div>
                     )}
                   </div>
