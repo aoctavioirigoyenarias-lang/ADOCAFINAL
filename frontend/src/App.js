@@ -880,6 +880,139 @@ const clearSessionStorage = () => {
   localStorage.removeItem(SESSION_STORAGE_KEY);
 };
 
+// ============ LANDING PAGE DE VENTAS PICPARTYLIVE ============
+const PicPartyLiveLanding = () => {
+  const navigate = useNavigate();
+  
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-violet-900 to-purple-950">
+      {/* Header */}
+      <header className="border-b border-white/10 backdrop-blur-sm bg-black/30 sticky top-0 z-40">
+        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <img src={PICPARTY_LOGO} alt="PicParty" className="h-10 w-10 object-contain" />
+            <span className="text-xl font-bold text-white">PicParty</span>
+          </div>
+          <Link to="/cotizador">
+            <Button className="bg-pink-500 hover:bg-pink-600">
+              💰 Cotizar Ahora
+            </Button>
+          </Link>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <main className="container mx-auto px-4 py-12">
+        <div className="max-w-4xl mx-auto text-center">
+          {/* Badge animado */}
+          <div className="mb-6">
+            <Badge className="bg-pink-500/20 text-pink-300 px-4 py-2 text-lg animate-pulse">
+              🔴 PICPARTYLIVE
+            </Badge>
+          </div>
+          
+          {/* Título principal */}
+          <h1 className="text-4xl md:text-6xl font-black text-white mb-4 leading-tight">
+            El Muro de Fotos{" "}
+            <span className="bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">
+              en Tiempo Real
+            </span>
+          </h1>
+          
+          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+            Todos los invitados suben fotos desde su celular y aparecen al instante en la pantalla del evento. Sin apps, sin complicaciones.
+          </p>
+          
+          {/* CTA Principal */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <Button 
+              onClick={() => navigate('/cotizador')}
+              className="h-14 px-8 text-lg font-bold bg-gradient-to-r from-pink-500 to-fuchsia-500 hover:from-pink-600 hover:to-fuchsia-600 shadow-lg shadow-pink-500/30"
+              data-testid="landing-cotizar-btn"
+            >
+              ✨ Quiero PICPARTYLIVE en mi fiesta
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => navigate('/live?code=9022')}
+              className="h-14 px-8 text-lg border-white/30 text-white hover:bg-white/10"
+              data-testid="landing-demo-btn"
+            >
+              👀 Ver Demo (Código: 9022)
+            </Button>
+          </div>
+          
+          {/* Features Grid */}
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
+            <Card className="bg-white/5 border-white/10 p-6 text-center">
+              <div className="text-4xl mb-3">📱</div>
+              <h3 className="text-white font-bold text-lg mb-2">Sin Apps</h3>
+              <p className="text-gray-400 text-sm">Los invitados escanean un QR y suben fotos directamente desde el navegador.</p>
+            </Card>
+            
+            <Card className="bg-white/5 border-white/10 p-6 text-center">
+              <div className="text-4xl mb-3">📺</div>
+              <h3 className="text-white font-bold text-lg mb-2">Proyección en Vivo</h3>
+              <p className="text-gray-400 text-sm">Conecta a cualquier pantalla o TV. Efectos: Slideshow, Mosaico, Pop-up.</p>
+            </Card>
+            
+            <Card className="bg-white/5 border-white/10 p-6 text-center">
+              <div className="text-4xl mb-3">♾️</div>
+              <h3 className="text-white font-bold text-lg mb-2">Almacenamiento Ilimitado</h3>
+              <p className="text-gray-400 text-sm">Todas las fotos se guardan en la nube. Descárgalas cuando quieras.</p>
+            </Card>
+          </div>
+          
+          {/* Pricing Section */}
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mb-12">
+            <h2 className="text-2xl font-bold text-white mb-6">Precios NETO</h2>
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-6">
+                <div className="text-3xl font-black text-green-400 mb-2">$700</div>
+                <div className="text-white font-semibold">Súper Precio</div>
+                <p className="text-gray-400 text-sm mt-2">Al contratar Cabina de Fotos o Video 360°</p>
+              </div>
+              <div className="bg-pink-500/10 border border-pink-500/30 rounded-xl p-6">
+                <div className="text-3xl font-black text-pink-400 mb-2">$1,000</div>
+                <div className="text-white font-semibold">Promo Expo</div>
+                <p className="text-gray-400 text-sm mt-2">Precio temporal por tiempo limitado</p>
+              </div>
+              <div className="bg-purple-500/10 border border-purple-500/30 rounded-xl p-6">
+                <div className="text-3xl font-black text-purple-400 mb-2">$1,500</div>
+                <div className="text-white font-semibold">Precio Normal</div>
+                <p className="text-gray-400 text-sm mt-2">PICPARTYLIVE solo (sin servicio adicional)</p>
+              </div>
+            </div>
+          </div>
+          
+          {/* CTA Final */}
+          <div className="text-center">
+            <p className="text-gray-400 mb-4">¿Ya tienes un código de evento?</p>
+            <Button 
+              variant="outline"
+              onClick={() => {
+                const code = prompt("Ingresa el código de tu evento:");
+                if (code) navigate(`/live?code=${code}`);
+              }}
+              className="border-white/30 text-white hover:bg-white/10"
+            >
+              🔑 Ingresar Código
+            </Button>
+          </div>
+        </div>
+      </main>
+      
+      {/* Footer */}
+      <footer className="border-t border-white/10 py-8 mt-12">
+        <div className="container mx-auto px-4 text-center">
+          <p className="text-gray-500">PICPARTYLIVE • adoca.net</p>
+          <p className="text-gray-600 text-sm mt-2">© 2025 PicParty - Cabina Fotográfica</p>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
 const PicPartyLive = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
