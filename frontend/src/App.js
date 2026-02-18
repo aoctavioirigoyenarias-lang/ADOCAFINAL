@@ -3097,6 +3097,30 @@ const AdminPanel = () => {
                               <p className="text-cyan-400 text-xs mt-2 font-mono">
                                 https://{SITE_DOMAIN}/live?code={session.code}
                               </p>
+                              {/* Clave de descarga (últimos 4 dígitos del teléfono) */}
+                              {session.client_phone && (
+                                <div className="flex items-center gap-2 mt-1">
+                                  <Badge className="bg-orange-500/30 text-orange-300 text-xs">
+                                    🔑 Clave descarga: <span className="font-mono font-bold ml-1">{session.client_phone.slice(-4)}</span>
+                                  </Badge>
+                                  <Button 
+                                    size="sm" 
+                                    variant="ghost"
+                                    className="text-orange-300 hover:bg-orange-500/20 text-xs h-6 px-2"
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(session.client_phone.slice(-4));
+                                      toast.success("🔑 Clave copiada: " + session.client_phone.slice(-4));
+                                    }}
+                                  >
+                                    📋
+                                  </Button>
+                                </div>
+                              )}
+                              {!session.client_phone && (
+                                <Badge className="bg-red-500/30 text-red-300 text-xs mt-1">
+                                  ⚠️ Sin teléfono (descarga bloqueada)
+                                </Badge>
+                              )}
                               {/* Botones de compartir */}
                               <div className="flex gap-2 mt-2">
                                 <Button 
