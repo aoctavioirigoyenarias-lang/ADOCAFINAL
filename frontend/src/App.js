@@ -2844,6 +2844,20 @@ const AdminPanel = () => {
                   </div>
                 </div>
                 
+                {/* Campo de Teléfono del Cliente (OBLIGATORIO) */}
+                <div>
+                  <Label className="text-white text-sm">Teléfono del Cliente * <span className="text-pink-400 text-xs">(Clave de descarga)</span></Label>
+                  <Input 
+                    type="tel"
+                    placeholder="10 dígitos - Ej: 5512345678" 
+                    maxLength={10}
+                    value={newSession.client_phone} 
+                    onChange={(e) => setNewSession({...newSession, client_phone: e.target.value.replace(/\D/g, '')})} 
+                    className="bg-slate-700 border-white/10 text-white mt-1" 
+                  />
+                  <p className="text-gray-500 text-xs mt-1">Los últimos 4 dígitos serán la clave para descargar las fotos</p>
+                </div>
+                
                 {/* Campo personalizado si es "Otro" */}
                 {newSession.event_type === "otro" && (
                   <div>
