@@ -118,6 +118,31 @@ ADOCA/{{MES}}/{{FECHA}}/{{TIPO}}_{{NOMBRE}}/
 - ✅ Hints de usuario/contraseña en formulario de login
 - ✅ Credencial de respaldo: ADMIN / admin123
 
+## ACTUALIZACIÓN DICIEMBRE 2025 - Interfaz Maestra PICPARTYLIVE
+
+### 21. MENÚ PRINCIPAL (3 BOTONES)
+- ✅ 📺 **PROYECTAR EN TV** - Acceso al selector de efectos
+- ✅ 📸 **VER GALERÍA** - Ver fotos y subir nuevas
+- ✅ 📥 **DESCARGAR EVENTO** - Protegido con contraseña admin
+
+### 22. SELECTOR DE EFECTOS DE PROYECCIÓN
+- ✅ **Slideshow** - Una foto con transición suave (Fade) cada 5 segundos
+- ✅ **Mosaico** - Cuadrícula dinámica de fotos
+- ✅ **Pop-up** - Nueva foto aparece en grande por 5 segundos
+- ✅ Botón de **Pantalla Completa**
+- ✅ Logo PICPARTYLIVE en esquina
+- ✅ Polling cada 3 segundos en modo proyección
+
+### 23. AUTOMATIZACIÓN
+- ✅ Sistema autosuficiente para cliente
+- ✅ Mensajes de éxito claros: "✅ ¡Foto subida con éxito! Mírala en la pantalla."
+- ✅ Contador de fotos en galería y menú
+
+### 24. ESTABILIDAD
+- ✅ Base de datos MongoDB conectada y funcionando
+- ✅ Build exitoso sin errores
+- ✅ Servicios activos (backend + frontend)
+
 ## Próximas Tareas (Backlog)
 
 ### 7. BOTONES DE COMPARTIR (Admin Panel)
