@@ -881,6 +881,34 @@ const clearSessionStorage = () => {
 // ============ LANDING PAGE DE VENTAS PICPARTYLIVE ============
 const PicPartyLiveLanding = () => {
   const navigate = useNavigate();
+  const [creatingDemo, setCreatingDemo] = useState(false);
+  
+  // Crear demo temporal individual (24 horas)
+  const createTempDemo = async () => {
+    setCreatingDemo(true);
+    try {
+      // Generar código único para demo
+      const demoCode = 'DEMO-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+      
+      // Crear sesión demo en backend
+      const params = new URLSearchParams({
+        code: demoCode,
+        event_name: `Demo Temporal ${new Date().toLocaleDateString('es-MX')}`,
+        event_type: 'demo',
+        event_date: new Date().toISOString().split('T')[0],
+        client_phone: '0000000000',
+        is_demo: 'true'
+      });
+      
+      await axios.post(`${API}/live/sessions/create?${params.toString()}`);
+      
+      toast.success(`🎉 ¡Tu demo privada está lista! Código: ${demoCode}`);
+      navigate(`/live?code=${demoCode}`);
+    } catch (e) {
+      toast.error("Error al crear demo. Intenta de nuevo.");
+    }
+    setCreatingDemo(false);
+  };
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-950 via-violet-900 to-purple-950">
@@ -909,16 +937,17 @@ const PicPartyLiveLanding = () => {
             </Badge>
           </div>
           
-          {/* Título principal */}
+          {/* Título principal - ACTUALIZADO */}
           <h1 className="text-4xl md:text-6xl font-black text-white mb-4 leading-tight">
-            El Muro de Fotos{" "}
             <span className="bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">
-              en Tiempo Real
-            </span>
+              Cero Aplicaciones.
+            </span>{" "}
+            <br className="hidden md:block" />
+            Fotos al Instante.
           </h1>
           
           <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            Todos los invitados suben fotos desde su celular y aparecen al instante en la pantalla del evento. Sin apps, sin complicaciones.
+            Tus invitados suben fotos desde el navegador y aparecen al instante en la pantalla del evento. Sin descargas, sin complicaciones.
           </p>
           
           {/* CTA Principal */}
@@ -932,33 +961,46 @@ const PicPartyLiveLanding = () => {
             </Button>
             <Button 
               variant="outline"
-              onClick={() => navigate('/live?code=9022')}
-              className="h-14 px-8 text-lg border-white/30 text-white hover:bg-white/10"
+              onClick={createTempDemo}
+              disabled={creatingDemo}
+              className="h-14 px-8 text-lg border-cyan-500/50 text-cyan-300 hover:bg-cyan-500/20"
               data-testid="landing-demo-btn"
             >
-              👀 Ver Demo (Código: 9022)
+              {creatingDemo ? '⏳ Creando...' : '🧪 Probar GRATIS (24h)'}
             </Button>
           </div>
           
-          {/* Features Grid */}
+          {/* Features Grid - ACTUALIZADO */}
           <div className="grid md:grid-cols-3 gap-6 mb-12">
             <Card className="bg-white/5 border-white/10 p-6 text-center">
-              <div className="text-4xl mb-3">📱</div>
-              <h3 className="text-white font-bold text-lg mb-2">Sin Apps</h3>
-              <p className="text-gray-400 text-sm">Los invitados escanean un QR y suben fotos directamente desde el navegador.</p>
-            </Card>
-            
-            <Card className="bg-white/5 border-white/10 p-6 text-center">
-              <div className="text-4xl mb-3">📺</div>
-              <h3 className="text-white font-bold text-lg mb-2">Proyección en Vivo</h3>
-              <p className="text-gray-400 text-sm">Conecta a cualquier pantalla o TV. Efectos: Slideshow, Mosaico, Pop-up.</p>
-            </Card>
-            
-            <Card className="bg-white/5 border-white/10 p-6 text-center">
               <div className="text-4xl mb-3">♾️</div>
-              <h3 className="text-white font-bold text-lg mb-2">Almacenamiento Ilimitado</h3>
-              <p className="text-gray-400 text-sm">Todas las fotos se guardan en la nube. Descárgalas cuando quieras.</p>
+              <h3 className="text-white font-bold text-lg mb-2">Almacenamiento SIN LÍMITE</h3>
+              <p className="text-gray-400 text-sm">Sube todas las fotos que quieras. Sin restricciones de espacio ni cantidad.</p>
             </Card>
+            
+            <Card className="bg-white/5 border-white/10 p-6 text-center">
+              <div className="text-4xl mb-3">📅</div>
+              <h3 className="text-white font-bold text-lg mb-2">Vigencia 6 MESES</h3>
+              <p className="text-gray-400 text-sm">Tienes hasta 6 meses para descargar todas tus fotos después del evento.</p>
+            </Card>
+            
+            <Card className="bg-white/5 border-white/10 p-6 text-center">
+              <div className="text-4xl mb-3">⚡</div>
+              <h3 className="text-white font-bold text-lg mb-2">Fotos al Instante</h3>
+              <p className="text-gray-400 text-sm">Las fotos aparecen en la pantalla en tiempo real desde el navegador. Cero apps.</p>
+            </Card>
+          </div>
+          
+          {/* Privacidad - NUEVO */}
+          <div className="bg-gradient-to-r from-green-500/10 to-cyan-500/10 border border-green-500/30 rounded-2xl p-6 mb-12">
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <span className="text-3xl">🔒</span>
+              <h3 className="text-xl font-bold text-white">Galerías 100% Exclusivas</h3>
+            </div>
+            <p className="text-gray-300">
+              Cada evento tiene su propia galería privada. Las fotos <strong className="text-green-400">NUNCA se mezclan</strong> con otros clientes. 
+              Tu código de acceso es único y solo tus invitados pueden ver y subir fotos.
+            </p>
           </div>
           
           {/* Pricing Section */}
