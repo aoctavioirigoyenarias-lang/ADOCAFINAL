@@ -3242,6 +3242,39 @@ const AdminPanel = () => {
                                   ⚠️ Sin teléfono (descarga bloqueada)
                                 </Badge>
                               )}
+                              
+                              {/* Botón de sincronizar Cloudinary */}
+                              <div className="flex items-center gap-2 mt-2">
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  className="border-orange-500/50 text-orange-300 hover:bg-orange-500/20 text-xs h-7"
+                                  onClick={async () => {
+                                    const folder = prompt(
+                                      "Ingresa la ruta de Cloudinary:\n(Ej: ADOCA/FEBRERO/28-02-26/EXPO PÚBLICO BODA)", 
+                                      session.cloudinary_folder || "ADOCA/"
+                                    );
+                                    if (folder) {
+                                      try {
+                                        toast.info("Sincronizando fotos...");
+                                        const res = await axios.post(`${API}/live/sync-cloudinary/${session.code}?folder_path=${encodeURIComponent(folder)}`);
+                                        toast.success(`✅ ${res.data.imported} fotos importadas, ${res.data.skipped} ya existían`);
+                                        fetchData();
+                                      } catch (e) {
+                                        toast.error("Error: " + (e.response?.data?.detail || "No se pudo sincronizar"));
+                                      }
+                                    }
+                                  }}
+                                >
+                                  ☁️ Sincronizar Cloudinary
+                                </Button>
+                                {session.cloudinary_folder && (
+                                  <span className="text-gray-500 text-[10px] truncate max-w-[150px]" title={session.cloudinary_folder}>
+                                    📁 {session.cloudinary_folder}
+                                  </span>
+                                )}
+                              </div>
+                              
                               {/* Botones de compartir */}
                               <div className="flex gap-2 mt-2">
                                 <Button 
