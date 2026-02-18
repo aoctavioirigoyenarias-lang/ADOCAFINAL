@@ -3147,7 +3147,7 @@ const AdminPanel = () => {
                   </div>
 
                   {/* Horarios */}
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
                       <Label className="text-white">Horario Evento</Label>
                       <Input placeholder="ej: 6:00 PM" value={contractForm.event_time} onChange={(e) => setContractForm({...contractForm, event_time: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
@@ -3155,15 +3155,6 @@ const AdminPanel = () => {
                     <div>
                       <Label className="text-white">Horario Servicio</Label>
                       <Input placeholder="ej: 7:00 PM - 11:00 PM" value={contractForm.service_time} onChange={(e) => setContractForm({...contractForm, service_time: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
-                    </div>
-                    <div>
-                      <Label className="text-white">Duración (horas)</Label>
-                      <Select value={contractForm.duration_hours.toString()} onValueChange={(v) => setContractForm({...contractForm, duration_hours: parseInt(v)})}>
-                        <SelectTrigger className="bg-slate-700 border-white/10 text-white"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          {[2,3,4,5,6,8,10].map(h => <SelectItem key={h} value={h.toString()}>{h} horas</SelectItem>)}
-                        </SelectContent>
-                      </Select>
                     </div>
                   </div>
 
