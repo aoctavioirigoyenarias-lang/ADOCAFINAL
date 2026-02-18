@@ -2383,8 +2383,8 @@ const AdminPanel = () => {
     }
     
     // Validar teléfono (obligatorio)
-    if (!newSession.client_phone || newSession.client_phone.length < 7) {
-      toast.error("El teléfono del cliente es obligatorio (mínimo 7 dígitos)");
+    if (!newSession.client_phone || newSession.client_phone.length < 4) {
+      toast.error("El teléfono del cliente es obligatorio (mínimo 4 dígitos para clave)");
       return;
     }
     
