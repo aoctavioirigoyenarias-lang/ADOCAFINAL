@@ -859,6 +859,12 @@ const PicPartyLive = () => {
   const uploadToCloudinary = async (file) => {
     const folderPath = generateCloudinaryFolder();
     
+    // Validar tamaño del archivo (máximo 10MB)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      throw new Error('ARCHIVO_GRANDE');
+    }
+    
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
@@ -872,7 +878,8 @@ const PicPartyLive = () => {
           onUploadProgress: (progressEvent) => {
             const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
             setUploadProgress(percent);
-          }
+          },
+          timeout: 60000 // 60 segundos timeout
         }
       );
       
@@ -888,6 +895,14 @@ const PicPartyLive = () => {
       return response.data;
     } catch (error) {
       console.error('Error subiendo a Cloudinary:', error);
+      // Propagar el error con más contexto
+      if (error.message === 'ARCHIVO_GRANDE') {
+        throw error;
+      } else if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+        throw new Error('TIMEOUT');
+      } else if (!navigator.onLine) {
+        throw new Error('SIN_CONEXION');
+      }
       throw error;
     }
   };
