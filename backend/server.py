@@ -473,11 +473,17 @@ async def create_contract(contract_data: ContractCreate):
     else:
         net_price = subtotal - discount_amount
     
+    # Calcular utilidad neta si hay costo de proveedor
+    utilidad_neta = None
+    if contract_data.costo_proveedor is not None:
+        utilidad_neta = net_price - contract_data.costo_proveedor
+    
     contract = Contract(
         **contract_data.model_dump(),
         subtotal=subtotal,
         discount_amount=discount_amount,
-        net_price=net_price
+        net_price=net_price,
+        utilidad_neta=utilidad_neta
     )
     
     doc = contract.model_dump()
