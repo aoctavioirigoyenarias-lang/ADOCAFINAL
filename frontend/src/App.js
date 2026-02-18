@@ -3322,10 +3322,10 @@ const AdminPanel = () => {
                   {/* Botones */}
                   <div className="flex gap-3">
                     <Button onClick={calculateContractPreview} variant="outline" className="border-white/20 text-white">
-                      🧮 Calcular
+                      Calcular
                     </Button>
                     <Button onClick={createContract} className="bg-green-500 hover:bg-green-600">
-                      ✓ Crear Contrato
+                      Crear Contrato
                     </Button>
                   </div>
 
@@ -3334,12 +3334,12 @@ const AdminPanel = () => {
                     <div className="p-4 bg-green-500/10 border border-green-500/30 rounded">
                       <div className="flex justify-between text-white">
                         <span>Subtotal:</span>
-                        <span>${contractPreview.subtotal.toLocaleString()}</span>
+                        <span>${contractPreview.subtotal.toLocaleString()} NETO</span>
                       </div>
-                      {contractForm.discount_percent > 0 && (
+                      {contractForm.discount_amount > 0 && (
                         <div className="flex justify-between text-orange-400">
-                          <span>Descuento ({contractForm.discount_percent}%):</span>
-                          <span>-${contractPreview.discountAmount.toLocaleString()}</span>
+                          <span>Descuento:</span>
+                          <span>-${contractForm.discount_amount.toLocaleString()}</span>
                         </div>
                       )}
                       <div className="flex justify-between text-green-400 font-bold text-xl mt-2 pt-2 border-t border-green-500/30">
