@@ -1602,18 +1602,12 @@ const PicPartyLive = () => {
         {!session ? (
           /* ============ PANTALLA DE ENTRADA ============ */
           <div className="max-w-md mx-auto text-center pt-8">
-            {/* Barra de emojis decorativos */}
-            <div className="flex justify-center gap-2 mb-4 text-2xl">
-              {PICPARTY_EMOJIS.map((emoji, i) => (
-                <span key={i} className="animate-bounce" style={{ animationDelay: `${i * 0.1}s` }}>{emoji}</span>
-              ))}
-            </div>
             
             <div className="w-28 h-28 mx-auto bg-gradient-to-r from-pink-500 to-violet-500 rounded-full flex items-center justify-center mb-6 shadow-2xl shadow-pink-500/30">
-              <span className="text-5xl">👑</span>
+              <img src={PICPARTY_LOGO} alt="PicParty" className="w-20 h-20 object-contain" />
             </div>
-            <h1 className="text-3xl font-black text-white mb-2">¡Únete a la Fiesta!</h1>
-            <p className="text-gray-400 mb-6">Ingresa el código del evento ✨</p>
+            <h1 className="text-3xl font-black text-white mb-2">Únete a la Fiesta</h1>
+            <p className="text-gray-400 mb-6">Ingresa el código del evento</p>
             
             {error && (
               <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg">
