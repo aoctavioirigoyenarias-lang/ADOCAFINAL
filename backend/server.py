@@ -571,6 +571,7 @@ async def update_live_session(
     event_type: str = None,
     event_type_custom: str = None,
     event_date: str = None,
+    client_phone: str = None,
     code: str = None
 ):
     """Actualizar datos de una sesión Live existente"""
@@ -589,6 +590,8 @@ async def update_live_session(
         update_data["event_type_custom"] = event_type_custom if event_type == "otro" else None
     if event_date is not None:
         update_data["event_date"] = event_date
+    if client_phone is not None:
+        update_data["client_phone"] = client_phone
     if code is not None:
         # Verificar que el nuevo código no exista
         existing = await db.live_sessions.find_one({"code": code, "id": {"$ne": session_id}})
