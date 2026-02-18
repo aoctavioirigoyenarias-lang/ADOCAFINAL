@@ -1113,6 +1113,13 @@ const PicPartyLive = () => {
       saveSessionToStorage(response.data);
       fetchGalleryPhotos(targetCode);
       toast.success(`¡Bienvenido a ${response.data.event_name}!`);
+      
+      // SMART VIEW: Si es móvil, ir directo a galería
+      if (window.innerWidth < 768) {
+        setViewMode("gallery");
+      } else {
+        setViewMode("menu"); // PC/Tablet: mostrar menú maestro
+      }
     } catch (e) {
       setError("Código inválido o evento no activo");
       toast.error("Código inválido o evento no activo");
