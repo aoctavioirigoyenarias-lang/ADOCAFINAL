@@ -376,15 +376,15 @@ const Cotizador = () => {
       return;
     }
 
-    toast.info("Generando PDF...");
+    toast.info("Generando PDF optimizado para impresión...");
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
     const pageWidth = pdf.internal.pageSize.getWidth();
     
-    // Header con fondo púrpura
-    pdf.setFillColor(88, 28, 135);
+    // === HEADER B&W - Gris claro 10% ===
+    pdf.setFillColor(245, 245, 245);
     pdf.rect(0, 0, pageWidth, 50, 'F');
     
-    // Logo
+    // Logo fijo esquina izquierda
     try {
       const logoImg = new Image();
       logoImg.crossOrigin = "anonymous";
@@ -394,9 +394,12 @@ const Cotizador = () => {
     } catch(e) {}
     
     pdf.setFontSize(28);
-    pdf.setTextColor(255, 255, 255);
-    pdf.text("COTIZACIÓN", pageWidth - 20, 25, { align: 'right' });
+    pdf.setTextColor(30, 30, 30);
+    pdf.setFont(undefined, 'bold');
+    pdf.text("COTIZACION", pageWidth - 20, 25, { align: 'right' });
     pdf.setFontSize(12);
+    pdf.setTextColor(80, 80, 80);
+    pdf.setFont(undefined, 'normal');
     pdf.text(`Folio: ${folio}`, pageWidth - 20, 38, { align: 'right' });
     
     // Info del cliente
@@ -411,8 +414,8 @@ const Cotizador = () => {
     pdf.setFont(undefined, 'normal');
     pdf.setFontSize(11);
     pdf.text(`Nombre: ${clientData.nombre}`, 20, y); y += 6;
-    pdf.text(`Teléfono: ${clientData.telefono}`, 20, y); y += 6;
-    if (clientData.salon) { pdf.text(`Salón: ${clientData.salon}`, 20, y); y += 6; }
+    pdf.text(`Telefono: ${clientData.telefono}`, 20, y); y += 6;
+    if (clientData.salon) { pdf.text(`Salon: ${clientData.salon}`, 20, y); y += 6; }
     if (clientData.fecha) { pdf.text(`Fecha del Evento: ${clientData.fecha}`, 20, y); y += 6; }
     
     y += 10;
@@ -421,11 +424,12 @@ const Cotizador = () => {
     pdf.text("DETALLE DE SERVICIOS", 20, y);
     y += 10;
     
-    // Tabla de servicios
+    // Tabla de servicios - Cabecera gris claro 10%
     pdf.setFillColor(240, 240, 240);
     pdf.rect(20, y - 5, pageWidth - 40, 8, 'F');
     pdf.setFontSize(10);
     pdf.setFont(undefined, 'bold');
+    pdf.setTextColor(50, 50, 50);
     pdf.text("Concepto", 25, y);
     pdf.text("Precio Neto", pageWidth - 45, y, { align: 'right' });
     y += 10;
@@ -434,7 +438,7 @@ const Cotizador = () => {
     
     // Servicio principal
     if (quote.mainService && quote.serviceHours) {
-      const serviceName = quote.mainService === "cabina" ? "Cabina de Fotos" : "Video 360°";
+      const serviceName = quote.mainService === "cabina" ? "Cabina de Fotos" : "Video 360";
       pdf.text(`${serviceName} (${quote.serviceHours} horas)`, 25, y);
       pdf.text(formatCurrency(quote.servicePrice), pageWidth - 45, y, { align: 'right' });
       y += 7;
@@ -442,14 +446,14 @@ const Cotizador = () => {
     
     // PICPARTYLIVE
     if (quote.livePrice > 0) {
-      const pkgLabel = quote.livePackage === 700 ? "Súper Precio (con servicio)" : quote.livePackage === 1000 ? "Promo Expo" : "Regular";
+      const pkgLabel = quote.livePackage === 700 ? "Super Precio (con servicio)" : quote.livePackage === 1000 ? "Promo Expo" : "Regular";
       pdf.text(`PICPARTYLIVE - ${pkgLabel}`, 25, y);
       pdf.text(formatCurrency(quote.livePrice), pageWidth - 45, y, { align: 'right' });
       y += 7;
     }
     
     y += 5;
-    pdf.setDrawColor(200, 200, 200);
+    pdf.setDrawColor(180, 180, 180);
     pdf.line(20, y, pageWidth - 20, y);
     y += 8;
     
@@ -458,17 +462,17 @@ const Cotizador = () => {
     pdf.text(formatCurrency(quote.subtotal), pageWidth - 45, y, { align: 'right' });
     y += 7;
     
-    // Descuento si aplica
+    // Descuento si aplica (gris oscuro, no naranja)
     if (quote.descuentoPct > 0) {
-      pdf.setTextColor(220, 120, 50);
+      pdf.setTextColor(100, 100, 100);
       pdf.text(`Descuento (${quote.descuentoPct}%):`, 25, y);
       pdf.text(`-${formatCurrency(quote.descuento)}`, pageWidth - 45, y, { align: 'right' });
       y += 7;
     }
     
-    // Total Neto
+    // Total Neto - Recuadro gris oscuro
     y += 3;
-    pdf.setFillColor(88, 28, 135);
+    pdf.setFillColor(60, 60, 60);
     pdf.rect(20, y - 5, pageWidth - 40, 12, 'F');
     pdf.setTextColor(255, 255, 255);
     pdf.setFontSize(14);
@@ -481,8 +485,8 @@ const Cotizador = () => {
     pdf.setFontSize(9);
     pdf.setTextColor(150, 150, 150);
     pdf.setFont(undefined, 'normal');
-    pdf.text("* Todos los precios son NETOS. Cotización válida por 15 días.", pageWidth / 2, y, { align: 'center' });
-    pdf.text("PicParty - Cabina Fotográfica | adoca.net", pageWidth / 2, y + 5, { align: 'center' });
+    pdf.text("* Todos los precios son NETOS. Cotizacion valida por 15 dias.", pageWidth / 2, y, { align: 'center' });
+    pdf.text("PicParty - Cabina Fotografica | adoca.net", pageWidth / 2, y + 5, { align: 'center' });
     
     pdf.save(`Cotizacion_${folio}.pdf`);
     toast.success("PDF descargado correctamente");
