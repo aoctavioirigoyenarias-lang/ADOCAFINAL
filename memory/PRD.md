@@ -96,6 +96,28 @@ ADOCA/{{MES}}/{{FECHA}}/{{TIPO}}_{{NOMBRE}}/
 - Banner DEMO 9022: 100% ✅
 - Marca PICPARTYLIVE: 100% ✅
 
+## ACTUALIZACIÓN DICIEMBRE 2025 - Reparación Integral
+
+### 17. CÓDIGO DE EVENTO AUTOMÁTICO
+- ✅ Generación automática de código numérico de 4 dígitos
+- ✅ Validación de unicidad antes de asignar
+- ✅ Eliminado campo manual de código
+
+### 18. MENSAJES DE SUBIDA MEJORADOS
+- ✅ Éxito: "✅ ¡Foto subida con éxito! Mírala en la pantalla. 📺"
+- ✅ Error específico: "📦 Archivo muy pesado (máx 10MB)"
+- ✅ Error específico: "⏱️ Tiempo de espera agotado"
+- ✅ Error específico: "📡 Error de conexión: Revisa tu internet"
+
+### 19. CONTADOR DE FOTOS REAL-TIME
+- ✅ Badge "📸 X fotos" visible en cada evento del admin
+- ✅ Actualización automática cada 10 segundos
+- ✅ Animación pulse para indicar datos en vivo
+
+### 20. CREDENCIALES ADMIN VISIBLES
+- ✅ Hints de usuario/contraseña en formulario de login
+- ✅ Credencial de respaldo: ADMIN / admin123
+
 ## Próximas Tareas (Backlog)
 
 ### 7. BOTONES DE COMPARTIR (Admin Panel)
