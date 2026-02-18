@@ -1424,6 +1424,7 @@ const AdminPanel = () => {
   const [contracts, setContracts] = useState([]);
   const [preferences, setPreferences] = useState({ show_net_price: true });
   const [loading, setLoading] = useState(true);
+  const [photosCounts, setPhotosCounts] = useState({}); // Contador de fotos por evento
   const [newEvent, setNewEvent] = useState({ name: "", date: "", time: "", description: "", fotoshare_url: "", video360_url: "", location: "", has_photos: true, has_video360: false, color: "" });
   const [newSession, setNewSession] = useState({ 
     event_name: "", 
