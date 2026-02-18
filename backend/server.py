@@ -90,6 +90,8 @@ class LiveSession(BaseModel):
     is_vip: bool = False
     vip_pass: Optional[str] = None
     cloudinary_folder: Optional[str] = None
+    is_demo: bool = False  # Si es sesión demo temporal (24h)
+    demo_expires_at: Optional[datetime] = None  # Fecha de expiración para demos
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class Contract(BaseModel):
