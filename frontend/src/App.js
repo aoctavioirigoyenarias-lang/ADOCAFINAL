@@ -2307,8 +2307,8 @@ const AdminPanel = () => {
     }
     
     // Validar teléfono (obligatorio)
-    if (!newSession.client_phone || newSession.client_phone.length < 10) {
-      toast.error("El teléfono del cliente es obligatorio (10 dígitos)");
+    if (!newSession.client_phone || newSession.client_phone.length < 7) {
+      toast.error("El teléfono del cliente es obligatorio (mínimo 7 dígitos)");
       return;
     }
     
