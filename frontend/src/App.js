@@ -243,13 +243,12 @@ const Cotizador = () => {
   const [quote, setQuote] = useState(null);
   const [folio, setFolio] = useState(null);
   
-  // Servicio principal seleccionado
+  // ADD-ON PICPARTYLIVE - AHORA ES PRIORIDAD 1
+  const [includeLive, setIncludeLive] = useState(false);
+  
+  // Servicio principal seleccionado (AHORA PUNTO 2)
   const [mainService, setMainService] = useState(""); // "cabina" o "video360"
   const [serviceHours, setServiceHours] = useState(0);
-  
-  // ADD-ON PICPARTYLIVE
-  const [includeLive, setIncludeLive] = useState(false);
-  const [livePackage, setLivePackage] = useState(0); // $700, $1000, $1500 NETO
   
   // PRECIOS REALES - Cabina de Fotos
   const cabinaPrecios = [
