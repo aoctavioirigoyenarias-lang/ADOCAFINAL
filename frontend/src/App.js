@@ -1202,72 +1202,464 @@ const PicPartyLive = () => {
             </Card>
           </div>
         ) : (
-          /* ============ INTERFAZ DE INVITADOS ============ */
-          <div className="max-w-lg mx-auto">
+          /* ============ INTERFAZ MAESTRA PICPARTYLIVE ============ */
+          <>
             {/* Banner DEMO para código 9022 */}
             {session.code === '9022' && (
-              <div className="mb-4 p-3 bg-amber-500/20 border border-amber-500/50 rounded-lg animate-pulse">
+              <div className="max-w-4xl mx-auto mb-4 p-3 bg-amber-500/20 border border-amber-500/50 rounded-lg animate-pulse">
                 <p className="text-amber-300 text-sm text-center font-semibold">
                   ⚠️ Galería de Prueba: El contenido y las interacciones se eliminan automáticamente cada 24 horas.
                 </p>
               </div>
             )}
-            
-            {/* Barra de emojis decorativos */}
-            <div className="flex justify-center gap-3 mb-3 text-xl">
-              {PICPARTY_EMOJIS.map((emoji, i) => (
-                <span key={i} className="opacity-70">{emoji}</span>
-              ))}
-            </div>
-            
-            {/* Bienvenida */}
-            <div className="text-center mb-5">
-              <h1 className="text-2xl font-black text-white mb-1">
-                ¡Bienvenido a la fiesta! 👸
-              </h1>
-              <p className="text-xl font-bold bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">
-                {session.event_name}
-              </p>
-              {session.event_type && (
-                <Badge className="mt-2 bg-purple-500/30 text-purple-200">
-                  {session.event_type === 'boda' && '💍 Boda'}
-                  {session.event_type === 'quinceanios' && '👑 Quinceaños'}
-                  {session.event_type === 'cumpleanos' && '🎂 Cumpleaños'}
-                  {session.event_type === 'empresarial' && '🏢 Empresarial'}
-                  {session.event_type === 'fiesta' && '💃 Fiesta'}
-                  {session.event_type === 'publico' && '✨ Evento Público'}
-                  {session.event_type === 'otro' && `✨ ${session.event_type_custom || 'Evento'}`}
-                </Badge>
-              )}
-            </div>
 
-            {/* TABS: Subir / Galería */}
-            <div className="flex gap-2 mb-4">
-              <Button 
-                variant={activeTab === "upload" ? "default" : "outline"}
-                className={activeTab === "upload" ? "flex-1 bg-pink-500" : "flex-1 border-white/20 text-white"}
-                onClick={() => setActiveTab("upload")}
-              >
-                📸 Subir
-              </Button>
-              <Button 
-                variant={activeTab === "gallery" ? "default" : "outline"}
-                className={activeTab === "gallery" ? "flex-1 bg-purple-500" : "flex-1 border-white/20 text-white"}
-                onClick={() => { setActiveTab("gallery"); fetchGalleryPhotos(session.code); }}
-              >
-                👑 Galería ({galleryPhotos.length})
-              </Button>
-            </div>
+            {/* ============ MODO MENÚ PRINCIPAL ============ */}
+            {viewMode === "menu" && (
+              <div className="max-w-2xl mx-auto px-4">
+                {/* Header del evento */}
+                <div className="text-center mb-8">
+                  <div className="flex justify-center gap-3 mb-3 text-2xl">
+                    {PICPARTY_EMOJIS.map((emoji, i) => (
+                      <span key={i} className="opacity-70">{emoji}</span>
+                    ))}
+                  </div>
+                  <h1 className="text-3xl font-black text-white mb-2">
+                    ¡Bienvenido a la fiesta! 👸
+                  </h1>
+                  <p className="text-2xl font-bold bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">
+                    {session.event_name}
+                  </p>
+                  {session.event_type && (
+                    <Badge className="mt-3 bg-purple-500/30 text-purple-200 text-base px-4 py-1">
+                      {session.event_type === 'boda' && '💍 Boda'}
+                      {session.event_type === 'quinceanios' && '👑 Quinceaños'}
+                      {session.event_type === 'cumpleanos' && '🎂 Cumpleaños'}
+                      {session.event_type === 'empresarial' && '🏢 Empresarial'}
+                      {session.event_type === 'fiesta' && '💃 Fiesta'}
+                      {session.event_type === 'publico' && '✨ Evento Público'}
+                      {session.event_type === 'otro' && `✨ ${session.event_type_custom || 'Evento'}`}
+                    </Badge>
+                  )}
+                  <p className="text-gray-400 mt-3">📸 {galleryPhotos.length} fotos en la galería</p>
+                </div>
 
-            {activeTab === "upload" ? (
-              <>
-                {/* BOTÓN PRINCIPAL DE SUBIDA */}
-                <Card className="bg-white/5 border-white/10 backdrop-blur mb-4">
-                  <CardContent className="p-4">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
+                {/* 3 BOTONES PRINCIPALES */}
+                <div className="grid gap-4 mb-8">
+                  {/* Botón PROYECTAR */}
+                  <Button
+                    className="h-24 text-xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 shadow-lg shadow-cyan-500/30"
+                    onClick={() => setViewMode("projection-select")}
+                  >
+                    <div className="flex items-center gap-4">
+                      <span className="text-4xl">📺</span>
+                      <div className="text-left">
+                        <div>PROYECTAR EN TV</div>
+                        <div className="text-sm font-normal opacity-80">Mostrar fotos en pantalla grande</div>
+                      </div>
+                    </div>
+                  </Button>
+
+                  {/* Botón VER GALERÍA */}
+                  <Button
+                    className="h-24 text-xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 shadow-lg shadow-pink-500/30"
+                    onClick={() => setViewMode("gallery")}
+                  >
+                    <div className="flex items-center gap-4">
+                      <span className="text-4xl">📸</span>
+                      <div className="text-left">
+                        <div>VER GALERÍA</div>
+                        <div className="text-sm font-normal opacity-80">Ver fotos y subir nuevas</div>
+                      </div>
+                    </div>
+                  </Button>
+
+                  {/* Botón DESCARGAR */}
+                  <Button
+                    className="h-24 text-xl font-bold bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-700 hover:to-emerald-600 shadow-lg shadow-green-500/30"
+                    onClick={() => setViewMode("download")}
+                  >
+                    <div className="flex items-center gap-4">
+                      <span className="text-4xl">📥</span>
+                      <div className="text-left">
+                        <div>DESCARGAR EVENTO</div>
+                        <div className="text-sm font-normal opacity-80">Bajar todas las fotos (Admin)</div>
+                      </div>
+                    </div>
+                  </Button>
+                </div>
+
+                {/* Botón salir pequeño */}
+                <Button 
+                  variant="ghost" 
+                  className="w-full text-gray-400 hover:text-white text-sm"
+                  onClick={handleLogout}
+                >
+                  ← Salir del evento
+                </Button>
+              </div>
+            )}
+
+            {/* ============ MODO SELECTOR DE EFECTOS ============ */}
+            {viewMode === "projection-select" && (
+              <div className="max-w-3xl mx-auto px-4">
+                <Button 
+                  variant="ghost" 
+                  className="mb-4 text-gray-400 hover:text-white"
+                  onClick={() => setViewMode("menu")}
+                >
+                  ← Volver al menú
+                </Button>
+                
+                <h2 className="text-2xl font-bold text-white text-center mb-6">
+                  📺 Selecciona el Efecto de Proyección
+                </h2>
+
+                <div className="grid md:grid-cols-3 gap-4 mb-6">
+                  {/* Slideshow */}
+                  <Card 
+                    className={`cursor-pointer transition-all hover:scale-105 ${projectionEffect === 'slideshow' ? 'ring-2 ring-cyan-500 bg-cyan-500/20' : 'bg-white/5'} border-white/10`}
+                    onClick={() => setProjectionEffect('slideshow')}
+                  >
+                    <CardContent className="p-6 text-center">
+                      <div className="text-5xl mb-3">🖼️</div>
+                      <h3 className="text-white font-bold text-lg">Slideshow</h3>
+                      <p className="text-gray-400 text-sm mt-2">Una foto con transición suave (Fade)</p>
+                    </CardContent>
+                  </Card>
+
+                  {/* Mosaico */}
+                  <Card 
+                    className={`cursor-pointer transition-all hover:scale-105 ${projectionEffect === 'mosaic' ? 'ring-2 ring-pink-500 bg-pink-500/20' : 'bg-white/5'} border-white/10`}
+                    onClick={() => setProjectionEffect('mosaic')}
+                  >
+                    <CardContent className="p-6 text-center">
+                      <div className="text-5xl mb-3">🔲</div>
+                      <h3 className="text-white font-bold text-lg">Mosaico</h3>
+                      <p className="text-gray-400 text-sm mt-2">Cuadrícula dinámica de fotos</p>
+                    </CardContent>
+                  </Card>
+
+                  {/* Pop-up */}
+                  <Card 
+                    className={`cursor-pointer transition-all hover:scale-105 ${projectionEffect === 'popup' ? 'ring-2 ring-purple-500 bg-purple-500/20' : 'bg-white/5'} border-white/10`}
+                    onClick={() => setProjectionEffect('popup')}
+                  >
+                    <CardContent className="p-6 text-center">
+                      <div className="text-5xl mb-3">✨</div>
+                      <h3 className="text-white font-bold text-lg">Pop-up</h3>
+                      <p className="text-gray-400 text-sm mt-2">Foto nueva aparece grande 5 seg</p>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <Button
+                  className="w-full h-14 text-lg font-bold bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600"
+                  onClick={() => { setViewMode("projection"); fetchGalleryPhotos(session.code); }}
+                >
+                  🚀 Iniciar Proyección
+                </Button>
+              </div>
+            )}
+
+            {/* ============ MODO PROYECCIÓN ============ */}
+            {viewMode === "projection" && (
+              <div className="fixed inset-0 bg-black z-50">
+                {/* Logo PICPARTYLIVE en esquina */}
+                <div className="absolute top-4 left-4 z-10">
+                  <img src={PICPARTY_LOGO} alt="PicParty" className="h-12 opacity-80" />
+                  <span className="text-white/60 text-xs ml-2">LIVE</span>
+                </div>
+
+                {/* Botones de control */}
+                <div className="absolute top-4 right-4 z-10 flex gap-2">
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="bg-black/50 border-white/30 text-white"
+                    onClick={toggleFullscreen}
+                  >
+                    {isFullscreen ? '⏹️ Salir' : '⛶ Pantalla Completa'}
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="bg-black/50 border-white/30 text-white"
+                    onClick={() => { setViewMode("projection-select"); if (document.fullscreenElement) document.exitFullscreen(); }}
+                  >
+                    ✕ Cerrar
+                  </Button>
+                </div>
+
+                {/* Contador de fotos */}
+                <div className="absolute bottom-4 left-4 z-10 bg-black/60 px-3 py-1 rounded-full">
+                  <span className="text-white/80 text-sm">📸 {galleryPhotos.length} fotos</span>
+                </div>
+
+                {/* EFECTO SLIDESHOW */}
+                {projectionEffect === "slideshow" && galleryPhotos.length > 0 && (
+                  <div className="w-full h-full flex items-center justify-center p-8">
+                    <img 
+                      src={galleryPhotos[currentSlideIndex]?.cloudinary_url}
+                      alt="Foto del evento"
+                      className="max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-opacity duration-1000"
+                      style={{ animation: 'fadeIn 1s ease-in-out' }}
+                    />
+                  </div>
+                )}
+
+                {/* EFECTO MOSAICO */}
+                {projectionEffect === "mosaic" && (
+                  <div className="w-full h-full p-4 overflow-hidden">
+                    <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 h-full auto-rows-fr">
+                      {galleryPhotos.slice(0, 24).map((photo, idx) => (
+                        <div 
+                          key={photo._id || idx} 
+                          className="relative overflow-hidden rounded-lg"
+                          style={{ animation: `fadeIn 0.5s ease-in-out ${idx * 0.1}s both` }}
+                        >
+                          <img 
+                            src={photo.thumbnail_url || photo.cloudinary_url}
+                            alt="Foto"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* EFECTO POP-UP */}
+                {projectionEffect === "popup" && (
+                  <div className="w-full h-full">
+                    {/* Mosaico de fondo */}
+                    <div className="absolute inset-0 p-4 opacity-40">
+                      <div className="grid grid-cols-4 md:grid-cols-5 gap-2 h-full auto-rows-fr">
+                        {galleryPhotos.slice(0, 20).map((photo, idx) => (
+                          <div key={photo._id || idx} className="rounded overflow-hidden">
+                            <img 
+                              src={photo.thumbnail_url || photo.cloudinary_url}
+                              alt="Foto"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Pop-up de nueva foto */}
+                    {newPhotoPopup && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/70 z-20">
+                        <div className="relative" style={{ animation: 'scaleIn 0.5s ease-out' }}>
+                          <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-pink-500 px-4 py-1 rounded-full text-white font-bold">
+                            📸 ¡NUEVA FOTO!
+                          </div>
+                          <img 
+                            src={newPhotoPopup.cloudinary_url}
+                            alt="Nueva foto"
+                            className="max-w-[80vw] max-h-[80vh] object-contain rounded-xl shadow-2xl ring-4 ring-pink-500"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Mensaje de espera */}
+                    {!newPhotoPopup && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="text-center text-white/60">
+                          <div className="text-6xl mb-4 animate-pulse">📸</div>
+                          <p className="text-xl">Esperando nuevas fotos...</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Sin fotos */}
+                {galleryPhotos.length === 0 && (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <div className="text-center text-white">
+                      <div className="text-8xl mb-4">📷</div>
+                      <h3 className="text-2xl font-bold mb-2">Sin fotos aún</h3>
+                      <p className="text-gray-400">Las fotos aparecerán aquí en tiempo real</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ============ MODO GALERÍA (con subida) ============ */}
+            {viewMode === "gallery" && (
+              <div className="max-w-4xl mx-auto px-4 pb-32">
+                <Button 
+                  variant="ghost" 
+                  className="mb-4 text-gray-400 hover:text-white"
+                  onClick={() => setViewMode("menu")}
+                >
+                  ← Volver al menú
+                </Button>
+
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-bold text-white">📸 Galería de {session.event_name}</h2>
+                  <p className="text-gray-400">{galleryPhotos.length} fotos</p>
+                </div>
+
+                {/* TABS: Subir / Ver */}
+                <div className="flex gap-2 mb-4">
+                  <Button 
+                    variant={activeTab === "upload" ? "default" : "outline"}
+                    className={activeTab === "upload" ? "flex-1 bg-pink-500" : "flex-1 border-white/20 text-white"}
+                    onClick={() => setActiveTab("upload")}
+                  >
+                    ➕ Subir Fotos
+                  </Button>
+                  <Button 
+                    variant={activeTab === "gallery" ? "default" : "outline"}
+                    className={activeTab === "gallery" ? "flex-1 bg-purple-500" : "flex-1 border-white/20 text-white"}
+                    onClick={() => { setActiveTab("gallery"); fetchGalleryPhotos(session.code); }}
+                  >
+                    🖼️ Ver Fotos ({galleryPhotos.length})
+                  </Button>
+                </div>
+
+                {activeTab === "upload" ? (
+                  <Card className="bg-white/5 border-white/10 backdrop-blur">
+                    <CardContent className="p-6">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        ref={fileInputRef}
+                        onChange={handleFileSelect}
+                        className="hidden"
+                        id="photo-upload-gallery"
+                      />
+                      <label 
+                        htmlFor="photo-upload-gallery"
+                        className="block cursor-pointer"
+                      >
+                        <div className={`border-2 border-dashed rounded-xl p-8 text-center transition-all ${uploading ? 'border-pink-500 bg-pink-500/10' : 'border-white/30 hover:border-pink-500 hover:bg-white/5'}`}>
+                          {uploading ? (
+                            <div className="space-y-3">
+                              <div className="text-5xl animate-bounce">📤</div>
+                              <p className="text-white font-bold">Subiendo foto {currentFileIndex} de {totalFiles}...</p>
+                              <div className="w-full bg-gray-700 rounded-full h-3">
+                                <div className="bg-pink-500 h-3 rounded-full transition-all" style={{width: `${uploadProgress}%`}}></div>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <div className="text-6xl mb-4">📸</div>
+                              <p className="text-white font-bold text-xl mb-2">SUBIR MIS FOTOS</p>
+                              <p className="text-gray-400 text-sm">Toca para seleccionar hasta 10 fotos</p>
+                            </>
+                          )}
+                        </div>
+                      </label>
+                      
+                      {/* Info de almacenamiento */}
+                      <div className="mt-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                        <p className="text-green-300/80 text-sm text-center">
+                          ✓ Almacenamiento de fotos ILIMITADO. La resolución depende del celular.
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  /* Grid de galería */
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                    {galleryPhotos.map((photo, idx) => (
+                      <Card key={photo._id || idx} className="bg-white/5 border-white/10 overflow-hidden group">
+                        <div className="relative aspect-square">
+                          <img 
+                            src={photo.thumbnail_url || photo.cloudinary_url} 
+                            alt="Foto del evento"
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                          {/* Overlay con reacciones */}
+                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                            <div className="flex justify-center gap-1 flex-wrap">
+                              {PICPARTY_EMOJIS.map(emoji => (
+                                <button
+                                  key={emoji}
+                                  onClick={() => addReaction(photo._id, emoji)}
+                                  className="bg-white/20 hover:bg-white/40 rounded-full px-2 py-1 text-sm transition-all hover:scale-110"
+                                >
+                                  {emoji} {photo.reactions?.[emoji] || 0}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                    {galleryPhotos.length === 0 && (
+                      <div className="col-span-full text-center py-12">
+                        <div className="text-5xl mb-3">📷</div>
+                        <p className="text-gray-400">No hay fotos aún. ¡Sé el primero en subir!</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ============ MODO DESCARGA ============ */}
+            {viewMode === "download" && (
+              <div className="max-w-md mx-auto px-4">
+                <Button 
+                  variant="ghost" 
+                  className="mb-4 text-gray-400 hover:text-white"
+                  onClick={() => setViewMode("menu")}
+                >
+                  ← Volver al menú
+                </Button>
+
+                <Card className="bg-white/5 border-white/10 backdrop-blur">
+                  <CardHeader className="text-center">
+                    <div className="text-5xl mb-2">📥</div>
+                    <CardTitle className="text-white">Descargar Evento</CardTitle>
+                    <CardDescription className="text-gray-400">
+                      Descarga todas las fotos del evento. Solo el administrador puede acceder.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label className="text-white">Contraseña de Administrador</Label>
+                      <Input 
+                        type="password"
+                        placeholder="Ingresa la contraseña"
+                        value={downloadPassword}
+                        onChange={(e) => setDownloadPassword(e.target.value)}
+                        className="bg-white/10 border-white/20 text-white mt-1"
+                      />
+                      {downloadError && (
+                        <p className="text-red-400 text-sm mt-1">{downloadError}</p>
+                      )}
+                    </div>
+                    
+                    <div className="bg-gray-800/50 p-3 rounded-lg">
+                      <p className="text-gray-300 text-sm">
+                        <strong>📊 Resumen:</strong><br/>
+                        • Evento: {session.event_name}<br/>
+                        • Fotos disponibles: {galleryPhotos.length}<br/>
+                        • Carpeta: {session.cloudinary_folder || 'ADOCA/...'}
+                      </p>
+                    </div>
+
+                    <Button
+                      className="w-full bg-green-600 hover:bg-green-700"
+                      onClick={handleDownload}
+                      disabled={isDownloading || galleryPhotos.length === 0}
+                    >
+                      {isDownloading ? '⏳ Preparando...' : '📥 Descargar Fotos'}
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+          </>
+        )}
                       capture="environment"
                       ref={fileInputRef}
                       onChange={handleFileSelect}
