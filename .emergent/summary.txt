@@ -1,90 +1,94 @@
 <analysis>**original_problem_statement:**
-The user's initial goal was to repair a non-existent application, which evolved into a complete rebuild of a live event photo-sharing platform called PicParty (now PICPARTYLIVE). The application is built from scratch based on a series of iterative, detailed prompts from the user.
+The user's initial goal was to repair a non-existent application, which evolved into a complete rebuild of a live event photo-sharing platform called PICPARTYLIVE. The application is built from scratch based on a series of iterative, detailed prompts from the user.
 
 **Consolidated Product Requirements (based on all user prompts):**
-1.  **Branding & Core Routes**: The site is branded PICPARTYLIVE. Key routes include  (event gallery),  (guest access/sales page),  (quotes), and  (management).
-2.  **Admin Security**: The  route is protected by a login (User: , Pass: ).
+1.  **Branding & Core Routes**: The site is branded PICPARTYLIVE. Key routes include  (main landing),  (guest access & sales page),  (dedicated sales page),  (quotes), and  (management).
+2.  **Admin Security & Privacy**:
+    *   The  route is protected by a login (User: , Pass: ).
+    *   All hardcoded credentials and personal identifiers () must be removed from the UI (login hints, welcome messages, admin header).
 3.  **Admin Panel Features**:
-    *   Create, view, and edit live events.
-    *   Event codes must be auto-generated (4-digit numeric).
-    *   Generate and download QR code PDFs for events.
-    *   Share event links via direct copy and WhatsApp.
-    *   A button to copy the admin password () for easy sharing.
-    *   A real-time counter showing the number of photos for each event.
+    *   Create, view, and edit live events. Events must be sorted with the newest on top.
+    *   Event codes must be auto-generated.
+    *   Client phone number is mandatory for event creation, allowing 7-15 digits.
+    *   The last 4 digits of the client's phone number serve as the download key and must be displayed in the admin event list.
+    *   **Cloudinary Sync**: A button to manually sync photos from a Cloudinary folder into the app's database for events where photos were uploaded externally.
 4.  **Guest Experience ( route)**:
-    *   **Smart View**: The interface must adapt based on the device. On mobile, it should go directly to the photo upload/gallery view. On PC/Tablet, it should show a master menu with three options: Proyectar en TV, Ver Galería, Descargar Evento.
-    *   **Projection Mode**: A micro-site for displaying photos on large screens with effects like Slideshow, Mosaic, and Pop-up, including a fullscreen option.
-    *   **Gallery Mode**: Guests can upload photos (up to 10 at once) and view a real-time collaborative gallery with emoji reactions. Clear success/error messages must be displayed during upload.
-    *   **Download Mode**: An admin-password-protected feature to download all event photos as a ZIP file.
-    *   **Access**: Secure access via a  URL parameter.
-5.  **Sales & Quoting ( &  landing page)**:
-    *   The  route (without a code) should be a landing page to sell the PICPARTYLIVE service.
-    *   The  must be mobile-first and generate a unique  for each quote.
-    *   Service pricing must be configurable with specific options and prices for Cabina de Fotos, Video 360°, and PICPARTYLIVE. Prices must be clearly marked as Neto.
-6.  **Cloudinary Integration**: All photos must be uploaded to the user's Cloudinary account () into a structured folder: .
+    *   **Smart View**: On mobile, go directly to the photo gallery. On PC/Tablet, show a master menu (Proyectar, Ver Galería, Descargar).
+    *   **Gallery Mode**: Guests can upload photos and view a real-time collaborative gallery with working emoji reactions.
+    *   **Download Mode**: Protected feature to download all event photos as a ZIP, using the last 4 digits of the client's phone as the password.
+5.  **Sales & Quoting ( & Landing Pages)**:
+    *   The  and  routes must serve a sales landing page when no event code is specified.
+    - The  must be mobile-first and generate a unique  for each quote.
+    - **Reordered Flow**: PICPARTYLIVE service must be the first option. Its price is ,000 standalone, but drops to 00 (net) if a Cabina de Fotos or Video 360° service is also selected, displaying a prominent discount message.
+    - The client's phone number is optional in the cotizador.
+6.  **Demo Mode**:
+    *   A Try for FREE button on the landing page generates a temporary, isolated demo session ().
+    *   Demo galleries must display a banner indicating they will be deleted in 24 hours.
+    *   A backend job must automatically delete expired demo sessions and their associated photos.
+7.  **Cloudinary Integration**: All photos are stored in the user's Cloudinary account. The app reads photos from its own database, which can be populated via in-app uploads or the manual admin sync.
 
 **User's preferred language**: Spanish. The next agent MUST respond in Spanish.
 
 **what currently exists?**
-A full-stack application with a React frontend and a FastAPI backend. The entire application logic is contained within two monolithic files:  and . The admin panel is functional, with automatic 4-digit code generation for events and a real-time photo counter. The guest  route has been significantly refactored to include a master menu for PC/Tablet users with Projector, Gallery, and Download modes. However, the  (quote generator) is in a broken state; a refactoring attempt failed, and it was patched with legacy code just to make the application build, but its functionality is incorrect and does not meet user requirements.
+A full-stack application with a React frontend and a FastAPI backend. The entire application logic is in two monolithic files:  and . The app includes a functional admin panel, a rebuilt  with the correct pricing logic, a sales landing page, and a temporary demo mode with auto-cleanup. A feature to sync photos from Cloudinary to the app's database has been partially implemented: the backend endpoint and dependencies exist, but the frontend trigger is missing.
 
 **Last working item**:
--   **Last item agent was working**: The agent was attempting to fix a critical build failure caused by a failed refactoring of the  component. The user had requested a complete overhaul of the cotizador (Message 276 & 301), but the monolithic nature of  made this difficult. The agent's last action was to patch the component by re-introducing legacy variables to make the build pass, without actually fixing the underlying functional issues or implementing the user's new requirements.
--   **Status**: BLOCKED
+-   **Last item agent was working**: The agent was addressing a critical user request (Message 428) to display photos that were uploaded directly to Cloudinary but were not showing in the gallery (0 photos bug). The agent's solution was to create a feature to sync Cloudinary folders with the application's MongoDB database. The backend endpoint  was created in , and the  library was installed. The work was interrupted before the frontend button could be added to the admin panel to trigger this sync.
+-   **Status**: IN PROGRESS
 -   **Agent Testing Done**: N
--   **Which testing method agent to use?** Frontend testing agent. The agent must first test the  page to fully understand its broken state. After the fix, the testing agent should be used to verify all new features from the user's latest request (Message 301).
+-   **Which testing method agent to use?** Manual testing. After implementing the frontend button, the agent must:
+    1.  Click the Sync button for the event specified by the user ().
+    2.  Check browser developer tools and backend logs for successful API response.
+    3.  Navigate to the public gallery URL () for that event to confirm the photos are now visible.
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   Issue 1: Rebuild the  Component (Priority: P0)
--   Issue 2: Implement User's Latest Feature Requests (Priority: P1)
+-   Issue 1: Complete the Cloudinary Sync Feature (Priority: P0)
 
 **Issues Detail**:
 -   **Issue 1**:
-    -   **Description**: The  component is functionally broken. A previous refactoring attempt failed, and the component's JSX is now out of sync with its state management logic. It uses a mix of new and legacy variables, does not generate a , and does not have the correct mobile-first layout or service options requested by the user.
-    -   **Attempted fixes**: A complete rewrite of the component failed. A subsequent patch was applied to add back legacy variables (, , ) to resolve build errors, but this did not fix the functionality.
+    -   **Description**: The gallery shows 0 photos for events when photos are added directly to Cloudinary, bypassing the app's database. A sync feature is halfway implemented to solve this.
+    -   **Attempted fixes**: A backend endpoint () was created in . The  Python package was added to .
     -   **Next debug checklist**:
-        1.  Examine the  function within .
-        2.  **Remove the legacy variable patches.**
-        3.  **Rewrite the JSX form** to correctly use the modern state variables (, ).
-        4.  Implement the state and UI for the new service menus (Cabina, 360, PICPARTYLIVE) as specified in Message 301.
-        5.  Modify the  logic on the frontend and the  endpoint in  to generate and save a unique  number for each submission.
-    -   **Why fix this issue and what will be achieved with the fix?**: This is a critical sales feature for the user and has been requested multiple times. Fixing it is a prerequisite for any further development and deployment.
+        1.  Open .
+        2.  Locate the  component where the list of events is rendered (around line 3200).
+        3.  Add a new button, e.g., Sincronizar Cloudinary, next to the existing action buttons for each event.
+        4.  Implement the  handler for this new button. This handler should make an API call () to the  endpoint.
+        5.  Add a user notification (e.g., using ) to show the status of the sync (e.g., Sincronizando..., ¡Fotos sincronizadas con éxito!, Error al sincronizar).
+    -   **Why fix this issue and what will be achieved with the fix?**: This is a critical blocker for the user. Fixing it will allow them to display all event photos, regardless of how they were uploaded.
     -   **Status**: IN PROGRESS
     -   **Is recurring issue?** Y
     -   **Should Test frontend/backend/both after fix?** Both
     -   **Blocked on other issue**: None
 
--   **Issue 2**:
-    -   **Description**: The features requested in the user's latest prompt (Message 301) have not been started because the agent was blocked by the broken cotizador.
-    -   **Attempted fixes**: None.
-    -   **Next debug checklist**:
-        1.  **Smart View**: Implement device detection (e.g., using  or a library) in the  component in  to conditionally render either the gallery (mobile) or the master menu (PC/Tablet).
-        2.  ** Landing Page**: Modify the React Router logic in  to render a new, dedicated sales component when the  path is accessed without a  parameter.
-        3.  **Admin Copy Password Button**: In the admin section of , add a button next to the existing share buttons that copies the string  to the clipboard.
-    -   **Why fix this issue and what will be achieved with the fix?**: This will complete the user's final set of requirements, making the application feature-complete and ready for final deployment.
-    -   **Status**: NOT STARTED
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Frontend
-    -   **Blocked on other issue**: Issue 1: Rebuild the  Component
-
 **In progress Task List**:
--   There are no other tasks in progress. The focus is on resolving the  issue and then completing the user's last request.
+-   **Task 1**: Implement the frontend Sync with Cloudinary button.
+    -   **Where to resume**: , inside the  component's JSX map function that renders the event list.
+    -   **What will be achieved with this?**: This will provide the UI for the admin to trigger the backend sync logic, completing the feature.
+    -   **Status**: IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?**: Both
+    -   **Blocked on something**: None
 
 **Upcoming and Future Tasks**
 -   **Future Tasks**:
-    -   **(P2)** Fully flesh out the  route for projectors, which is currently a basic implementation within the Proyectar mode.
+    -   **(P2)** Refactor the monolithic  and  files into a proper component/module structure to improve maintainability and reduce the risk of regression bugs.
+    -   **(P2)** Fully develop the projector-specific route () beyond the current implementation.
 
 **Completed work in this session**
--   **Major Guest UI Refactor**: Implemented the Master Interface for the  route on PC/Tablet, featuring a 3-button menu for Projector, Gallery, and Download modes, each with its own sub-interface.
--   **Automatic Event Code Generation**: Modified the admin panel and backend to automatically generate a unique 4-digit numeric code when creating a new event, removing the manual input field.
--   **Real-time Photo Counter**: Added a pulsating, real-time photo count badge to each event in the admin panel list.
--   **Improved Upload UX**: Implemented clear, user-facing success () and error messages for the photo upload process.
--   **Sales Text & Branding Updates**: Updated pricing and descriptions on the  page and implemented a Demo banner for a specific event code (). Standardized branding to PICPARTYLIVE.
--   **Admin Login Assistance**: Added the credentials as placeholder hints in the login form to help the user. Verified login functionality.
+-   **Cotizador Overhaul**: Rebuilt and reordered the  page with complex, conditional pricing logic and visual feedback for discounts. Made the phone field optional.
+-   **Admin Security & Privacy**: Removed all visible user credentials (, ) from the login page UI and admin panel.
+-   **Download Key & Phone Validation**:
+    -   Successfully changed the event download password to be the last 4 digits of the client's phone number.
+    -   Fixed the admin phone number input field to allow 7-15 digits () resolving a major user frustration.
+    -   Added the 4-digit download key to the admin event list for easy reference.
+-   **Admin Panel UX**: Sorted the event list to show the newest events first.
+-   **Temporary Demo Mode**: Implemented an isolated demo feature with a 24-hour auto-cleanup job on the backend using .
+-   **Landing Page**: Created a dedicated sales landing page at  and updated its marketing copy.
+-   **Bug Fixes**: Corrected the Error al reaccionar emoji bug in the gallery.
+-   **Projection Optimization**: Improved slideshow performance with fade transitions and image pre-loading.
 
 **Earlier issues found/mentioned but not fixed**
--   **Technical Debt**: The monolithic structure of  is the root cause of the current  issue and poses a significant risk to future development. While not a bug, it is a critical issue that needs to be addressed, starting with component extraction.
+-   **Technical Debt**: The monolithic structure of  and  is a significant risk. It has caused bugs and slowed down development. It needs to be broken down into smaller components/modules.
 
 **Known issue recurrence from previous fork**
 -   N/A
@@ -93,57 +97,62 @@ A full-stack application with a React frontend and a FastAPI backend. The entire
 
 
 **Key Technical Concepts**
--   **Frontend**: React, React Router, Tailwind CSS, Axios, jsPDF, qrcode.react
--   **Backend**: FastAPI, Python
+-   **Frontend**: React, React Router, Tailwind CSS, Axios
+-   **Backend**: FastAPI, Python, Pydantic
 -   **Database**: MongoDB
 -   **Authentication**: JWT (Passlib, python-jose)
--   **File Storage**: Cloudinary (unsigned upload preset)
+-   **File Storage**: Cloudinary (for uploads and now API-based sync)
+-   **Background Jobs**:  for cleaning up expired demo sessions.
 
 **key DB schema**
--   :  (code is now auto-generated)
--   :  (This table will need a new  field).
+-   : 
+-   : 
 -   : 
 
 **changes in tech stack**
--   None.
+-   **Backend**: Added  and  to .
 
 **All files of reference**
--   : **CRITICAL FILE.** This single file contains the entire, increasingly complex frontend. It is extremely fragile, especially the  section. All frontend edits will happen here.
--   : The backend monolith. Was modified for auto-code generation and will require further changes for the quote .
--   : Contains new CSS classes for the projector animations and UI enhancements.
+-   : **CRITICAL FILE.** The entire frontend is here. The new sync button logic needs to be added to this file.
+-   : The backend monolith. Contains the new sync endpoint, demo creation/cleanup logic, and other recent changes.
+-   : Updated to include new dependencies.
 
 **Areas that need refactoring**:
--   : **URGENT.** The inability to update the  proves this file is unmaintainable. It must be broken down into smaller, reusable components. The  is the highest priority candidate for extraction into its own file ().
--   : Could be split into separate files for routes, models, and services to improve organization.
+-   : **URGENT.** This file is over 4,000 lines long and extremely fragile. It must be broken down into smaller components (, , , etc.) to ensure future stability.
+-   : Should be organized into a standard FastAPI project structure (e.g., folders for , , ).
 
 **key api endpoints**
--    (POST): Logic was modified on the backend to auto-generate and return the 4-digit .
--    (POST): **Needs modification.** This endpoint must be updated to generate a unique  number and store it with the quote data.
--    (GET): New endpoint to get the photo count for an event in real-time.
+-   : **New endpoint**. Triggers sync from Cloudinary to MongoDB.
+-   : **New endpoint**. Creates a temporary demo session.
+-   : Saves quote with a unique .
+-   : Now sorted by  descending.
+-   : Updated to handle  and .
 
 **Critical Info for New Agent**
--   **The Cotizador is BROKEN and is the TOP PRIORITY**: Your immediate task is to fix the  component. The user has requested this multiple times. The previous agent failed and applied a temporary patch just to make the build pass. You must properly rewrite the component's JSX to use the correct state variables and implement the  generation on the backend. Do not trust the current cotizador code.
--   **Monolithic Structure**: Be extremely careful when editing . It contains all frontend logic, and changes can have unintended side effects. Isolate and view the relevant code blocks before making any edits.
--   **Follow User Request (Message 301)**: After fixing the cotizador, you must implement the rest of the user's latest request: smart device view, a  landing page, and the admin copy password button.
+-   Your immediate and only priority is to **complete the Cloudinary sync feature**. The user is blocked as their photos are not appearing in the gallery.
+-   The backend work is done. You only need to add a button to the admin panel in  that calls the  endpoint.
+-   After implementing the button, test the feature using the event  and the Cloudinary path  mentioned by the user.
+-   The monolithic nature of  makes it very fragile. Be extremely careful and targeted with your edits.
 
 **documents and test reports created in this job**
 -    (updated)
+-    (created for a previous feature set)
 
 **Last 10 User Messages and any pending HUMAN messages**
--   The last messages detail the user requesting a major refactor of the cotizador and other features (Message 276, 301). The agent struggles with the cotizador due to technical debt, gets the build stuck, and spends the rest of the session applying a patch to simply make the build pass, without implementing any of the new features. The tasks from Message 301 are completely un-started.
+-   The last several messages show the user's increasing urgency to fix two issues: the gallery displaying 0 photos and the phone number input being too restrictive. The phone number issue has been resolved. The gallery issue led to the current task of implementing a Cloudinary sync, which was started but not finished. The latest message () reiterates the need to fix the gallery display as the top priority.
 
 **Project Health Check:**
--   **Broken**: The  page is functionally broken and does not meet user requirements, despite the application being buildable.
+-   **Broken**: The core gallery functionality is broken for photos uploaded outside the app, which is a critical, user-facing issue.
 
 **3rd Party Integrations**
--   **Cloudinary**: Active for photo uploads, using an unsigned preset.
--   **MongoDB**: Active as the primary database.
+-   **Cloudinary**: Used for photo storage. A new API integration for syncing was added.
+-   **MongoDB**: Primary database.
 
 **Testing status**
--   **Testing agent used after significant changes**: NO, not since the last major feature requests and the breaking of the cotizador.
+-   **Testing agent used after significant changes**: YES, but not for the most recent changes (demo mode, Cloudinary sync).
 -   **Troubleshoot agent used after agent stuck in loop**: NO
 -   **Test files created**: None.
--   **Known regressions**: The functionality of the  page has regressed completely.
+-   **Known regressions**: The gallery is non-functional for externally uploaded photos.
 
 **Credentials to test flow:**
 -   **Admin Panel Access**:
@@ -152,8 +161,4 @@ A full-stack application with a React frontend and a FastAPI backend. The entire
     -   **Password**: 
 
 **What agent forgot to execute**
-The agent was unable to start any of the tasks from the user's most recent request (Message 301) due to being blocked by the broken  component. The following tasks are pending:
-1.  The complete functional rebuild of the mobile-first  with folio generation.
-2.  The implementation of the Smart View (Mobile vs. PC) for the  route.
-3.  The creation of a sales landing page for the  route.
-4.  The addition of an admin Copy Password button in the admin panel.</analysis>
+-   The agent did not complete the full implementation of the Cloudinary sync feature. The frontend part (the button in the admin panel) is missing and must be implemented to resolve the user's primary issue.</analysis>
