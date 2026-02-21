@@ -615,30 +615,14 @@ const Cotizador = () => {
                 </div>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-pearl">Salón / Lugar</Label>
-                  <Input 
-                    placeholder="Nombre del salón" 
-                    value={clientData.salon}
-                    onChange={(e) => setClientData({...clientData, salon: e.target.value})}
-                    className="input-premium"
-                  />
-                  <p className="text-pearl-muted text-xs mt-2 leading-relaxed">
-                    Para que tus fotos brillen en grande, el lugar requiere buena conexión a internet. 
-                    Recuerda que la pantalla y el internet corren por cuenta del anfitrión o el salón. 
-                    ¡Nosotros ponemos la magia digital!
-                  </p>
-                </div>
-                <div>
-                  <Label className="text-pearl">Fecha del Evento</Label>
-                  <Input 
-                    type="date"
-                    value={clientData.fecha}
-                    onChange={(e) => setClientData({...clientData, fecha: e.target.value})}
-                    className="input-premium"
-                  />
-                </div>
+              <div>
+                <Label className="text-pearl">Fecha del Evento</Label>
+                <Input 
+                  type="date"
+                  value={clientData.fecha}
+                  onChange={(e) => setClientData({...clientData, fecha: e.target.value})}
+                  className="input-premium"
+                />
               </div>
             </CardContent>
           </Card>
