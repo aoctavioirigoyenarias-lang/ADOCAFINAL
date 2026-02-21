@@ -3,6 +3,7 @@ import "@/App.css";
 import { BrowserRouter, Routes, Route, Link, useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +23,53 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 const SITE_DOMAIN = "adoca.net";
 const PICPARTY_LOGO = "https://customer-assets.emergentagent.com/job_net-price-quotes/artifacts/udz3kgwy_logo%20pic%20party.png";
+
+// ============ DATEPICKER VISUAL ============
+const DatePicker = ({ value, onChange, placeholder = "Seleccionar fecha", className = "" }) => {
+  const [open, setOpen] = useState(false);
+  
+  // Convertir string YYYY-MM-DD a Date object
+  const selectedDate = value ? new Date(value + 'T12:00:00') : undefined;
+  
+  // Formatear fecha para mostrar
+  const formatDate = (dateStr) => {
+    if (!dateStr) return placeholder;
+    const date = new Date(dateStr + 'T12:00:00');
+    return date.toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
+  };
+  
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button 
+          variant="outline" 
+          className={`w-full justify-start text-left font-normal input-premium ${!value ? 'text-pearl-muted' : 'text-pearl'} ${className}`}
+        >
+          <span className="mr-2">📅</span>
+          {formatDate(value)}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0 bg-night border-gold/30" align="start">
+        <Calendar
+          mode="single"
+          selected={selectedDate}
+          onSelect={(date) => {
+            if (date) {
+              const yyyy = date.getFullYear();
+              const mm = String(date.getMonth() + 1).padStart(2, '0');
+              const dd = String(date.getDate()).padStart(2, '0');
+              onChange(`${yyyy}-${mm}-${dd}`);
+            }
+            setOpen(false);
+          }}
+          initialFocus
+          className="rounded-md border border-gold/20 bg-night text-pearl"
+        />
+      </PopoverContent>
+    </Popover>
+  );
+};
+
 
 // ============ COMPONENTE DE TARJETA DE EVENTO ============
 const EventCard = ({ event }) => {
