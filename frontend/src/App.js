@@ -118,13 +118,17 @@ const EventGallery = () => {
       setFilteredEvents(filtered);
       if (filtered.length === 0) toast.info("No hay eventos para esta fecha");
     } else {
-      setFilteredEvents(allEvents.slice(0, 5));
+      // TOP 3: Mostrar los 3 eventos más recientes ordenados por fecha
+      const sortedByDate = [...allEvents].sort((a, b) => new Date(b.date) - new Date(a.date));
+      setFilteredEvents(sortedByDate.slice(0, 3));
     }
   }, [allEvents]);
 
   const resetFilter = () => {
     setSelectedDate(null);
-    setFilteredEvents(allEvents.slice(0, 5));
+    // TOP 3: Mostrar los 3 eventos más recientes
+    const sortedByDate = [...allEvents].sort((a, b) => new Date(b.date) - new Date(a.date));
+    setFilteredEvents(sortedByDate.slice(0, 3));
   };
 
   if (loading) return (
