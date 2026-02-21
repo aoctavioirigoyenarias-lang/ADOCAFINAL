@@ -3231,13 +3231,17 @@ const AdminPanel = () => {
     // Subtotal
     pdf.setFont(undefined, 'normal');
     pdf.text("Subtotal:", colRight, y);
-    pdf.text(formatMXN(contract.subtotal || contract.net_price), pageWidth - margin, y, { align: 'right' });
+    pdf.text(formatMXN(contract.subtotal || (contract.net_price + (contract.discount_amount || 0))), pageWidth - margin, y, { align: 'right' });
     y += 6;
     
-    // Descuento (si aplica)
+    // Descuento Especial (si aplica)
     if (contract.discount_amount && contract.discount_amount > 0) {
-      pdf.text("Descuento:", colRight, y);
+      pdf.setTextColor(200, 50, 50);
+      pdf.setFont(undefined, 'bold');
+      pdf.text("Descuento Especial:", colRight, y);
       pdf.text(`-${formatMXN(contract.discount_amount)}`, pageWidth - margin, y, { align: 'right' });
+      pdf.setTextColor(40, 40, 40);
+      pdf.setFont(undefined, 'normal');
       y += 6;
     }
     
