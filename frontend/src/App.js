@@ -2830,8 +2830,9 @@ const AdminPanel = () => {
   };
 
   const createContract = async () => {
-    if (!contractForm.client_name || !contractForm.client_phone || !contractForm.event_name || !contractForm.event_date) {
-      toast.error("Complete los campos obligatorios (Nombre, Teléfono, Evento, Fecha)");
+    // Validación mínima: solo nombre, teléfono y fecha
+    if (!contractForm.client_name || !contractForm.client_phone || !contractForm.event_date) {
+      toast.error("Complete: Nombre, Teléfono y Fecha");
       return;
     }
     try {
@@ -2845,7 +2846,7 @@ const AdminPanel = () => {
         include_cabina: false, cabina_hours: 0, price_cabina: 0,
         include_video360: false, video360_hours: 0, price_video360: 0,
         include_key_moments: false, key_moments_pieces: 0, price_key_moments: 0,
-        include_live: false, price_live: 700,
+        include_live: false, price_live: 0,
         extras: [], discount_amount: 0, special_price: null, notes: "",
         cortesia: "",
         manual_total: 0, anticipo_amount: 0,
