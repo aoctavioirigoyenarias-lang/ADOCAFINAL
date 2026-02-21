@@ -3419,20 +3419,20 @@ const AdminPanel = () => {
     const pageWidth = pdf.internal.pageSize.getWidth();
     const margin = 5;
     
-    // Logo
+    // Logo centrado (imagen gráfica)
     try {
       const logoImg = new Image();
       logoImg.crossOrigin = "anonymous";
       logoImg.src = PICPARTY_LOGO;
       await new Promise(r => { logoImg.onload = r; setTimeout(r, 1000); });
-      pdf.addImage(logoImg, 'PNG', (pageWidth - 20) / 2, 5, 20, 20);
+      pdf.addImage(logoImg, 'PNG', (pageWidth - 25) / 2, 3, 25, 25);
     } catch(e) {
       pdf.setFontSize(12);
       pdf.setFont(undefined, 'bold');
       pdf.text("PIC PARTY", pageWidth / 2, 15, { align: 'center' });
     }
     
-    let y = 30;
+    let y = 32;
     
     // Título
     pdf.setFontSize(10);
