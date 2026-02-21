@@ -669,11 +669,10 @@ const Cotizador = () => {
               
               <div>
                 <Label className="text-pearl">Fecha del Evento</Label>
-                <Input 
-                  type="date"
+                <DatePicker 
                   value={clientData.fecha}
-                  onChange={(e) => setClientData({...clientData, fecha: e.target.value})}
-                  className="input-premium"
+                  onChange={(fecha) => setClientData({...clientData, fecha})}
+                  placeholder="Seleccionar fecha"
                 />
               </div>
             </CardContent>
