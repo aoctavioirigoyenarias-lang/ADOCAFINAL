@@ -3955,11 +3955,11 @@ const AdminPanel = () => {
                     {/* Campo personalizado si es "Otro" */}
                     {editForm.event_type === "otro" && (
                       <div>
-                        <Label className="text-white text-sm">Especifica el tipo</Label>
+                        <Label className="text-pearl text-sm">Especifica el tipo</Label>
                         <Input 
                           value={editForm.event_type_custom}
                           onChange={(e) => setEditForm({...editForm, event_type_custom: e.target.value})}
-                          className="bg-slate-700 border-white/10 text-white mt-1"
+                          className="input-premium mt-1"
                           placeholder="ej: Graduación, Bautizo"
                         />
                       </div>
@@ -3967,32 +3967,31 @@ const AdminPanel = () => {
                     
                     {/* Fecha */}
                     <div>
-                      <Label className="text-white text-sm">Fecha del Evento *</Label>
+                      <Label className="text-pearl text-sm">Fecha del Evento *</Label>
                       <Input 
                         type="date"
                         value={editForm.event_date}
                         onChange={(e) => setEditForm({...editForm, event_date: e.target.value})}
-                        className="bg-slate-700 border-white/10 text-white mt-1"
+                        className="input-premium mt-1"
                       />
-                      <p className="text-gray-500 text-xs mt-1">
-                        💡 Cambia a fecha de hoy para activar acceso inmediato
+                      <p className="text-pearl-muted/70 text-xs mt-1">
+                        Cambia a fecha de hoy para activar acceso inmediato
                       </p>
                     </div>
                     
                     {/* Botones */}
                     <div className="flex gap-3 pt-4">
                       <Button 
-                        variant="outline" 
-                        className="flex-1 border-white/20 text-white"
+                        className="flex-1 btn-gold-outline"
                         onClick={closeEditModal}
                       >
                         Cancelar
                       </Button>
                       <Button 
-                        className="flex-1 bg-cyan-500 hover:bg-cyan-600"
+                        className="flex-1 btn-gold"
                         onClick={saveSessionEdit}
                       >
-                        💾 Guardar Cambios
+                        Guardar Cambios
                       </Button>
                     </div>
                   </CardContent>
@@ -4002,36 +4001,36 @@ const AdminPanel = () => {
           </TabsContent>
 
           <TabsContent value="cloudinary" className="mt-4">
-            <Card className="bg-slate-800 border-white/10">
+            <Card className="card-premium">
               <CardHeader>
-                <CardTitle className="text-white">☁️ Configuración Cloudinary</CardTitle>
-                <CardDescription className="text-gray-400">Almacenamiento ILIMITADO de fotos para PICPARTYLIVE</CardDescription>
+                <CardTitle className="text-pearl">Configuración Cloudinary</CardTitle>
+                <CardDescription className="text-pearl-muted">Almacenamiento ILIMITADO de fotos para PICPARTYLIVE</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded">
-                  <p className="text-yellow-400 font-semibold">⚠️ Pendiente de Configurar</p>
-                  <p className="text-gray-400 text-sm mt-1">Proporciona tus credenciales de Cloudinary para activar:</p>
+                <div className="p-4 bg-gold/10 border border-gold/30 rounded">
+                  <p className="text-gold font-semibold">Cloudinary Activo</p>
+                  <p className="text-pearl-muted text-sm mt-1">Las credenciales ya están configuradas en el sistema.</p>
                 </div>
                 <div className="space-y-3">
                   <div>
-                    <Label className="text-white">Cloud Name</Label>
-                    <Input placeholder="tu-cloud-name" className="bg-slate-700 border-white/10 text-white" disabled />
+                    <Label className="text-pearl">Cloud Name</Label>
+                    <Input placeholder="••••••••••" className="input-premium" disabled />
                   </div>
                   <div>
-                    <Label className="text-white">API Key</Label>
-                    <Input placeholder="••••••••••" className="bg-slate-700 border-white/10 text-white" disabled />
+                    <Label className="text-pearl">API Key</Label>
+                    <Input placeholder="••••••••••" className="input-premium" disabled />
                   </div>
                   <div>
-                    <Label className="text-white">API Secret</Label>
-                    <Input type="password" placeholder="••••••••••" className="bg-slate-700 border-white/10 text-white" disabled />
+                    <Label className="text-pearl">API Secret</Label>
+                    <Input type="password" placeholder="••••••••••" className="input-premium" disabled />
                   </div>
                 </div>
-                <div className="p-4 bg-purple-500/10 border border-purple-500/30 rounded">
-                  <p className="text-purple-300 font-semibold">📁 Estructura de Carpetas</p>
-                  <p className="text-gray-400 font-mono text-sm mt-1">[Nombre_Evento]_[YYYY-MM-DD]/</p>
-                  <p className="text-gray-500 text-xs mt-1">Ejemplo: BODA_PEDRO_2025-01-26/</p>
+                <div className="p-4 bg-gold/10 border border-gold/30 rounded">
+                  <p className="text-gold font-semibold">Estructura de Carpetas</p>
+                  <p className="text-pearl-muted font-mono text-sm mt-1">[Nombre_Evento]_[YYYY-MM-DD]/</p>
+                  <p className="text-pearl-muted/70 text-xs mt-1">Ejemplo: BODA_PEDRO_2025-01-26/</p>
                 </div>
-                <Button className="w-full bg-gray-600" disabled>Guardar Configuración (Próximamente)</Button>
+                <Button className="w-full btn-gold" disabled>Guardar Configuración (Próximamente)</Button>
               </CardContent>
             </Card>
           </TabsContent>
