@@ -213,7 +213,8 @@ async def root():
 # Events endpoints
 @api_router.get("/events", response_model=List[Event])
 async def get_events():
-    events = await db.events.find({}, {"_id": 0}).to_list(100)
+    # Ordenar por created_at descendente (último subido primero)
+    events = await db.events.find({}, {"_id": 0}).sort("created_at", -1).to_list(100)
     for event in events:
         if isinstance(event.get('created_at'), str):
             event['created_at'] = datetime.fromisoformat(event['created_at'])
