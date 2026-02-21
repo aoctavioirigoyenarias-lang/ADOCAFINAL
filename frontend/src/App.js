@@ -436,14 +436,7 @@ const Cotizador = () => {
     
     // Logo imagen gráfica esquina izquierda
     try {
-      const logoImg = new Image();
-      logoImg.crossOrigin = "anonymous";
-      await new Promise((resolve, reject) => {
-        logoImg.onload = resolve;
-        logoImg.onerror = reject;
-        logoImg.src = PICPARTY_LOGO + "?t=" + Date.now();
-      });
-      pdf.addImage(logoImg, 'PNG', 12, 5, 40, 40);
+      pdf.addImage(PICPARTY_LOGO_BASE64, 'PNG', 12, 5, 40, 40);
     } catch(e) {
       console.error("Error cargando logo cotización:", e);
     }
