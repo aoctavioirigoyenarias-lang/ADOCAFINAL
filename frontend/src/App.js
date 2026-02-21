@@ -4214,7 +4214,9 @@ const AdminPanel = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {contracts.map((contract) => {
+                      {[...contracts]
+                        .sort((a, b) => new Date(b.event_date || '1900-01-01') - new Date(a.event_date || '1900-01-01'))
+                        .map((contract) => {
                         const total = contract.net_price || 0;
                         const abono = contract.anticipo_amount || 0;
                         const saldo = total - abono;
