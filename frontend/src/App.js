@@ -4453,34 +4453,88 @@ const AdminPanel = () => {
           <TabsContent value="cloudinary" className="mt-4">
             <Card className="card-premium">
               <CardHeader>
-                <CardTitle className="text-pearl">Configuración Cloudinary</CardTitle>
-                <CardDescription className="text-pearl-muted">Almacenamiento ILIMITADO de fotos para PICPARTYLIVE</CardDescription>
+                <CardTitle className="text-pearl">Galería de Imágenes por Evento</CardTitle>
+                <CardDescription className="text-pearl-muted">Solo imágenes PNG/JPG - Descarga directa para Staff</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="p-4 bg-gold/10 border border-gold/30 rounded">
-                  <p className="text-gold font-semibold">Cloudinary Activo</p>
-                  <p className="text-pearl-muted text-sm mt-1">Las credenciales ya están configuradas en el sistema.</p>
+                {/* Selector de Evento */}
+                <div className="space-y-2">
+                  <Label className="text-pearl">Seleccionar Evento</Label>
+                  <Select onValueChange={(code) => setSelectedEventCode(code)}>
+                    <SelectTrigger className="bg-night border-gold/30 text-pearl">
+                      <SelectValue placeholder="Selecciona un evento para ver sus imágenes" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {liveSessions.map(session => (
+                        <SelectItem key={session.code} value={session.code}>
+                          {session.name} - {session.code}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-                <div className="space-y-3">
-                  <div>
-                    <Label className="text-pearl">Cloud Name</Label>
-                    <Input placeholder="••••••••••" className="input-premium" disabled />
+                
+                {/* Galería de Fotos del Evento Seleccionado */}
+                {selectedEventCode && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-gold font-bold">Imágenes del Evento: {selectedEventCode}</h3>
+                      <Button 
+                        className="btn-gold-outline" 
+                        onClick={async () => {
+                          try {
+                            const res = await axios.get(`${API}/live/photos/${selectedEventCode}`);
+                            setEventPhotos(res.data.photos || []);
+                            toast.success(`${res.data.total} imágenes cargadas`);
+                          } catch(e) {
+                            toast.error("Error cargando imágenes");
+                          }
+                        }}
+                      >
+                        Cargar Imágenes
+                      </Button>
+                    </div>
+                    
+                    {eventPhotos.length > 0 ? (
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {eventPhotos.map((photo, idx) => (
+                          <div key={photo.id || idx} className="relative group">
+                            <img 
+                              src={photo.photo_url} 
+                              alt={`Foto ${idx + 1}`}
+                              className="w-full h-32 object-cover rounded border border-gold/30"
+                            />
+                            <a 
+                              href={photo.photo_url} 
+                              download={`evento_${selectedEventCode}_foto_${idx + 1}.jpg`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="absolute inset-0 bg-night/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                            >
+                              <Button size="sm" className="btn-gold">
+                                Descargar
+                              </Button>
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-pearl-muted text-center py-8">Haz clic en "Cargar Imágenes" para ver las fotos del evento</p>
+                    )}
+                    
+                    {eventPhotos.length > 0 && (
+                      <div className="p-3 bg-gold/10 border border-gold/30 rounded">
+                        <p className="text-gold text-sm font-semibold">Descarga Masiva</p>
+                        <p className="text-pearl-muted text-xs">Haz clic en cada imagen para descargarla. Solo formatos PNG/JPG soportados.</p>
+                      </div>
+                    )}
                   </div>
-                  <div>
-                    <Label className="text-pearl">API Key</Label>
-                    <Input placeholder="••••••••••" className="input-premium" disabled />
-                  </div>
-                  <div>
-                    <Label className="text-pearl">API Secret</Label>
-                    <Input type="password" placeholder="••••••••••" className="input-premium" disabled />
-                  </div>
+                )}
+                
+                <div className="p-4 bg-green-500/10 border border-green-500/30 rounded">
+                  <p className="text-green-400 font-semibold">Sistema Optimizado</p>
+                  <p className="text-pearl-muted text-sm mt-1">Solo imágenes PNG/JPG. Sin videos ni audios.</p>
                 </div>
-                <div className="p-4 bg-gold/10 border border-gold/30 rounded">
-                  <p className="text-gold font-semibold">Estructura de Carpetas</p>
-                  <p className="text-pearl-muted font-mono text-sm mt-1">[Nombre_Evento]_[YYYY-MM-DD]/</p>
-                  <p className="text-pearl-muted/70 text-xs mt-1">Ejemplo: BODA_PEDRO_2025-01-26/</p>
-                </div>
-                <Button className="w-full btn-gold" disabled>Guardar Configuración (Próximamente)</Button>
               </CardContent>
             </Card>
           </TabsContent>
