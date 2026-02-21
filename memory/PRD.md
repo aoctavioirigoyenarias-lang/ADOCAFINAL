@@ -91,6 +91,30 @@ PICPARTYLIVE es una plataforma de galería de fotos en vivo para eventos, que pe
 
 ## Changelog
 
+### 🏁 21 Febrero 2026 - DEPLOY FINAL PIC PARTY 2026 (COMPLETADO)
+**Sistema de Contratos Profesional - Versión Final**
+
+✅ **Libertad Total de Precios**:
+- Campo TOTAL editable (cualquier monto manual)
+- Campo Anticipo editable (sin restricciones)
+- SALDO calculado en tiempo real (Total - Anticipo)
+
+✅ **PDF Contrato 2 Páginas (Clon MARU)**:
+- Página 1: 6 cláusulas legales (OBJETO, PAGO, RESPONSABILIDAD, REQUERIMIENTOS, CANCELACIÓN, USO DE IMAGEN)
+- Página 2: Tabla SERVICIOS CONTRATADOS + Desglose Abono/Saldo + Firmas
+- Footer: (614) 272 5008 | SINCE 2014 | WWW.PICPARTY.NET
+- Folio automático: PIC-2026-[INICIALES][NÚMERO]
+
+✅ **4 Servicios Activos**:
+- Cabina de Fotos
+- Video 360
+- Key Moments
+- PicPartyLive
+- ❌ Espejo IA (DESHABILITADO)
+
+✅ **Regla de Liquidación**:
+- Si Saldo = $0 → Muestra "** SERVICIO TOTALMENTE LIQUIDADO **" en PDF y formulario
+
 ### 21 Febrero 2026 - Libertad de Precios y Lógica de Saldo (COMPLETADO)
 - ✅ **TOTAL editable**: Campo manual para escribir cualquier cantidad
 - ✅ **Anticipo editable**: Campo independiente para el monto recibido
