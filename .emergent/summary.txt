@@ -2,93 +2,73 @@
 The user's initial goal was to repair a non-existent application, which evolved into a complete rebuild of a live event photo-sharing platform called PICPARTYLIVE. The application is built from scratch based on a series of iterative, detailed prompts from the user.
 
 **Consolidated Product Requirements (based on all user prompts):**
-1.  **Branding & Core Routes**: The site is branded PICPARTYLIVE. Key routes include  (main landing),  (guest access & sales page),  (dedicated sales page),  (quotes), and  (management).
-2.  **Admin Security & Privacy**:
-    *   The  route is protected by a login (User: , Pass: ).
-    *   All hardcoded credentials and personal identifiers () must be removed from the UI (login hints, welcome messages, admin header).
+1.  **Branding & Core Routes**: The site is branded PICPARTYLIVE (and also referred to as ADOCA.NET). Key routes include  (main landing),  (guest access),  (quotes), and  (management).
+2.  **Admin Security & Privacy**: The  route is protected by a login (User: , Pass: ). Hardcoded identifiers have been removed from the UI.
 3.  **Admin Panel Features**:
-    *   Create, view, and edit live events. Events must be sorted with the newest on top.
-    *   Event codes must be auto-generated.
-    *   Client phone number is mandatory for event creation, allowing 7-15 digits.
-    *   The last 4 digits of the client's phone number serve as the download key and must be displayed in the admin event list.
-    *   **Cloudinary Sync**: A button to manually sync photos from a Cloudinary folder into the app's database for events where photos were uploaded externally.
+    *   Create, view, and edit live events, sorted with the newest on top.
+    *   Generate and manage professional, B&W-optimized, 2-page PDF contracts with dynamic pricing, legal clauses, and private admin fields (cost, profit).
+    *   **Cloudinary Sync**: A button to manually sync photos from a Cloudinary folder into the app's database.
 4.  **Guest Experience ( route)**:
-    *   **Smart View**: On mobile, go directly to the photo gallery. On PC/Tablet, show a master menu (Proyectar, Ver Galería, Descargar).
-    *   **Gallery Mode**: Guests can upload photos and view a real-time collaborative gallery with working emoji reactions.
-    *   **Download Mode**: Protected feature to download all event photos as a ZIP, using the last 4 digits of the client's phone as the password.
-5.  **Sales & Quoting ( & Landing Pages)**:
-    *   The  and  routes must serve a sales landing page when no event code is specified.
-    - The  must be mobile-first and generate a unique  for each quote.
-    - **Reordered Flow**: PICPARTYLIVE service must be the first option. Its price is ,000 standalone, but drops to 00 (net) if a Cabina de Fotos or Video 360° service is also selected, displaying a prominent discount message.
-    - The client's phone number is optional in the cotizador.
-6.  **Demo Mode**:
-    *   A Try for FREE button on the landing page generates a temporary, isolated demo session ().
-    *   Demo galleries must display a banner indicating they will be deleted in 24 hours.
-    *   A backend job must automatically delete expired demo sessions and their associated photos.
-7.  **Cloudinary Integration**: All photos are stored in the user's Cloudinary account. The app reads photos from its own database, which can be populated via in-app uploads or the manual admin sync.
+    *   An Instagram-style gallery experience with a 3-column grid, fullscreen photo viewer (lightbox), and double-tap-to-like functionality.
+    *   Guest photo uploads.
+    *   A protected feature to download all event photos as a ZIP.
+5.  **Sales & Quoting ()**:
+    *   A mobile-first quote generator with a fixed price catalog for services (sold by hours or pieces).
+    *   Generates a professional PDF of the quote.
+6.  **Visual Style**: The application must have a Premium look and feel, using a Morado Noche (deep purple/black) background, Dorado Elegante (soft gold) for accents and buttons, and Blanco Perlado for text.
 
 **User's preferred language**: Spanish. The next agent MUST respond in Spanish.
 
 **what currently exists?**
-A full-stack application with a React frontend and a FastAPI backend. The entire application logic is in two monolithic files:  and . The app includes a functional admin panel, a rebuilt  with the correct pricing logic, a sales landing page, and a temporary demo mode with auto-cleanup. A feature to sync photos from Cloudinary to the app's database has been partially implemented: the backend endpoint and dependencies exist, but the frontend trigger is missing.
+A full-stack application with a React frontend and a FastAPI backend. The entire application logic is in two monolithic files:  and . The app includes a functional admin panel with advanced contract generation, a quote generator with a fixed price catalog, a fully functional Cloudinary photo sync, and a guest gallery with an Instagram-style UI/UX (lightbox, double-tap likes). The implementation of a new Premium color palette (deep purple and gold) has been started but is not complete, resulting in an inconsistent UI.
 
 **Last working item**:
--   **Last item agent was working**: The agent was addressing a critical user request (Message 428) to display photos that were uploaded directly to Cloudinary but were not showing in the gallery (0 photos bug). The agent's solution was to create a feature to sync Cloudinary folders with the application's MongoDB database. The backend endpoint  was created in , and the  library was installed. The work was interrupted before the frontend button could be added to the admin panel to trigger this sync.
+-   **Last item agent was working**: The agent was implementing the user's request for a Premium visual overhaul. This involved changing the application's color scheme to a Morado Noche (deep purple) background, Dorado Elegante (gold) accents, and Blanco Perlado (off-white) text. The agent began by adding new CSS variables for this palette to .
 -   **Status**: IN PROGRESS
 -   **Agent Testing Done**: N
--   **Which testing method agent to use?** Manual testing. After implementing the frontend button, the agent must:
-    1.  Click the Sync button for the event specified by the user ().
-    2.  Check browser developer tools and backend logs for successful API response.
-    3.  Navigate to the public gallery URL () for that event to confirm the photos are now visible.
+-   **Which testing method agent to use?** screenshot tool. The agent needs to replace all old color classes in  with the new CSS variables and then take a screenshot of the main pages (gallery, admin, cotizador) to verify a consistent and correct application of the new theme.
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   Issue 1: Complete the Cloudinary Sync Feature (Priority: P0)
+-   Issue 1: Complete and Verify Premium Color Palette Implementation (Priority: P0)
 
 **Issues Detail**:
 -   **Issue 1**:
-    -   **Description**: The gallery shows 0 photos for events when photos are added directly to Cloudinary, bypassing the app's database. A sync feature is halfway implemented to solve this.
-    -   **Attempted fixes**: A backend endpoint () was created in . The  Python package was added to .
+    -   **Description**: The user requested a complete visual overhaul to a Premium theme (deep purple background, gold accents). The agent has started applying CSS changes in  but has not updated the components in , leaving the UI in a visually inconsistent state.
+    -   **Attempted fixes**: New CSS variables (, , etc.) were added to  and applied to the  tag.
     -   **Next debug checklist**:
         1.  Open .
-        2.  Locate the  component where the list of events is rendered (around line 3200).
-        3.  Add a new button, e.g., Sincronizar Cloudinary, next to the existing action buttons for each event.
-        4.  Implement the  handler for this new button. This handler should make an API call () to the  endpoint.
-        5.  Add a user notification (e.g., using ) to show the status of the sync (e.g., Sincronizando..., ¡Fotos sincronizadas con éxito!, Error al sincronizar).
-    -   **Why fix this issue and what will be achieved with the fix?**: This is a critical blocker for the user. Fixing it will allow them to display all event photos, regardless of how they were uploaded.
+        2.  Systematically search for and replace all instances of hardcoded Tailwind CSS color utilities (e.g., , , , ) with the new CSS variables (e.g., , , , ).
+        3.  Pay close attention to buttons, modals, forms, headers, and backgrounds across all sections (Admin, Cotizador, Gallery, Landing Page).
+        4.  After making the changes, take a screenshot of the main gallery page to confirm the new theme is applied consistently.
+    -   **Why fix this issue and what will be achieved with the fix?**: To fulfill the user's latest critical design request and deliver a visually cohesive, premium-looking application.
     -   **Status**: IN PROGRESS
-    -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** Both
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: Frontend
     -   **Blocked on other issue**: None
 
 **In progress Task List**:
--   **Task 1**: Implement the frontend Sync with Cloudinary button.
-    -   **Where to resume**: , inside the  component's JSX map function that renders the event list.
-    -   **What will be achieved with this?**: This will provide the UI for the admin to trigger the backend sync logic, completing the feature.
+-   **Task 1**: Apply Premium Color Palette to All Components.
+    -   **Where to resume**: .
+    -   **What will be achieved with this?**: A visually consistent application that matches the user's elegant design specification.
     -   **Status**: IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?**: Both
+    -   **Should Test frontend/backend/both after fix?**: Frontend
     -   **Blocked on something**: None
 
 **Upcoming and Future Tasks**
 -   **Future Tasks**:
-    -   **(P2)** Refactor the monolithic  and  files into a proper component/module structure to improve maintainability and reduce the risk of regression bugs.
-    -   **(P2)** Fully develop the projector-specific route () beyond the current implementation.
+    -   **(P2)** **Refactor Monolithic Codebase**: This is a critical technical debt.  and  must be broken down into smaller, maintainable components and modules to ensure future stability and easier development.
+    -   **(P2)** **Enhance Projector Route**: Fully develop the  route.
 
 **Completed work in this session**
--   **Cotizador Overhaul**: Rebuilt and reordered the  page with complex, conditional pricing logic and visual feedback for discounts. Made the phone field optional.
--   **Admin Security & Privacy**: Removed all visible user credentials (, ) from the login page UI and admin panel.
--   **Download Key & Phone Validation**:
-    -   Successfully changed the event download password to be the last 4 digits of the client's phone number.
-    -   Fixed the admin phone number input field to allow 7-15 digits () resolving a major user frustration.
-    -   Added the 4-digit download key to the admin event list for easy reference.
--   **Admin Panel UX**: Sorted the event list to show the newest events first.
--   **Temporary Demo Mode**: Implemented an isolated demo feature with a 24-hour auto-cleanup job on the backend using .
--   **Landing Page**: Created a dedicated sales landing page at  and updated its marketing copy.
--   **Bug Fixes**: Corrected the Error al reaccionar emoji bug in the gallery.
--   **Projection Optimization**: Improved slideshow performance with fade transitions and image pre-loading.
+-   **Cloudinary Sync Implemented & Fixed**: Successfully integrated the user's Cloudinary credentials and implemented the sync logic, allowing photos uploaded directly to Cloudinary to appear in the app's gallery.
+-   **Instagram-style Gallery UX**: Transformed the photo gallery with a simplified 3-column grid, a fullscreen lightbox photo viewer, and a double-tap-to-like feature with an animation.
+-   **Advanced PDF Contract Generation**: Overhauled the contract system to generate a professional, 2-page, B&W-optimized PDF. This includes dynamic pricing from a service catalog, specific legal clauses, and private admin-only fields (, ).
+-   **UI Professionalization**: Removed distracting emojis from all user-facing documents (PDFs) and key UI components to create a cleaner, more professional appearance.
+-   **Admin Panel Sorting**: Configured the events list in the admin panel to sort descending by creation date, showing the newest events first.
 
 **Earlier issues found/mentioned but not fixed**
--   **Technical Debt**: The monolithic structure of  and  is a significant risk. It has caused bugs and slowed down development. It needs to be broken down into smaller components/modules.
+-   **Technical Debt**: The monolithic structure of  and  is a significant, unaddressed risk. It complicates development and increases the chance of regressions.
 
 **Known issue recurrence from previous fork**
 -   N/A
@@ -97,68 +77,74 @@ A full-stack application with a React frontend and a FastAPI backend. The entire
 
 
 **Key Technical Concepts**
--   **Frontend**: React, React Router, Tailwind CSS, Axios
--   **Backend**: FastAPI, Python, Pydantic
--   **Database**: MongoDB
--   **Authentication**: JWT (Passlib, python-jose)
--   **File Storage**: Cloudinary (for uploads and now API-based sync)
--   **Background Jobs**:  for cleaning up expired demo sessions.
+-   **Frontend**: React, React Router, Tailwind CSS, Axios, **jsPDF** (for document generation).
+-   **Backend**: FastAPI, Python, Pydantic.
+-   **Database**: MongoDB.
+-   **File Storage**: Cloudinary.
+-   **Authentication**: JWT.
 
 **key DB schema**
 -   : 
 -   : 
--   : 
+-   :  (Schema has been significantly expanded for the new contract system).
 
 **changes in tech stack**
--   **Backend**: Added  and  to .
+-   No new dependencies installed. Heavy utilization of the existing  library for frontend PDF generation.
 
 **All files of reference**
--   : **CRITICAL FILE.** The entire frontend is here. The new sync button logic needs to be added to this file.
--   : The backend monolith. Contains the new sync endpoint, demo creation/cleanup logic, and other recent changes.
--   : Updated to include new dependencies.
+-   : **CRITICAL FILE.** The entire frontend is here. It needs to be updated to use the new color palette.
+-   : **CRITICAL FILE.** The new Premium color palette CSS variables are defined here.
+-   : The backend monolith. Contains the Cloudinary sync logic and the expanded contract model.
+-   : Now populated with the user's Cloudinary credentials.
 
 **Areas that need refactoring**:
--   : **URGENT.** This file is over 4,000 lines long and extremely fragile. It must be broken down into smaller components (, , , etc.) to ensure future stability.
--   : Should be organized into a standard FastAPI project structure (e.g., folders for , , ).
+-   : **URGENT.** This file has grown even larger and more complex, making it extremely fragile. It must be broken down into smaller components.
+-   : Should be organized into a standard FastAPI project structure (e.g., , , ).
 
 **key api endpoints**
--   : **New endpoint**. Triggers sync from Cloudinary to MongoDB.
--   : **New endpoint**. Creates a temporary demo session.
--   : Saves quote with a unique .
--   : Now sorted by  descending.
--   : Updated to handle  and .
+-   : Now fully functional.
+-   : Endpoint and model were heavily modified to support the new detailed contract structure with a price catalog, manual discounts, and admin-only fields.
+-   : Now sorted by .
 
 **Critical Info for New Agent**
--   Your immediate and only priority is to **complete the Cloudinary sync feature**. The user is blocked as their photos are not appearing in the gallery.
--   The backend work is done. You only need to add a button to the admin panel in  that calls the  endpoint.
--   After implementing the button, test the feature using the event  and the Cloudinary path  mentioned by the user.
--   The monolithic nature of  makes it very fragile. Be extremely careful and targeted with your edits.
+-   Your immediate and only priority is to **complete the Premium color palette implementation**. The user wants a high-end look with a deep purple/black background and gold accents.
+-   The color variables are already defined in . You must now go through  and replace all old color utility classes with the new CSS variables to ensure a consistent look.
+-   The application's core functionality (Cloudinary sync, Instagram-style gallery, contract generation) is complete and working. Do not alter this logic.
+-   The codebase is extremely fragile due to its monolithic nature. Be very targeted with your CSS class changes and use a screenshot to verify the final look before finishing.
 
 **documents and test reports created in this job**
--    (updated)
--    (created for a previous feature set)
+-   
 
 **Last 10 User Messages and any pending HUMAN messages**
--   The last several messages show the user's increasing urgency to fix two issues: the gallery displaying 0 photos and the phone number input being too restrictive. The phone number issue has been resolved. The gallery issue led to the current task of implementing a Cloudinary sync, which was started but not finished. The latest message () reiterates the need to fix the gallery display as the top priority.
+-   : User requests a Premium color palette (deep purple, elegant gold) and confirms the desire for the Instagram-style features. **This is the current, active task.**
+-   : User requests the Instagram-style UI/UX overhaul (simplified cards, double-tap-to-like, fullscreen lightbox). (Completed)
+-   : User provides their Cloudinary API credentials. (Completed & Integrated)
+-   : User provides detailed requirements for the final contract system, including a fixed price catalog, B&W PDF design, specific legal clauses, and admin-only fields. (Completed)
+-   : Further refinement requests for the professional contract PDF. (Completed)
+-   : Request to optimize PDFs for B&W printing, use vector icons, and add admin fields. (Completed)
+-   : User requests a radical cleaning of all emojis from the UI and PDFs to fix printing issues. (Completed)
+-   : User asks for event list sorting (newest first) and confirmation of data storage locations. (Completed)
 
 **Project Health Check:**
--   **Broken**: The core gallery functionality is broken for photos uploaded outside the app, which is a critical, user-facing issue.
+-   **Broken**: The user interface is visually inconsistent because the new Premium color theme has only been partially applied. Some elements are dark purple/gold, while others retain the old styling.
 
 **3rd Party Integrations**
--   **Cloudinary**: Used for photo storage. A new API integration for syncing was added.
+-   **Cloudinary**: Fully integrated for photo storage and API-based folder syncing. Credentials are saved in .
 -   **MongoDB**: Primary database.
+-   **jsPDF**: Integrated on the frontend to generate Quote, QR, and Contract PDFs.
 
 **Testing status**
--   **Testing agent used after significant changes**: YES, but not for the most recent changes (demo mode, Cloudinary sync).
+-   **Testing agent used after significant changes**: NO
 -   **Troubleshoot agent used after agent stuck in loop**: NO
 -   **Test files created**: None.
--   **Known regressions**: The gallery is non-functional for externally uploaded photos.
+-   **Known regressions**: None functional, but the UI is in a broken visual state.
 
 **Credentials to test flow:**
 -   **Admin Panel Access**:
-    -   **URL**: 
-    -   **Usuario**: 
-    -   **Password**: 
+    -   URL: 
+    -   Usuario: 
+    -   Password: 
+-   **Cloudinary Credentials**: Stored in .
 
 **What agent forgot to execute**
--   The agent did not complete the full implementation of the Cloudinary sync feature. The frontend part (the button in the admin panel) is missing and must be implemented to resolve the user's primary issue.</analysis>
+-   The agent started the color palette redesign by editing  but did not complete the task. It failed to apply the new CSS variables throughout the components in , leaving the UI in an inconsistent state. The work needs to be finished and verified.</analysis>
