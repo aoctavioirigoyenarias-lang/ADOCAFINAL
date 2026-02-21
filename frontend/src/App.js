@@ -3436,10 +3436,14 @@ const AdminPanel = () => {
     try {
       const logoImg = new Image();
       logoImg.crossOrigin = "anonymous";
-      logoImg.src = PICPARTY_LOGO;
-      await new Promise(r => { logoImg.onload = r; setTimeout(r, 1000); });
+      await new Promise((resolve, reject) => {
+        logoImg.onload = resolve;
+        logoImg.onerror = reject;
+        logoImg.src = PICPARTY_LOGO + "?t=" + Date.now();
+      });
       pdf.addImage(logoImg, 'PNG', (pageWidth - 25) / 2, 3, 25, 25);
     } catch(e) {
+      console.error("Error cargando logo recibo:", e);
       pdf.setFontSize(12);
       pdf.setFont(undefined, 'bold');
       pdf.text("PIC PARTY", pageWidth / 2, 15, { align: 'center' });
