@@ -101,6 +101,31 @@ PICPARTYLIVE es una plataforma de galería de fotos en vivo para eventos, que pe
 
 ## Changelog
 
+### 🏁 21 Febrero 2026 - STAFF View & Orden de Eventos (COMPLETADO)
+**Sistema de Control de Acceso por Roles y Orden de Lista**
+
+✅ **Orden de Eventos (PRIORITARIO)**:
+- Eventos ordenados por `created_at` DESC (último subido primero)
+- Backend actualizado: GET /api/events ordena por created_at descendente
+- Homepage muestra Top 3 eventos más recientes
+
+✅ **Vista STAFF Restringida**:
+- Login separado: STAFF / PICPARTY2026
+- Interfaz limitada a "Galería de Eventos por Contrato"
+- Selector de eventos muestra todos los contratos con indicadores (✅💰⏳)
+- Campos para pegar links de fotoshare.co (Link de FOTOS / Link de VIDEOS)
+- Botón "Guardar Links de Fotoshare" (API: PUT /contracts/{id}/links)
+- Botón "Abrir Templates en Cloudinary"
+
+✅ **Ticket Fiscal (Recibo PDF)**:
+- Incluye links de fotoshare.co bajo título "Tus Fotos y Videos aquí:"
+- Datos fiscales del usuario: RFC: IIAA8004021A9 / Adán Octavio Irigoyen Arias
+- Altura dinámica del ticket según contenido
+
+✅ **Backend Updates**:
+- Modelo Contract: Nuevos campos `link_fotos` y `link_videos`
+- Endpoint: PUT /api/contracts/{contract_id}/links
+
 ### 🏁 21 Febrero 2026 - DEPLOY FINAL PIC PARTY 2026 (COMPLETADO)
 **Sistema de Contratos Profesional - Versión Final**
 
