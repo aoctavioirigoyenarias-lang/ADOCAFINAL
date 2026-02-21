@@ -3372,14 +3372,10 @@ const AdminPanel = () => {
                   </div>
 
                   {/* Datos del Evento */}
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
                       <Label className="text-pearl">Nombre Evento *</Label>
                       <Input value={contractForm.event_name} onChange={(e) => setContractForm({...contractForm, event_name: e.target.value})} className="input-premium" />
-                    </div>
-                    <div>
-                      <Label className="text-pearl">Salón *</Label>
-                      <Input value={contractForm.salon} onChange={(e) => setContractForm({...contractForm, salon: e.target.value})} className="input-premium" />
                     </div>
                     <div>
                       <Label className="text-pearl">Fecha Evento *</Label>
