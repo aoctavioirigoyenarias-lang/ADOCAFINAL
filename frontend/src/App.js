@@ -4697,12 +4697,13 @@ const AdminPanel = () => {
                     {/* Fecha */}
                     <div>
                       <Label className="text-pearl text-sm">Fecha del Evento *</Label>
-                      <Input 
-                        type="date"
-                        value={editForm.event_date}
-                        onChange={(e) => setEditForm({...editForm, event_date: e.target.value})}
-                        className="input-premium mt-1"
-                      />
+                      <div className="mt-1">
+                        <DatePicker 
+                          value={editForm.event_date}
+                          onChange={(event_date) => setEditForm({...editForm, event_date})}
+                          placeholder="Seleccionar fecha"
+                        />
+                      </div>
                       <p className="text-pearl-muted/70 text-xs mt-1">
                         Cambia a fecha de hoy para activar acceso inmediato
                       </p>
