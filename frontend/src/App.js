@@ -3051,19 +3051,11 @@ const AdminPanel = () => {
     // ==================== PÁGINA 1: CLÁUSULAS LEGALES ====================
     
     // === HEADER CON LOGO Y FOLIO ===
-    // Logo a la izquierda (incluye texto PICPARTY)
+    // Logo a la izquierda (imagen embebida para evitar CORS)
     try {
-      const logoImg = new Image();
-      logoImg.crossOrigin = "anonymous";
-      await new Promise((resolve, reject) => {
-        logoImg.onload = resolve;
-        logoImg.onerror = reject;
-        logoImg.src = PICPARTY_LOGO + "?t=" + Date.now(); // Cache bust
-      });
-      pdf.addImage(logoImg, 'PNG', margin, 5, 38, 38);
+      pdf.addImage(PICPARTY_LOGO_BASE64, 'PNG', margin, 5, 38, 38);
     } catch(e) {
       console.error("Error cargando logo:", e);
-      // Fallback solo si falla la carga de imagen
       pdf.setFontSize(18);
       pdf.setTextColor(26, 11, 46);
       pdf.setFont(undefined, 'bold');
