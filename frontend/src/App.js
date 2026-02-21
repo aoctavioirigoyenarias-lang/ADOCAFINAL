@@ -3507,6 +3507,174 @@ const AdminPanel = () => {
 
   if (loading) return <div className="min-h-screen bg-night flex items-center justify-center text-pearl">Cargando...</div>;
 
+  // ============ VISTA STAFF - RESTRINGIDA ============
+  if (userRole === "staff") {
+    return (
+      <div className="min-h-screen bg-night">
+        <header className="header-premium">
+          <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <img src={PICPARTY_LOGO} alt="PicParty" className="h-10 w-10" />
+              <span className="text-xl font-bold text-gold">PicParty STAFF</span>
+              <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30">Staff</Badge>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="destructive" onClick={() => { sessionStorage.removeItem("adminAuth"); sessionStorage.removeItem("userRole"); setIsAuthenticated(false); }}>Salir</Button>
+            </div>
+          </div>
+        </header>
+
+        <main className="container mx-auto px-4 py-6">
+          <Card className="card-premium border-gold/30 mb-6">
+            <CardHeader>
+              <CardTitle className="text-gold">Galería de Eventos por Contrato</CardTitle>
+              <CardDescription className="text-pearl-muted">
+                Selecciona un evento para ver sus templates y agregar los links de Fotoshare
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {/* Selector de Eventos (Contratos con fecha) */}
+              <div className="mb-4">
+                <Label className="text-pearl mb-2 block">Seleccionar Evento:</Label>
+                <Select value={selectedEventCode || ""} onValueChange={(val) => {
+                  setSelectedEventCode(val);
+                  const contract = contracts.find(c => c.id === val);
+                  if (contract) {
+                    setFotoshareLinks({ fotos: contract.link_fotos || "", videos: contract.link_videos || "" });
+                  }
+                }}>
+                  <SelectTrigger className="input-premium" data-testid="staff-event-selector">
+                    <SelectValue placeholder="Selecciona un evento..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {contracts
+                      .filter(c => c.anticipo_status === "pagado" || c.anticipo_status === "abonado")
+                      .sort((a, b) => new Date(b.event_date) - new Date(a.event_date))
+                      .map(contract => (
+                        <SelectItem key={contract.id} value={contract.id}>
+                          {contract.client_name} - {new Date(contract.event_date).toLocaleDateString('es-MX')}
+                          {contract.anticipo_status === "pagado" && " ✅"}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Contenido del evento seleccionado */}
+              {selectedEventCode && (() => {
+                const selectedContract = contracts.find(c => c.id === selectedEventCode);
+                if (!selectedContract) return null;
+                
+                return (
+                  <div className="space-y-6">
+                    {/* Info del evento */}
+                    <div className="p-4 bg-night/50 rounded-lg border border-gold/20">
+                      <h3 className="text-gold text-lg font-bold mb-2">{selectedContract.client_name}</h3>
+                      <div className="grid grid-cols-2 gap-2 text-pearl-muted text-sm">
+                        <p>Fecha: {new Date(selectedContract.event_date).toLocaleDateString('es-MX')}</p>
+                        <p>Teléfono: {selectedContract.client_phone}</p>
+                        <p>Estado: <Badge className={selectedContract.anticipo_status === "pagado" ? "bg-green-500/20 text-green-300" : "bg-yellow-500/20 text-yellow-300"}>{selectedContract.anticipo_status}</Badge></p>
+                      </div>
+                    </div>
+
+                    {/* Servicios Contratados */}
+                    <div className="p-4 bg-gold/10 rounded-lg border border-gold/30">
+                      <h4 className="text-gold font-semibold mb-3">Servicios Contratados:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedContract.include_cabina && <Badge className="badge-gold">Cabina de Fotos ({selectedContract.cabina_hours}h)</Badge>}
+                        {selectedContract.include_video360 && <Badge className="badge-gold">Video 360 ({selectedContract.video360_hours}h)</Badge>}
+                        {selectedContract.include_key_moments && <Badge className="badge-gold">Key Moments ({selectedContract.key_moments_pieces} piezas)</Badge>}
+                        {selectedContract.include_live && <Badge className="badge-gold">PicPartyLive</Badge>}
+                      </div>
+                    </div>
+
+                    {/* ============ LINKS DE FOTOSHARE ============ */}
+                    <div className="p-4 bg-purple-500/10 rounded-lg border border-purple-500/30">
+                      <h4 className="text-purple-300 font-semibold mb-3 flex items-center gap-2">
+                        <span>📎</span> Links de Fotoshare.co
+                      </h4>
+                      <div className="space-y-3">
+                        <div>
+                          <Label className="text-pearl text-sm">Link de FOTOS:</Label>
+                          <Input 
+                            placeholder="https://fotoshare.co/e/..." 
+                            value={fotoshareLinks.fotos}
+                            onChange={(e) => setFotoshareLinks({...fotoshareLinks, fotos: e.target.value})}
+                            className="input-premium mt-1"
+                            data-testid="staff-link-fotos"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-pearl text-sm">Link de VIDEOS:</Label>
+                          <Input 
+                            placeholder="https://fotoshare.co/v/..." 
+                            value={fotoshareLinks.videos}
+                            onChange={(e) => setFotoshareLinks({...fotoshareLinks, videos: e.target.value})}
+                            className="input-premium mt-1"
+                            data-testid="staff-link-videos"
+                          />
+                        </div>
+                        <Button 
+                          onClick={async () => {
+                            try {
+                              const params = new URLSearchParams();
+                              if (fotoshareLinks.fotos) params.append('link_fotos', fotoshareLinks.fotos);
+                              if (fotoshareLinks.videos) params.append('link_videos', fotoshareLinks.videos);
+                              await axios.put(`${API}/contracts/${selectedEventCode}/links?${params.toString()}`);
+                              toast.success("✅ Links guardados correctamente");
+                              fetchData();
+                            } catch (e) {
+                              toast.error("Error guardando links");
+                            }
+                          }}
+                          className="w-full btn-gold"
+                          data-testid="staff-save-links-btn"
+                        >
+                          Guardar Links de Fotoshare
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* ============ GALERÍA DE TEMPLATES CLOUDINARY ============ */}
+                    <div className="p-4 bg-night/50 rounded-lg border border-gold/20">
+                      <h4 className="text-gold font-semibold mb-3 flex items-center gap-2">
+                        <span>🖼️</span> Templates del Evento
+                      </h4>
+                      <p className="text-pearl-muted text-sm mb-3">
+                        Descarga los templates (PNG/JPG) para el evento desde Cloudinary
+                      </p>
+                      <Button 
+                        onClick={() => {
+                          // Abrir Cloudinary con la carpeta del evento
+                          const folderPath = `ADOCA/TEMPLATES/${selectedContract.client_name.replace(/\s+/g, '_').toUpperCase()}`;
+                          window.open(`https://cloudinary.com/console/media_library/folders/${encodeURIComponent(folderPath)}`, '_blank');
+                          toast.info("Abriendo Cloudinary... Busca la carpeta de templates del evento.");
+                        }}
+                        className="btn-gold-outline"
+                        data-testid="staff-download-templates-btn"
+                      >
+                        Abrir Templates en Cloudinary
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {!selectedEventCode && (
+                <div className="text-center py-12">
+                  <span className="text-6xl mb-4 block">📋</span>
+                  <h3 className="text-pearl text-xl font-bold mb-2">Selecciona un Evento</h3>
+                  <p className="text-pearl-muted">Elige un evento del selector para ver los templates y agregar links</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </main>
+      </div>
+    );
+  }
+
+  // ============ VISTA ADMIN - COMPLETA ============
   return (
     <div className="min-h-screen bg-night">
       <header className="header-premium">
