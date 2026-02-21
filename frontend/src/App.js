@@ -1143,15 +1143,73 @@ const PicPartyLive = () => {
     }
   };
 
+  // === INSTAGRAM-STYLE FUNCTIONS ===
+  
+  // Handle double tap for like (Instagram style)
+  const handlePhotoTap = (photo, idx) => {
+    const now = Date.now();
+    const DOUBLE_TAP_DELAY = 300;
+    
+    if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
+      // Double tap - dar like
+      handleDoubleTapLike(photo);
+    } else {
+      // Single tap - abrir lightbox después de delay
+      setTimeout(() => {
+        if (Date.now() - lastTapRef.current >= DOUBLE_TAP_DELAY) {
+          openLightbox(photo, idx);
+        }
+      }, DOUBLE_TAP_DELAY);
+    }
+    lastTapRef.current = now;
+  };
+  
+  // Handle double tap like with animation
+  const handleDoubleTapLike = (photo) => {
+    const photoId = photo.id || photo._id;
+    
+    // Show heart animation
+    setLikeAnimation(photoId);
+    setTimeout(() => setLikeAnimation(null), 1000);
+    
+    // Toggle like
+    if (!likedPhotos.includes(photoId)) {
+      const newLiked = [...likedPhotos, photoId];
+      setLikedPhotos(newLiked);
+      localStorage.setItem('picparty_liked_photos', JSON.stringify(newLiked));
+      // Send like to server
+      addReaction(photoId, '❤️');
+    }
+  };
+  
+  // Open lightbox
+  const openLightbox = (photo, idx) => {
+    setLightboxPhoto(photo);
+    setLightboxIndex(idx);
+  };
+  
+  // Close lightbox
+  const closeLightbox = () => {
+    setLightboxPhoto(null);
+  };
+  
+  // Navigate lightbox
+  const navigateLightbox = (direction) => {
+    const newIndex = direction === 'next' 
+      ? (lightboxIndex + 1) % galleryPhotos.length
+      : (lightboxIndex - 1 + galleryPhotos.length) % galleryPhotos.length;
+    setLightboxIndex(newIndex);
+    setLightboxPhoto(galleryPhotos[newIndex]);
+  };
+
   // Agregar reacción a una foto
   const addReaction = async (photoId, emoji) => {
     try {
       await axios.post(`${API}/live/photos/${photoId}/react`, { emoji });
       // Actualizar galería
       if (session) fetchGalleryPhotos(session.code);
-      toast.success(`${emoji} agregado!`);
     } catch (e) {
-      toast.error("Error al reaccionar");
+      console.error("Error al reaccionar");
     }
   };
 
