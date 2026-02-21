@@ -3415,14 +3415,7 @@ const AdminPanel = () => {
     
     // Logo centrado (imagen gráfica)
     try {
-      const logoImg = new Image();
-      logoImg.crossOrigin = "anonymous";
-      await new Promise((resolve, reject) => {
-        logoImg.onload = resolve;
-        logoImg.onerror = reject;
-        logoImg.src = PICPARTY_LOGO + "?t=" + Date.now();
-      });
-      pdf.addImage(logoImg, 'PNG', (pageWidth - 25) / 2, 3, 25, 25);
+      pdf.addImage(PICPARTY_LOGO_BASE64, 'PNG', (pageWidth - 25) / 2, 3, 25, 25);
     } catch(e) {
       console.error("Error cargando logo recibo:", e);
       pdf.setFontSize(12);
