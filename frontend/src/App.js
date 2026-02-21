@@ -3396,14 +3396,54 @@ const AdminPanel = () => {
                     </div>
                   </div>
 
-                  {/* === TOTAL ACUMULADO EN TIEMPO REAL === */}
-                  <div className="p-3 bg-gold/20 border border-gold/40 rounded-lg">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gold font-bold">TOTAL ACUMULADO:</span>
-                      <span className="text-pearl text-2xl font-black">
-                        ${((contractForm.price_cabina || 0) + (contractForm.price_video360 || 0) + (contractForm.price_key_moments || 0) + (contractForm.price_live || 0) - (contractForm.discount_amount || 0)).toLocaleString()} NETO
+                  {/* === TOTAL Y SALDO EN TIEMPO REAL === */}
+                  <div className="p-4 bg-gold/20 border border-gold/40 rounded-lg space-y-3">
+                    {/* TOTAL MANUAL */}
+                    <div className="flex justify-between items-center gap-4">
+                      <Label className="text-gold font-bold">TOTAL (editable):</Label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-gold">$</span>
+                        <Input 
+                          type="number" 
+                          placeholder="Escribe el total" 
+                          value={contractForm.manual_total || ""} 
+                          onChange={(e) => setContractForm({...contractForm, manual_total: parseInt(e.target.value) || 0})} 
+                          className="input-premium w-32 text-right text-xl font-bold" 
+                        />
+                        <span className="text-gold font-bold">MXN</span>
+                      </div>
+                    </div>
+                    
+                    {/* ANTICIPO */}
+                    <div className="flex justify-between items-center gap-4">
+                      <Label className="text-pearl-muted">Anticipo recibido:</Label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-pearl-muted">$</span>
+                        <Input 
+                          type="number" 
+                          placeholder="0" 
+                          value={contractForm.anticipo_amount || ""} 
+                          onChange={(e) => setContractForm({...contractForm, anticipo_amount: parseInt(e.target.value) || 0})} 
+                          className="input-premium w-32 text-right" 
+                        />
+                        <span className="text-pearl-muted">MXN</span>
+                      </div>
+                    </div>
+                    
+                    {/* SALDO EN TIEMPO REAL */}
+                    <div className="flex justify-between items-center pt-3 border-t border-gold/30">
+                      <span className="text-gold font-bold text-lg">SALDO:</span>
+                      <span className={`text-2xl font-black ${((contractForm.manual_total || 0) - (contractForm.anticipo_amount || 0)) <= 0 ? 'text-green-400' : 'text-pearl'}`}>
+                        ${Math.max(0, (contractForm.manual_total || 0) - (contractForm.anticipo_amount || 0)).toLocaleString()} MXN
                       </span>
                     </div>
+                    
+                    {/* MENSAJE DE LIQUIDACIÓN */}
+                    {((contractForm.manual_total || 0) - (contractForm.anticipo_amount || 0)) <= 0 && contractForm.manual_total > 0 && (
+                      <div className="p-2 bg-green-500/20 border border-green-500/50 rounded text-center">
+                        <span className="text-green-400 font-bold">✓ SERVICIO TOTALMENTE LIQUIDADO</span>
+                      </div>
+                    )}
                   </div>
 
                   {/* === CATÁLOGO DE SERVICIOS === */}
