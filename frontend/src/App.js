@@ -4391,12 +4391,13 @@ const AdminPanel = () => {
                   </div>
                   <div>
                     <Label className="text-pearl text-sm">Fecha del Evento *</Label>
-                    <Input 
-                      type="date" 
-                      value={newSession.event_date} 
-                      onChange={(e) => setNewSession({...newSession, event_date: e.target.value})} 
-                      className="input-premium mt-1" 
-                    />
+                    <div className="mt-1">
+                      <DatePicker 
+                        value={newSession.event_date} 
+                        onChange={(event_date) => setNewSession({...newSession, event_date})} 
+                        placeholder="Seleccionar fecha"
+                      />
+                    </div>
                   </div>
                 </div>
                 
