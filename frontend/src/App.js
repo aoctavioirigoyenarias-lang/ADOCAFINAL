@@ -3764,6 +3764,7 @@ const AdminPanel = () => {
                         <p className="text-gold font-bold text-2xl">${contract.net_price?.toLocaleString()}</p>
                         <p className="text-pearl-muted text-sm">Precio Neto</p>
                         <div className="flex gap-2 mt-2">
+                          <Button size="sm" className="btn-gold-outline" onClick={() => startEditContract(contract)}>Editar</Button>
                           <Button size="sm" className="btn-gold" onClick={() => printContractPDF(contract)}>PDF</Button>
                           <Button size="sm" variant="destructive" onClick={() => deleteContract(contract.id)}>Eliminar</Button>
                         </div>
