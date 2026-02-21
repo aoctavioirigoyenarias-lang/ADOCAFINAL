@@ -2395,7 +2395,7 @@ const AdminPanel = () => {
     contract_type: "public",
     // Cabina de Fotos (por horas)
     include_cabina: false, cabina_hours: 0, price_cabina: 0,
-    // Pic Motion 360 (por horas)
+    // Video 360 (por horas)
     include_video360: false, video360_hours: 0, price_video360: 0,
     // Key Moments (por piezas)
     include_key_moments: false, key_moments_pieces: 0, price_key_moments: 0,
@@ -2404,8 +2404,10 @@ const AdminPanel = () => {
     extras: [], discount_amount: 0, special_price: null, notes: "",
     // Cortesía / Regalo
     cortesia: "",
-    // Campos administrativos (uso interno - NO se imprimen excepto si liquidado)
-    anticipo_status: "pendiente", anticipo_amount: null, costo_proveedor: null, fecha_pago: null
+    // TOTAL Y ANTICIPO MANUALES
+    manual_total: 0, anticipo_amount: 0,
+    // Campos administrativos (uso interno)
+    anticipo_status: "pendiente", costo_proveedor: null, fecha_pago: null
   });
   const [contractPreview, setContractPreview] = useState(null);
   
