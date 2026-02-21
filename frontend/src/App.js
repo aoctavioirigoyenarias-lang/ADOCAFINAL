@@ -3596,12 +3596,13 @@ const AdminPanel = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {contracts
-                      .filter(c => c.anticipo_status === "pagado" || c.anticipo_status === "abonado")
                       .sort((a, b) => new Date(b.event_date) - new Date(a.event_date))
                       .map(contract => (
                         <SelectItem key={contract.id} value={contract.id}>
                           {contract.client_name} - {new Date(contract.event_date).toLocaleDateString('es-MX')}
                           {contract.anticipo_status === "pagado" && " ✅"}
+                          {contract.anticipo_status === "abonado" && " 💰"}
+                          {contract.anticipo_status === "pendiente" && " ⏳"}
                         </SelectItem>
                       ))}
                   </SelectContent>
