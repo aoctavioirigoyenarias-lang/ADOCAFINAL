@@ -147,7 +147,7 @@ const EventGallery = () => {
               <Button className="btn-gold-outline">Cotizar</Button>
             </Link>
             <Link to="/picpartylive">
-              <Button className="btn-gold">LIVE</Button>
+              <Button className="btn-gold font-black">EN VIVO</Button>
             </Link>
             <Link to="/admin">
               <Button variant="ghost" className="text-pearl-muted hover:text-gold">⚙️</Button>
