@@ -7,23 +7,23 @@ PICPARTYLIVE es una plataforma de galería de fotos en vivo para eventos, que pe
 - **Frontend**: React, React Router, Tailwind CSS, Shadcn/UI
 - **Backend**: FastAPI, Python, Pydantic
 - **Database**: MongoDB
-- **File Storage**: Cloudinary
+- **File Storage**: Cloudinary (Cloud: dpvliv2wl)
 - **Authentication**: JWT (Admin)
 - **PDF Generation**: jsPDF
 
-## Paleta de Colores (Premium Theme)
-- **Morado Noche** (`--premium-night: #0d0a14`): Fondo principal
-- **Púrpura Premium** (`--premium-purple: #1a1025`): Fondos secundarios
-- **Dorado Elegante** (`--premium-gold: #d4af37`): Acentos, botones CTA
-- **Dorado Claro** (`--premium-gold-light: #e8c968`): Hover states
-- **Blanco Perla** (`--premium-pearl: #f5f3f0`): Texto principal
-- **Perla Muted** (`--premium-pearl-muted: #c9c5c0`): Texto secundario
+## Paleta de Colores (Premium Theme - Actualizada)
+- **Morado Noche** (`#1A0B2E`): Fondo principal obligatorio
+- **Púrpura Premium** (`#2D1B4E`): Fondos secundarios
+- **Dorado Elegante** (`#d4af37`): Acentos, botones CTA (Champagne/Gold)
+- **Dorado Claro** (`#e8c968`): Hover states
+- **Blanco Perla** (`#f5f3f0`): Texto principal
+- **Perla Muted** (`#c9c5c0`): Texto secundario
 
 ## Rutas de la Aplicación
 - `/` - Galería principal de eventos
 - `/cotizador` - Generador de cotizaciones
 - `/picpartylive` - Landing page de ventas
-- `/live` - Galería en vivo para invitados
+- `/live` - Galería en vivo para invitados (Micrositio)
 - `/admin` - Panel de administración (protegido)
 
 ## Credenciales de Admin
@@ -32,40 +32,32 @@ PICPARTYLIVE es una plataforma de galería de fotos en vivo para eventos, que pe
 
 ## Funcionalidades Implementadas
 
-### 1. Panel de Administración (Completado)
+### 1. Galería de Eventos (Actualizada Dic 2025)
+- Tarjetas de evento limpias: Solo **Nombre** y **Fecha** (sin Ciudad ni Horario)
+- Botón header: "EN VIVO" en dorado negrita (antes "LIVE")
+- Fondo #1A0B2E obligatorio
+
+### 2. Micrositio PICPARTYLIVE - Efecto Instagram
+- **Doble Toque (Double Tap)**: Da like a las fotos
+- **Corazón blanco animado**: Aparece al centro al dar like
+- **Contador de likes**: Pequeño icono de corazón + número debajo de cada foto
+- **Fullscreen**: Un toque abre imagen completa sobre fondo negro
+- Lightbox con navegación y botón de like
+
+### 3. Cotizador (Actualizado Dic 2025)
+- **Campos eliminados**: "Salón / Lugar", "Descuento"
+- **Notas legales agregadas**: 
+  - "Vigencia: 20 días naturales"
+  - "Nota: Puede aplicar costo extra por flete o maniobras"
+- Precios NETO mantenidos
+
+### 4. Panel de Administración
 - Login seguro con credenciales hardcodeadas
 - Gestión de contratos con precios netos
 - Generación de PDFs de contratos (2 páginas, B&W optimizado)
 - Gestión de sesiones PICPARTYLIVE
-- Sincronización con Cloudinary
+- Sincronización con Cloudinary (dpvliv2wl)
 - Códigos QR para eventos
-
-### 2. Cotizador (Completado)
-- Catálogo de precios fijos (Cabina, Video 360, PICPARTYLIVE)
-- Descuentos automáticos por combo
-- Generación de PDF de cotización
-- Folio único por cotización
-
-### 3. Galería en Vivo (Completado)
-- Subida de fotos desde navegador
-- Galería estilo Instagram (3 columnas)
-- Lightbox fullscreen
-- Doble-tap para dar like
-- Modo proyección (Slideshow, Mosaico, Pop-up)
-- Descarga de fotos con contraseña
-
-### 4. Landing Page de Ventas (Completado)
-- Hero section con CTA
-- Features destacadas
-- Precios NETO
-- Demo gratuita 24h
-
-### 5. Visual Design (Completado - Diciembre 2025)
-- Paleta Premium implementada globalmente
-- Dark mode activado
-- Botones dorados destacados
-- Cards con glassmorphism
-- Headers premium con backdrop blur
 
 ## Catálogo de Precios NETO
 
@@ -82,8 +74,8 @@ PICPARTYLIVE es una plataforma de galería de fotos en vivo para eventos, que pe
 - 5 horas: $4,999
 
 ### PICPARTYLIVE
-- Solo: $1,000 NETO (Promo Expo)
-- Con Cabina/360: $700 NETO (Precio combo)
+- **Combo** (con Cabina/360): **$700 NETO**
+- Promo Expo (Solo): $1,000 NETO
 - Normal: $1,500 NETO
 
 ### Key Moments
@@ -93,48 +85,25 @@ PICPARTYLIVE es una plataforma de galería de fotos en vivo para eventos, que pe
 - 200 piezas: $4,499
 
 ## Integraciones de Terceros
-- **Cloudinary**: Almacenamiento de fotos (credentials en backend/.env)
+- **Cloudinary**: Cloud name `dpvliv2wl` (NO BORRAR)
 - **MongoDB**: Base de datos principal
 - **jsPDF**: Generación de PDFs en frontend
 
-## Estructura de Archivos Clave
-```
-/app/
-├── backend/
-│   ├── .env                   # Credentials (Cloudinary, MongoDB)
-│   ├── server.py              # FastAPI application
-│   └── requirements.txt
-├── frontend/
-│   ├── src/
-│   │   ├── App.js             # Aplicación React completa
-│   │   └── index.css          # Estilos Premium + Shadcn
-│   ├── tailwind.config.js     # Configuración con colores Premium
-│   └── package.json
-└── memory/
-    └── PRD.md
-```
-
-## Tareas Pendientes (Backlog)
-
-### P2 - Refactoring
-- [ ] Descomponer `frontend/src/App.js` en componentes modulares
-- [ ] Organizar `backend/server.py` en rutas/modelos/servicios
-- [ ] Implementar tests automatizados
-
-### P3 - Mejoras Futuras
-- [ ] Desarrollar ruta `/live-tv` para proyector
-- [ ] Añadir analytics de eventos
-- [ ] Implementar notificaciones push
-
 ## Changelog
 
-### Diciembre 2025
-- ✅ Implementación completa de paleta Premium (Morado Noche + Dorado Elegante)
-- ✅ Dark mode activado globalmente
-- ✅ Actualización de todos los componentes con nuevos estilos
-- ✅ Botón de "Subir Fotos" destacado en dorado
+### Diciembre 2025 - Super Prompt ADOCA.NET
+- ✅ Fondo obligatorio #1A0B2E (Morado Noche más profundo)
+- ✅ Botón "EN VIVO" en lugar de "LIVE" (dorado, negrita)
+- ✅ Tarjetas de evento: solo Nombre y Fecha (eliminado Ciudad/Horario)
+- ✅ Doble Toque para Like con corazón blanco animado
+- ✅ Contador de likes + icono corazón debajo de cada foto
+- ✅ Fullscreen al tocar una vez (fondo negro)
+- ✅ Cotizador: eliminado "Salón / Lugar" y "Descuento"
+- ✅ Notas legales: "Vigencia: 20 días naturales. Nota: Puede aplicar costo extra por flete o maniobras"
+- ✅ Credenciales Cloudinary preservadas (dpvliv2wl)
 
 ### Versiones Anteriores
+- ✅ Paleta Premium (Morado Noche + Dorado Elegante)
 - ✅ Sincronización con Cloudinary
 - ✅ Galería estilo Instagram con lightbox
 - ✅ Generación de contratos PDF profesionales
