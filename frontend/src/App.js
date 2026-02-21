@@ -587,34 +587,34 @@ const Cotizador = () => {
           </Card>
 
           {/* ========== PASO 2: Datos del Cliente ========== */}
-          <Card className="bg-white/5 border-white/10">
+          <Card className="card-premium">
             <CardHeader className="pb-3">
-              <CardTitle className="text-white text-lg flex items-center gap-2">
-                <span className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">2</span>
+              <CardTitle className="text-pearl text-lg flex items-center gap-2">
+                <span className="bg-gold/80 text-night w-6 h-6 rounded-full flex items-center justify-center text-sm">2</span>
                 Datos del Cliente
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-white">Nombre *</Label>
+                  <Label className="text-pearl">Nombre *</Label>
                   <Input 
                     placeholder="Tu nombre completo" 
                     value={clientData.nombre}
                     onChange={(e) => setClientData({...clientData, nombre: e.target.value})}
-                    className="bg-white/10 border-white/20 text-white"
+                    className="input-premium"
                     data-testid="cotizador-nombre"
                   />
                 </div>
                 <div>
-                  <Label className="text-white">Teléfono</Label>
+                  <Label className="text-pearl">Teléfono</Label>
                   <Input 
                     placeholder="10 dígitos (opcional)" 
                     type="tel"
                     maxLength={10}
                     value={clientData.telefono}
                     onChange={(e) => setClientData({...clientData, telefono: e.target.value.replace(/\D/g, '')})}
-                    className="bg-white/10 border-white/20 text-white"
+                    className="input-premium"
                     data-testid="cotizador-telefono"
                   />
                 </div>
@@ -622,26 +622,26 @@ const Cotizador = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-white">Salón / Lugar</Label>
+                  <Label className="text-pearl">Salón / Lugar</Label>
                   <Input 
                     placeholder="Nombre del salón" 
                     value={clientData.salon}
                     onChange={(e) => setClientData({...clientData, salon: e.target.value})}
-                    className="bg-white/10 border-white/20 text-white"
+                    className="input-premium"
                   />
-                  <p className="text-gray-400 text-xs mt-2 leading-relaxed">
-                    💡 Para que tus fotos brillen en grande, el lugar requiere buena conexión a internet. 
+                  <p className="text-pearl-muted text-xs mt-2 leading-relaxed">
+                    Para que tus fotos brillen en grande, el lugar requiere buena conexión a internet. 
                     Recuerda que la pantalla y el internet corren por cuenta del anfitrión o el salón. 
                     ¡Nosotros ponemos la magia digital!
                   </p>
                 </div>
                 <div>
-                  <Label className="text-white">Fecha del Evento</Label>
+                  <Label className="text-pearl">Fecha del Evento</Label>
                   <Input 
                     type="date"
                     value={clientData.fecha}
                     onChange={(e) => setClientData({...clientData, fecha: e.target.value})}
-                    className="bg-white/10 border-white/20 text-white"
+                    className="input-premium"
                   />
                 </div>
               </div>
