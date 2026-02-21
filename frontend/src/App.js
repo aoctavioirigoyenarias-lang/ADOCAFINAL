@@ -649,19 +649,19 @@ const Cotizador = () => {
           </Card>
 
           {/* ========== PASO 3: Servicio Principal (Opcional) ========== */}
-          <Card className="bg-white/5 border-white/10">
+          <Card className="card-premium">
             <CardHeader className="pb-3">
-              <CardTitle className="text-white text-lg flex items-center gap-2">
-                <span className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">3</span>
+              <CardTitle className="text-pearl text-lg flex items-center gap-2">
+                <span className="bg-gold/80 text-night w-6 h-6 rounded-full flex items-center justify-center text-sm">3</span>
                 Servicio Principal
-                <Badge className="bg-cyan-500/20 text-cyan-300 text-xs">Opcional</Badge>
+                <Badge className="badge-gold text-xs">Opcional</Badge>
               </CardTitle>
-              <CardDescription className="text-gray-400">Selecciona un servicio (opcional si solo quieres PICPARTYLIVE)</CardDescription>
+              <CardDescription className="text-pearl-muted">Selecciona un servicio (opcional si solo quieres PICPARTYLIVE)</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Cabina de Fotos */}
               <div className="space-y-2">
-                <p className="text-pink-300 font-semibold flex items-center gap-2">
+                <p className="text-gold font-semibold flex items-center gap-2">
                   <span className="text-xl">📸</span> Cabina de Fotos
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -669,7 +669,7 @@ const Cotizador = () => {
                     <Button 
                       key={`cabina-${horas}`}
                       variant={mainService === "cabina" && serviceHours === horas ? "default" : "outline"}
-                      className={`h-auto py-3 ${mainService === "cabina" && serviceHours === horas ? "bg-pink-500 text-white border-pink-500" : "border-pink-500/30 text-pink-300 hover:bg-pink-500/20"}`}
+                      className={`h-auto py-3 ${mainService === "cabina" && serviceHours === horas ? "btn-gold" : "btn-gold-outline"}`}
                       onClick={() => selectService("cabina", horas)}
                       data-testid={`cabina-${horas}h`}
                     >
@@ -684,8 +684,8 @@ const Cotizador = () => {
               </div>
 
               {/* Video 360° */}
-              <div className="space-y-2 pt-4 border-t border-white/10">
-                <p className="text-cyan-300 font-semibold flex items-center gap-2">
+              <div className="space-y-2 pt-4 border-t border-gold/20">
+                <p className="text-gold font-semibold flex items-center gap-2">
                   <span className="text-xl">🎥</span> Video 360°
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -693,7 +693,7 @@ const Cotizador = () => {
                     <Button 
                       key={`360-${horas}`}
                       variant={mainService === "video360" && serviceHours === horas ? "default" : "outline"}
-                      className={`h-auto py-3 ${mainService === "video360" && serviceHours === horas ? "bg-cyan-500 text-white border-cyan-500" : "border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20"}`}
+                      className={`h-auto py-3 ${mainService === "video360" && serviceHours === horas ? "btn-gold" : "btn-gold-outline"}`}
                       onClick={() => selectService("video360", horas)}
                       data-testid={`video360-${horas}h`}
                     >
@@ -712,21 +712,21 @@ const Cotizador = () => {
                 <Button 
                   variant="ghost" 
                   size="sm"
-                  className="text-gray-400 text-xs"
+                  className="text-pearl-muted text-xs"
                   onClick={() => { setMainService(""); setServiceHours(0); }}
                 >
-                  ✕ Quitar servicio principal
+                  Quitar servicio principal
                 </Button>
               )}
             </CardContent>
           </Card>
 
           {/* ========== PASO 4: Descuento (opcional) ========== */}
-          <Card className="bg-white/5 border-white/10">
+          <Card className="card-premium">
             <CardHeader className="pb-3">
-              <CardTitle className="text-white text-lg flex items-center gap-2">
-                <span className="bg-orange-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">4</span>
-                🏷️ Descuento
+              <CardTitle className="text-pearl text-lg flex items-center gap-2">
+                <span className="bg-gold/80 text-night w-6 h-6 rounded-full flex items-center justify-center text-sm">4</span>
+                Descuento
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -738,10 +738,10 @@ const Cotizador = () => {
                   placeholder="0"
                   value={clientData.descuento || ""}
                   onChange={(e) => setClientData({...clientData, descuento: parseInt(e.target.value) || 0})}
-                  className="bg-white/10 border-orange-500/30 text-orange-300 w-24 text-center"
+                  className="input-premium w-24 text-center"
                 />
-                <span className="text-orange-300">%</span>
-                <span className="text-gray-500 text-sm">Negociación directa</span>
+                <span className="text-gold">%</span>
+                <span className="text-pearl-muted text-sm">Negociación directa</span>
               </div>
             </CardContent>
           </Card>
