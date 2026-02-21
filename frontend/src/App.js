@@ -918,7 +918,7 @@ const PicPartyLiveLanding = () => {
       
       await axios.post(`${API}/live/sessions/create?${params.toString()}`);
       
-      toast.success(`🎉 ¡Tu demo privada está lista! Código: ${demoCode}`);
+      toast.success(`¡Tu demo privada está lista! Código: ${demoCode}`);
       navigate(`/live?code=${demoCode}`);
     } catch (e) {
       toast.error("Error al crear demo. Intenta de nuevo.");
@@ -927,17 +927,17 @@ const PicPartyLiveLanding = () => {
   };
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-violet-900 to-purple-950">
-      {/* Header */}
-      <header className="border-b border-white/10 backdrop-blur-sm bg-black/30 sticky top-0 z-40">
+    <div className="min-h-screen bg-premium-radial">
+      {/* Header Premium */}
+      <header className="header-premium sticky top-0 z-40">
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <img src={PICPARTY_LOGO} alt="PicParty" className="h-10 w-10 object-contain" />
-            <span className="text-xl font-bold text-white">PicParty</span>
+            <span className="text-xl font-bold text-gold">PicParty</span>
           </div>
           <Link to="/cotizador">
-            <Button className="bg-pink-500 hover:bg-pink-600">
-              💰 Cotizar Ahora
+            <Button className="btn-gold">
+              Cotizar Ahora
             </Button>
           </Link>
         </div>
@@ -948,21 +948,21 @@ const PicPartyLiveLanding = () => {
         <div className="max-w-4xl mx-auto text-center">
           {/* Badge animado */}
           <div className="mb-6">
-            <Badge className="bg-pink-500/20 text-pink-300 px-4 py-2 text-lg animate-pulse">
-              🔴 PICPARTYLIVE
+            <Badge className="badge-gold px-4 py-2 text-lg animate-pulse">
+              PICPARTYLIVE
             </Badge>
           </div>
           
-          {/* Título principal - ACTUALIZADO */}
-          <h1 className="text-4xl md:text-6xl font-black text-white mb-4 leading-tight">
-            <span className="bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">
+          {/* Título principal */}
+          <h1 className="text-4xl md:text-6xl font-black text-pearl mb-4 leading-tight">
+            <span className="text-gold">
               Cero Aplicaciones.
             </span>{" "}
             <br className="hidden md:block" />
             Fotos al Instante.
           </h1>
           
-          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-pearl-muted mb-8 max-w-2xl mx-auto">
             Tus invitados suben fotos desde el navegador y aparecen al instante en la pantalla del evento. Sin descargas, sin complicaciones.
           </p>
           
@@ -970,99 +970,99 @@ const PicPartyLiveLanding = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Button 
               onClick={() => navigate('/cotizador')}
-              className="h-14 px-8 text-lg font-bold bg-gradient-to-r from-pink-500 to-fuchsia-500 hover:from-pink-600 hover:to-fuchsia-600 shadow-lg shadow-pink-500/30"
+              className="h-14 px-8 text-lg font-bold btn-gold"
               data-testid="landing-cotizar-btn"
             >
-              ✨ Quiero PICPARTYLIVE en mi fiesta
+              Quiero PICPARTYLIVE en mi fiesta
             </Button>
             <Button 
               variant="outline"
               onClick={createTempDemo}
               disabled={creatingDemo}
-              className="h-14 px-8 text-lg border-cyan-500/50 text-cyan-300 hover:bg-cyan-500/20"
+              className="h-14 px-8 text-lg btn-gold-outline"
               data-testid="landing-demo-btn"
             >
-              {creatingDemo ? '⏳ Creando...' : '🧪 Probar GRATIS (24h)'}
+              {creatingDemo ? 'Creando...' : 'Probar GRATIS (24h)'}
             </Button>
           </div>
           
-          {/* Features Grid - ACTUALIZADO */}
+          {/* Features Grid */}
           <div className="grid md:grid-cols-3 gap-6 mb-12">
-            <Card className="bg-white/5 border-white/10 p-6 text-center">
+            <Card className="card-premium p-6 text-center">
               <div className="text-4xl mb-3">♾️</div>
-              <h3 className="text-white font-bold text-lg mb-2">Almacenamiento SIN LÍMITE</h3>
-              <p className="text-gray-400 text-sm">Sube todas las fotos que quieras. Sin restricciones de espacio ni cantidad.</p>
+              <h3 className="text-gold font-bold text-lg mb-2">Almacenamiento SIN LÍMITE</h3>
+              <p className="text-pearl-muted text-sm">Sube todas las fotos que quieras. Sin restricciones de espacio ni cantidad.</p>
             </Card>
             
-            <Card className="bg-white/5 border-white/10 p-6 text-center">
+            <Card className="card-premium p-6 text-center">
               <div className="text-4xl mb-3">📅</div>
-              <h3 className="text-white font-bold text-lg mb-2">Vigencia 6 MESES</h3>
-              <p className="text-gray-400 text-sm">Tienes hasta 6 meses para descargar todas tus fotos después del evento.</p>
+              <h3 className="text-gold font-bold text-lg mb-2">Vigencia 6 MESES</h3>
+              <p className="text-pearl-muted text-sm">Tienes hasta 6 meses para descargar todas tus fotos después del evento.</p>
             </Card>
             
-            <Card className="bg-white/5 border-white/10 p-6 text-center">
+            <Card className="card-premium p-6 text-center">
               <div className="text-4xl mb-3">⚡</div>
-              <h3 className="text-white font-bold text-lg mb-2">Fotos al Instante</h3>
-              <p className="text-gray-400 text-sm">Las fotos aparecen en la pantalla en tiempo real desde el navegador. Cero apps.</p>
+              <h3 className="text-gold font-bold text-lg mb-2">Fotos al Instante</h3>
+              <p className="text-pearl-muted text-sm">Las fotos aparecen en la pantalla en tiempo real desde el navegador. Cero apps.</p>
             </Card>
           </div>
           
-          {/* Privacidad - NUEVO */}
-          <div className="bg-gradient-to-r from-green-500/10 to-cyan-500/10 border border-green-500/30 rounded-2xl p-6 mb-12">
+          {/* Privacidad */}
+          <div className="card-premium border-gold/30 rounded-2xl p-6 mb-12">
             <div className="flex items-center justify-center gap-3 mb-3">
               <span className="text-3xl">🔒</span>
-              <h3 className="text-xl font-bold text-white">Galerías 100% Exclusivas</h3>
+              <h3 className="text-xl font-bold text-gold">Galerías 100% Exclusivas</h3>
             </div>
-            <p className="text-gray-300">
-              Cada evento tiene su propia galería privada. Las fotos <strong className="text-green-400">NUNCA se mezclan</strong> con otros clientes. 
+            <p className="text-pearl-muted">
+              Cada evento tiene su propia galería privada. Las fotos <strong className="text-gold">NUNCA se mezclan</strong> con otros clientes. 
               Tu código de acceso es único y solo tus invitados pueden ver y subir fotos.
             </p>
           </div>
           
           {/* Pricing Section */}
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mb-12">
-            <h2 className="text-2xl font-bold text-white mb-6">Precios NETO</h2>
+          <div className="card-premium rounded-2xl p-8 mb-12">
+            <h2 className="text-2xl font-bold text-gold mb-6">Precios NETO</h2>
             <div className="grid md:grid-cols-3 gap-4">
-              <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-6">
-                <div className="text-3xl font-black text-green-400 mb-2">$700</div>
-                <div className="text-white font-semibold">Súper Precio</div>
-                <p className="text-gray-400 text-sm mt-2">Al contratar Cabina de Fotos o Video 360°</p>
+              <div className="bg-gold/10 border border-gold/30 rounded-xl p-6">
+                <div className="text-3xl font-black text-gold mb-2">$700</div>
+                <div className="text-pearl font-semibold">Súper Precio</div>
+                <p className="text-pearl-muted text-sm mt-2">Al contratar Cabina de Fotos o Video 360°</p>
               </div>
-              <div className="bg-pink-500/10 border border-pink-500/30 rounded-xl p-6">
-                <div className="text-3xl font-black text-pink-400 mb-2">$1,000</div>
-                <div className="text-white font-semibold">Promo Expo</div>
-                <p className="text-gray-400 text-sm mt-2">Precio temporal por tiempo limitado</p>
+              <div className="bg-gold/10 border border-gold/30 rounded-xl p-6">
+                <div className="text-3xl font-black text-gold mb-2">$1,000</div>
+                <div className="text-pearl font-semibold">Promo Expo</div>
+                <p className="text-pearl-muted text-sm mt-2">Precio temporal por tiempo limitado</p>
               </div>
-              <div className="bg-purple-500/10 border border-purple-500/30 rounded-xl p-6">
-                <div className="text-3xl font-black text-purple-400 mb-2">$1,500</div>
-                <div className="text-white font-semibold">Precio Normal</div>
-                <p className="text-gray-400 text-sm mt-2">PICPARTYLIVE solo (sin servicio adicional)</p>
+              <div className="bg-gold/10 border border-gold/30 rounded-xl p-6">
+                <div className="text-3xl font-black text-gold mb-2">$1,500</div>
+                <div className="text-pearl font-semibold">Precio Normal</div>
+                <p className="text-pearl-muted text-sm mt-2">PICPARTYLIVE solo (sin servicio adicional)</p>
               </div>
             </div>
           </div>
           
           {/* CTA Final */}
           <div className="text-center">
-            <p className="text-gray-400 mb-4">¿Ya tienes un código de evento?</p>
+            <p className="text-pearl-muted mb-4">¿Ya tienes un código de evento?</p>
             <Button 
               variant="outline"
               onClick={() => {
                 const code = prompt("Ingresa el código de tu evento:");
                 if (code) navigate(`/live?code=${code}`);
               }}
-              className="border-white/30 text-white hover:bg-white/10"
+              className="btn-gold-outline"
             >
-              🔑 Ingresar Código
+              Ingresar Código
             </Button>
           </div>
         </div>
       </main>
       
       {/* Footer */}
-      <footer className="border-t border-white/10 py-8 mt-12">
+      <footer className="border-t border-gold/20 py-8 mt-12">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-gray-500">PICPARTYLIVE • adoca.net</p>
-          <p className="text-gray-600 text-sm mt-2">© 2025 PicParty - Cabina Fotográfica</p>
+          <p className="text-pearl-muted">PICPARTYLIVE • adoca.net</p>
+          <p className="text-pearl-muted/60 text-sm mt-2">© 2025 PicParty - Cabina Fotográfica</p>
         </div>
       </footer>
     </div>
