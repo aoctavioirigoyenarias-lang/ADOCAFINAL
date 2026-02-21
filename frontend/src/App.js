@@ -3750,33 +3750,33 @@ const AdminPanel = () => {
                                   {typeInfo.emoji} {typeInfo.label}
                                 </Badge>
                                 {session.event_date && (
-                                  <span className="text-gray-400 text-sm">
-                                    📅 {new Date(session.event_date + 'T12:00:00').toLocaleDateString('es-MX', { 
+                                  <span className="text-pearl-muted text-sm">
+                                    {new Date(session.event_date + 'T12:00:00').toLocaleDateString('es-MX', { 
                                       day: 'numeric', month: 'short', year: 'numeric' 
                                     })}
                                   </span>
                                 )}
                                 {/* Contador de fotos en tiempo real */}
-                                <Badge className="bg-pink-500/30 text-pink-300 text-xs animate-pulse">
-                                  📸 {photosCounts[session.code] || 0} fotos
+                                <Badge className="badge-gold text-xs animate-pulse">
+                                  {photosCounts[session.code] || 0} fotos
                                 </Badge>
                               </div>
-                              <p className="text-cyan-400 text-xs mt-2 font-mono">
+                              <p className="text-gold/70 text-xs mt-2 font-mono">
                                 https://{SITE_DOMAIN}/live?code={session.code}
                               </p>
                               {/* Clave de descarga (últimos 4 dígitos del teléfono) */}
                               {session.client_phone && (
                                 <div className="flex items-center gap-2 mt-1">
-                                  <Badge className="bg-orange-500/30 text-orange-300 text-xs">
-                                    🔑 Clave descarga: <span className="font-mono font-bold ml-1">{session.client_phone.slice(-4)}</span>
+                                  <Badge className="badge-gold text-xs">
+                                    Clave descarga: <span className="font-mono font-bold ml-1">{session.client_phone.slice(-4)}</span>
                                   </Badge>
                                   <Button 
                                     size="sm" 
                                     variant="ghost"
-                                    className="text-orange-300 hover:bg-orange-500/20 text-xs h-6 px-2"
+                                    className="text-gold hover:bg-gold/20 text-xs h-6 px-2"
                                     onClick={() => {
                                       navigator.clipboard.writeText(session.client_phone.slice(-4));
-                                      toast.success("🔑 Clave copiada: " + session.client_phone.slice(-4));
+                                      toast.success("Clave copiada: " + session.client_phone.slice(-4));
                                     }}
                                   >
                                     📋
@@ -3785,7 +3785,7 @@ const AdminPanel = () => {
                               )}
                               {!session.client_phone && (
                                 <Badge className="bg-red-500/30 text-red-300 text-xs mt-1">
-                                  ⚠️ Sin teléfono (descarga bloqueada)
+                                  Sin teléfono (descarga bloqueada)
                                 </Badge>
                               )}
                               
@@ -3794,7 +3794,7 @@ const AdminPanel = () => {
                                 <Button 
                                   size="sm" 
                                   variant="outline"
-                                  className="border-orange-500/50 text-orange-300 hover:bg-orange-500/20 text-xs h-7"
+                                  className="btn-gold-outline text-xs h-7"
                                   onClick={async () => {
                                     const folder = prompt(
                                       "Ingresa la ruta de Cloudinary:\n(Ej: ADOCA/FEBRERO/28-02-26/EXPO PÚBLICO BODA)", 
@@ -3804,7 +3804,7 @@ const AdminPanel = () => {
                                       try {
                                         toast.info("Sincronizando fotos...");
                                         const res = await axios.post(`${API}/live/sync-cloudinary/${session.code}?folder_path=${encodeURIComponent(folder)}`);
-                                        toast.success(`✅ ${res.data.imported} fotos importadas, ${res.data.skipped} ya existían`);
+                                        toast.success(`${res.data.imported} fotos importadas, ${res.data.skipped} ya existían`);
                                         fetchData();
                                       } catch (e) {
                                         toast.error("Error: " + (e.response?.data?.detail || "No se pudo sincronizar"));
@@ -3812,11 +3812,11 @@ const AdminPanel = () => {
                                     }
                                   }}
                                 >
-                                  ☁️ Sincronizar Cloudinary
+                                  Sincronizar Cloudinary
                                 </Button>
                                 {session.cloudinary_folder && (
-                                  <span className="text-gray-500 text-[10px] truncate max-w-[150px]" title={session.cloudinary_folder}>
-                                    📁 {session.cloudinary_folder}
+                                  <span className="text-pearl-muted/60 text-[10px] truncate max-w-[150px]" title={session.cloudinary_folder}>
+                                    {session.cloudinary_folder}
                                   </span>
                                 )}
                               </div>
@@ -3826,23 +3826,23 @@ const AdminPanel = () => {
                                 <Button 
                                   size="sm" 
                                   variant="outline"
-                                  className="border-cyan-500/50 text-cyan-300 hover:bg-cyan-500/20 text-xs h-7"
+                                  className="btn-gold-outline text-xs h-7"
                                   onClick={() => {
                                     navigator.clipboard.writeText(`https://${SITE_DOMAIN}/live?code=${session.code}`);
-                                    toast.success("🔗 Link copiado al portapapeles");
+                                    toast.success("Link copiado al portapapeles");
                                   }}
                                 >
-                                  🔗 Copiar Link
+                                  Copiar Link
                                 </Button>
                                 <Button 
                                   size="sm" 
-                                  className="bg-green-500 hover:bg-green-600 text-xs h-7"
+                                  className="bg-green-600 hover:bg-green-700 text-xs h-7"
                                   onClick={() => {
                                     const msg = encodeURIComponent(`¡Hola! Tu evento *${session.event_name}* en PICPARTYLIVE está listo.\n\n📸 Acceso directo: https://${SITE_DOMAIN}/live?code=${session.code}\n\n¡Sube tus fotos y compártelas con todos!`);
                                     window.open(`https://wa.me/?text=${msg}`, '_blank');
                                   }}
                                 >
-                                  🟢 WhatsApp
+                                  WhatsApp
                                 </Button>
                               </div>
                             </div>
@@ -3852,30 +3852,30 @@ const AdminPanel = () => {
                           <div className="flex flex-col gap-2">
                             <Button 
                               size="sm" 
-                              className="bg-blue-500 hover:bg-blue-600" 
+                              className="btn-gold" 
                               onClick={() => printQRPDF(session)}
                               data-testid={`print-qr-${session.code}`}
                             >
-                              🖨️ Imprimir QR
+                              Imprimir QR
                             </Button>
                             <Button 
                               size="sm" 
-                              className="bg-amber-500 hover:bg-amber-600"
+                              className="btn-gold-outline"
                               onClick={() => openEditModal(session)}
                               data-testid={`edit-${session.code}`}
                             >
-                              ✏️ Editar
+                              Editar
                             </Button>
                             <Button 
                               size="sm" 
                               variant="outline" 
-                              className="border-white/20 text-white hover:bg-white/10"
+                              className="btn-gold-outline"
                               onClick={async () => { 
                                 await axios.put(`${API}/live/sessions/${session.id}/toggle`); 
                                 fetchData(); 
                               }}
                             >
-                              {session.is_active ? "⏸️ Pausar" : "▶️ Activar"}
+                              {session.is_active ? "Pausar" : "Activar"}
                             </Button>
                             <Button 
                               size="sm" 
@@ -3887,7 +3887,7 @@ const AdminPanel = () => {
                                 }
                               }}
                             >
-                              🗑️ Eliminar
+                              Eliminar
                             </Button>
                           </div>
                         </div>
@@ -3899,47 +3899,47 @@ const AdminPanel = () => {
 
             {/* ============ MODAL DE EDICIÓN ============ */}
             {editingSession && (
-              <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-                <Card className="bg-slate-800 border-cyan-500/50 w-full max-w-md mx-4">
+              <div className="fixed inset-0 bg-night/90 flex items-center justify-center z-50">
+                <Card className="card-premium border-gold/50 w-full max-w-md mx-4">
                   <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                      ✏️ Editar Evento: {editingSession.code}
+                    <CardTitle className="text-pearl flex items-center gap-2">
+                      Editar Evento: {editingSession.code}
                     </CardTitle>
-                    <CardDescription className="text-gray-400">
+                    <CardDescription className="text-pearl-muted">
                       Modifica los datos del evento y guarda los cambios
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {/* Código */}
                     <div>
-                      <Label className="text-white text-sm">Código del Evento</Label>
+                      <Label className="text-pearl text-sm">Código del Evento</Label>
                       <Input 
                         value={editForm.code}
                         onChange={(e) => setEditForm({...editForm, code: e.target.value.toUpperCase()})}
-                        className="bg-slate-700 border-white/10 text-white mt-1"
+                        className="input-premium mt-1"
                         placeholder="Código único"
                       />
                     </div>
                     
                     {/* Nombre */}
                     <div>
-                      <Label className="text-white text-sm">Nombre del Evento *</Label>
+                      <Label className="text-pearl text-sm">Nombre del Evento *</Label>
                       <Input 
                         value={editForm.event_name}
                         onChange={(e) => setEditForm({...editForm, event_name: e.target.value})}
-                        className="bg-slate-700 border-white/10 text-white mt-1"
+                        className="input-premium mt-1"
                         placeholder="Nombre del evento"
                       />
                     </div>
                     
                     {/* Tipo de Evento */}
                     <div>
-                      <Label className="text-white text-sm">Tipo de Evento</Label>
+                      <Label className="text-pearl text-sm">Tipo de Evento</Label>
                       <Select 
                         value={editForm.event_type} 
                         onValueChange={(v) => setEditForm({...editForm, event_type: v})}
                       >
-                        <SelectTrigger className="bg-slate-700 border-white/10 text-white mt-1">
+                        <SelectTrigger className="bg-night border-gold/30 text-pearl mt-1">
                           <SelectValue placeholder="Selecciona tipo" />
                         </SelectTrigger>
                         <SelectContent>
