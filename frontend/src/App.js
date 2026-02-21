@@ -2231,6 +2231,90 @@ const PicPartyLive = () => {
         )}
       </main>
 
+      {/* === INSTAGRAM-STYLE LIGHTBOX === */}
+      {lightboxPhoto && (
+        <div 
+          className="fixed inset-0 bg-black z-50 flex items-center justify-center"
+          onClick={closeLightbox}
+        >
+          {/* Close button */}
+          <button 
+            className="absolute top-4 right-4 text-white/70 hover:text-white z-50 p-2"
+            onClick={closeLightbox}
+          >
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+          
+          {/* Navigation arrows */}
+          {galleryPhotos.length > 1 && (
+            <>
+              <button 
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white p-2 z-50"
+                onClick={(e) => { e.stopPropagation(); navigateLightbox('prev'); }}
+              >
+                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+              </button>
+              <button 
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white p-2 z-50"
+                onClick={(e) => { e.stopPropagation(); navigateLightbox('next'); }}
+              >
+                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </button>
+            </>
+          )}
+          
+          {/* Main image */}
+          <div 
+            className="max-w-full max-h-full p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img 
+              src={lightboxPhoto.cloudinary_url} 
+              alt=""
+              className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+              onDoubleClick={() => handleDoubleTapLike(lightboxPhoto)}
+            />
+            
+            {/* Like heart animation in lightbox */}
+            {likeAnimation === (lightboxPhoto.id || lightboxPhoto._id) && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="animate-ping">
+                  <svg className="w-32 h-32 text-white drop-shadow-2xl" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                  </svg>
+                </div>
+              </div>
+            )}
+          </div>
+          
+          {/* Photo counter */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-sm">
+            {lightboxIndex + 1} / {galleryPhotos.length}
+          </div>
+          
+          {/* Like button */}
+          <button 
+            className="absolute bottom-4 right-4 p-3"
+            onClick={(e) => { e.stopPropagation(); handleDoubleTapLike(lightboxPhoto); }}
+          >
+            <svg 
+              className={`w-8 h-8 transition-all ${likedPhotos.includes(lightboxPhoto.id || lightboxPhoto._id) ? 'text-red-500 scale-110' : 'text-white/70 hover:text-red-400'}`} 
+              fill={likedPhotos.includes(lightboxPhoto.id || lightboxPhoto._id) ? 'currentColor' : 'none'} 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </button>
+        </div>
+      )}
+
       {/* Footer con botón de ventas y privacidad - Solo en modo menú y galería */}
       {viewMode !== "projection" && (
         <footer className="fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur-sm border-t border-white/10 py-3 z-40">
