@@ -3549,25 +3549,25 @@ const AdminPanel = () => {
               [...contracts]
                 .sort((a, b) => new Date(a.event_date || '2099-12-31') - new Date(b.event_date || '2099-12-31'))
                 .map(contract => (
-                <Card key={contract.id} className="bg-slate-800 border-white/10">
+                <Card key={contract.id} className="card-premium">
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className="text-white font-bold">{contract.event_name}</h3>
-                          <Badge className={contract.contract_type === "special" ? "bg-orange-500/20 text-orange-400" : "bg-green-500/20 text-green-400"}>
+                          <h3 className="text-pearl font-bold">{contract.event_name}</h3>
+                          <Badge className={contract.contract_type === "special" ? "badge-gold" : "badge-gold"}>
                             {contract.contract_type === "special" ? "Especial" : "Publico"}
                           </Badge>
-                          <Badge className="bg-purple-500/20 text-purple-400">{contract.status}</Badge>
+                          <Badge className="badge-gold">{contract.status}</Badge>
                         </div>
-                        <p className="text-gray-400 text-sm">{contract.client_name} - {contract.client_phone}</p>
-                        <p className="text-gray-500 text-sm">{contract.salon} - {contract.event_date}</p>
+                        <p className="text-pearl-muted text-sm">{contract.client_name} - {contract.client_phone}</p>
+                        <p className="text-pearl-muted/70 text-sm">{contract.salon} - {contract.event_date}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-green-400 font-bold text-2xl">${contract.net_price?.toLocaleString()}</p>
-                        <p className="text-gray-500 text-sm">Precio Neto</p>
+                        <p className="text-gold font-bold text-2xl">${contract.net_price?.toLocaleString()}</p>
+                        <p className="text-pearl-muted text-sm">Precio Neto</p>
                         <div className="flex gap-2 mt-2">
-                          <Button size="sm" className="bg-blue-500" onClick={() => printContractPDF(contract)}>PDF</Button>
+                          <Button size="sm" className="btn-gold" onClick={() => printContractPDF(contract)}>PDF</Button>
                           <Button size="sm" variant="destructive" onClick={() => deleteContract(contract.id)}>Eliminar</Button>
                         </div>
                       </div>
@@ -3580,34 +3580,34 @@ const AdminPanel = () => {
 
           {/* ============ PESTAÑA GALERÍA PRO ============ */}
           <TabsContent value="events" className="space-y-4 mt-4">
-            <Card className="bg-purple-500/10 border-purple-500/30">
+            <Card className="card-premium border-gold/30">
               <CardContent className="p-4">
-                <p className="text-purple-300 font-semibold">📸 Galería Pro - Solo Visualización</p>
-                <p className="text-gray-400 text-sm">Estos eventos son para mostrar en IFRAME. NO generan carpetas en Cloudinary.</p>
+                <p className="text-gold font-semibold">Galería Pro - Solo Visualización</p>
+                <p className="text-pearl-muted text-sm">Estos eventos son para mostrar en IFRAME. NO generan carpetas en Cloudinary.</p>
               </CardContent>
             </Card>
-            <Card className="bg-slate-800 border-white/10">
-              <CardHeader><CardTitle className="text-white">Crear Evento de Galería</CardTitle></CardHeader>
+            <Card className="card-premium">
+              <CardHeader><CardTitle className="text-pearl">Crear Evento de Galería</CardTitle></CardHeader>
               <CardContent>
                 <div className="grid grid-cols-3 gap-3">
-                  <Input placeholder="NOMBRE" value={newEvent.name} onChange={(e) => setNewEvent({...newEvent, name: e.target.value.toUpperCase()})} className="bg-slate-700 border-white/10 text-white" />
-                  <Input type="date" value={newEvent.date} onChange={(e) => setNewEvent({...newEvent, date: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
-                  <Input placeholder="Ubicación" value={newEvent.location} onChange={(e) => setNewEvent({...newEvent, location: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
-                  <Input placeholder="URL Fotoshare (IFRAME)" value={newEvent.fotoshare_url} onChange={(e) => setNewEvent({...newEvent, fotoshare_url: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
-                  <Input placeholder="URL Video 360" value={newEvent.video360_url} onChange={(e) => setNewEvent({...newEvent, video360_url: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
-                  <Button onClick={createEvent} className="bg-purple-500">✓ Crear</Button>
+                  <Input placeholder="NOMBRE" value={newEvent.name} onChange={(e) => setNewEvent({...newEvent, name: e.target.value.toUpperCase()})} className="input-premium" />
+                  <Input type="date" value={newEvent.date} onChange={(e) => setNewEvent({...newEvent, date: e.target.value})} className="input-premium" />
+                  <Input placeholder="Ubicación" value={newEvent.location} onChange={(e) => setNewEvent({...newEvent, location: e.target.value})} className="input-premium" />
+                  <Input placeholder="URL Fotoshare (IFRAME)" value={newEvent.fotoshare_url} onChange={(e) => setNewEvent({...newEvent, fotoshare_url: e.target.value})} className="input-premium" />
+                  <Input placeholder="URL Video 360" value={newEvent.video360_url} onChange={(e) => setNewEvent({...newEvent, video360_url: e.target.value})} className="input-premium" />
+                  <Button onClick={createEvent} className="btn-gold">Crear</Button>
                 </div>
               </CardContent>
             </Card>
             {events.map(event => (
-              <Card key={event.id} className="bg-slate-800 border-white/10">
+              <Card key={event.id} className="card-premium">
                 <CardContent className="p-4 flex justify-between items-center">
                   <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded flex items-center justify-center text-2xl" style={{backgroundColor: event.color || "#7C3AED"}}>📸</div>
+                    <div className="w-14 h-14 rounded flex items-center justify-center text-2xl bg-gold/20">📸</div>
                     <div>
-                      <h3 className="text-white font-bold">{event.name}</h3>
-                      <p className="text-gray-400 text-sm">{event.date} • {event.location}</p>
-                      <Badge className="bg-purple-500/20 text-purple-400 text-xs mt-1">Solo visualización IFRAME</Badge>
+                      <h3 className="text-pearl font-bold">{event.name}</h3>
+                      <p className="text-pearl-muted text-sm">{event.date} • {event.location}</p>
+                      <Badge className="badge-gold text-xs mt-1">Solo visualización IFRAME</Badge>
                     </div>
                   </div>
                   <Button variant="destructive" size="sm" onClick={() => deleteEvent(event.id)}>Eliminar</Button>
@@ -3618,38 +3618,38 @@ const AdminPanel = () => {
 
           {/* ============ PESTAÑA PICPARTYLIVE ============ */}
           <TabsContent value="live" className="space-y-4 mt-4">
-            <Card className="bg-cyan-500/10 border-cyan-500/30">
+            <Card className="card-premium border-gold/30">
               <CardContent className="p-4">
-                <p className="text-cyan-300 font-semibold">🔴 PICPARTYLIVE - Muro en Vivo</p>
-                <p className="text-gray-400 text-sm">Estos eventos generan carpeta automática en Cloudinary y código QR para invitados. Incluye software de proyección en tiempo real para pantallas o TV. No incluye equipo físico (pantallas/cableado).</p>
+                <p className="text-gold font-semibold">PICPARTYLIVE - Muro en Vivo</p>
+                <p className="text-pearl-muted text-sm">Estos eventos generan carpeta automática en Cloudinary y código QR para invitados. Incluye software de proyección en tiempo real para pantallas o TV. No incluye equipo físico (pantallas/cableado).</p>
               </CardContent>
             </Card>
-            <Card className="bg-slate-800 border-white/10">
+            <Card className="card-premium">
               <CardHeader>
-                <CardTitle className="text-white">Crear Sesión Live</CardTitle>
-                <CardDescription className="text-gray-400">El código de 4 dígitos se genera automáticamente</CardDescription>
+                <CardTitle className="text-pearl">Crear Sesión Live</CardTitle>
+                <CardDescription className="text-pearl-muted">El código de 4 dígitos se genera automáticamente</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Fila 1: Nombre del Evento */}
                 <div>
-                  <Label className="text-white text-sm">Nombre del Evento *</Label>
+                  <Label className="text-pearl text-sm">Nombre del Evento *</Label>
                   <Input 
                     placeholder="ej: Boda de Pedro y María" 
                     value={newSession.event_name} 
                     onChange={(e) => setNewSession({...newSession, event_name: e.target.value})} 
-                    className="bg-slate-700 border-white/10 text-white mt-1" 
+                    className="input-premium mt-1" 
                   />
                 </div>
                 
                 {/* Fila 2: Tipo de Evento y Fecha */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-white text-sm">Tipo de Evento *</Label>
+                    <Label className="text-pearl text-sm">Tipo de Evento *</Label>
                     <Select 
                       value={newSession.event_type} 
                       onValueChange={(v) => setNewSession({...newSession, event_type: v, event_type_custom: v === "otro" ? newSession.event_type_custom : ""})}
                     >
-                      <SelectTrigger className="bg-slate-700 border-white/10 text-white mt-1">
+                      <SelectTrigger className="bg-night border-gold/30 text-pearl mt-1">
                         <SelectValue placeholder="Selecciona tipo" />
                       </SelectTrigger>
                       <SelectContent>
@@ -3662,38 +3662,38 @@ const AdminPanel = () => {
                     </Select>
                   </div>
                   <div>
-                    <Label className="text-white text-sm">Fecha del Evento *</Label>
+                    <Label className="text-pearl text-sm">Fecha del Evento *</Label>
                     <Input 
                       type="date" 
                       value={newSession.event_date} 
                       onChange={(e) => setNewSession({...newSession, event_date: e.target.value})} 
-                      className="bg-slate-700 border-white/10 text-white mt-1" 
+                      className="input-premium mt-1" 
                     />
                   </div>
                 </div>
                 
                 {/* Campo de Teléfono del Cliente (OBLIGATORIO) */}
                 <div>
-                  <Label className="text-white text-sm">Teléfono del Cliente * <span className="text-pink-400 text-xs">(Clave de descarga)</span></Label>
+                  <Label className="text-pearl text-sm">Teléfono del Cliente * <span className="text-gold text-xs">(Clave de descarga)</span></Label>
                   <Input 
                     type="text"
                     placeholder="Ej: 6146010070" 
                     value={newSession.client_phone} 
                     onChange={(e) => setNewSession({...newSession, client_phone: e.target.value})} 
-                    className="bg-slate-700 border-white/10 text-white mt-1" 
+                    className="input-premium mt-1" 
                   />
-                  <p className="text-gray-500 text-xs mt-1">Los últimos 4 dígitos serán la clave para descargar las fotos</p>
+                  <p className="text-pearl-muted/70 text-xs mt-1">Los últimos 4 dígitos serán la clave para descargar las fotos</p>
                 </div>
                 
                 {/* Campo personalizado si es "Otro" */}
                 {newSession.event_type === "otro" && (
                   <div>
-                    <Label className="text-white text-sm">Especifica el tipo de evento</Label>
+                    <Label className="text-pearl text-sm">Especifica el tipo de evento</Label>
                     <Input 
                       placeholder="ej: Graduación, Bautizo, etc." 
                       value={newSession.event_type_custom} 
                       onChange={(e) => setNewSession({...newSession, event_type_custom: e.target.value})} 
-                      className="bg-slate-700 border-white/10 text-white mt-1" 
+                      className="input-premium mt-1" 
                     />
                   </div>
                 )}
@@ -3705,21 +3705,21 @@ const AdminPanel = () => {
                       checked={newSession.is_vip} 
                       onCheckedChange={(c) => setNewSession({...newSession, is_vip: c})} 
                     />
-                    <Label className="text-yellow-400">⭐ Evento VIP</Label>
+                    <Label className="text-gold">VIP</Label>
                   </div>
-                  <Button onClick={createLiveSession} className="bg-cyan-500 hover:bg-cyan-600 px-6">
-                    ✓ Crear Sesión Live
+                  <Button onClick={createLiveSession} className="btn-gold px-6">
+                    Crear Sesión Live
                   </Button>
                 </div>
               </CardContent>
             </Card>
             {/* Lista de sesiones - Ordenadas por fecha descendente */}
             {liveSessions.length === 0 ? (
-              <Card className="bg-slate-800/50 border-white/10 border-dashed">
+              <Card className="card-premium border-dashed">
                 <CardContent className="p-8 text-center">
-                  <span className="text-5xl block mb-4">🔴</span>
-                  <p className="text-gray-400">No hay sesiones Live creadas</p>
-                  <p className="text-gray-500 text-sm">Crea tu primera sesión con el formulario de arriba</p>
+                  <span className="text-5xl block mb-4">📺</span>
+                  <p className="text-pearl-muted">No hay sesiones Live creadas</p>
+                  <p className="text-pearl-muted/70 text-sm">Crea tu primera sesión con el formulario de arriba</p>
                 </CardContent>
               </Card>
             ) : (
@@ -3728,7 +3728,7 @@ const AdminPanel = () => {
                 .map(session => {
                   const typeInfo = getEventTypeInfo(session.event_type, session.event_type_custom);
                   return (
-                    <Card key={session.id} className="bg-slate-800 border-white/10 hover:border-cyan-500/30 transition-colors">
+                    <Card key={session.id} className="card-premium hover:border-gold/50 transition-colors">
                       <CardContent className="p-4">
                         <div className="flex justify-between items-start">
                           {/* Lado izquierdo: QR y datos */}
@@ -3738,15 +3738,15 @@ const AdminPanel = () => {
                             </div>
                             <div>
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="text-white font-bold text-lg">{session.code}</span>
-                                <Badge className={session.is_active ? "bg-green-500/80" : "bg-gray-500"}>
-                                  {session.is_active ? "🟢 Activo" : "⚫ Inactivo"}
+                                <span className="text-pearl font-bold text-lg">{session.code}</span>
+                                <Badge className={session.is_active ? "bg-gold text-night" : "bg-pearl-muted/30 text-pearl-muted"}>
+                                  {session.is_active ? "Activo" : "Inactivo"}
                                 </Badge>
-                                {session.is_vip && <Badge className="bg-yellow-500/80">⭐ VIP</Badge>}
+                                {session.is_vip && <Badge className="bg-gold text-night">VIP</Badge>}
                               </div>
-                              <p className="text-gray-200 font-medium">{session.event_name}</p>
+                              <p className="text-pearl font-medium">{session.event_name}</p>
                               <div className="flex items-center gap-3 mt-1">
-                                <Badge className="bg-purple-500/20 text-purple-300 text-xs">
+                                <Badge className="badge-gold text-xs">
                                   {typeInfo.emoji} {typeInfo.label}
                                 </Badge>
                                 {session.event_date && (
