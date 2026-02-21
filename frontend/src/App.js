@@ -3673,7 +3673,7 @@ const AdminPanel = () => {
                           <Badge className="badge-gold">{contract.status}</Badge>
                         </div>
                         <p className="text-pearl-muted text-sm">{contract.client_name} - {contract.client_phone}</p>
-                        <p className="text-pearl-muted/70 text-sm">{contract.salon} - {contract.event_date}</p>
+                        <p className="text-pearl-muted/70 text-sm">{contract.event_date}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-gold font-bold text-2xl">${contract.net_price?.toLocaleString()}</p>
