@@ -1723,10 +1723,10 @@ const PicPartyLive = () => {
                 <div className="text-center mt-2">
                   <Button 
                     size="sm"
-                    className="bg-pink-500 hover:bg-pink-600 text-white"
+                    className="btn-gold"
                     onClick={() => window.open('/cotizador', '_blank')}
                   >
-                    💰 Ver Precios
+                    Ver Precios
                   </Button>
                 </div>
               </div>
