@@ -2402,8 +2402,10 @@ const AdminPanel = () => {
     // PicPartyLive
     include_live: false, price_live: 700,
     extras: [], discount_amount: 0, special_price: null, notes: "",
-    // Campos administrativos (uso interno - NO se imprimen)
-    anticipo_status: "pendiente", anticipo_amount: null, costo_proveedor: null
+    // Cortesía / Regalo
+    cortesia: "",
+    // Campos administrativos (uso interno - NO se imprimen excepto si liquidado)
+    anticipo_status: "pendiente", anticipo_amount: null, costo_proveedor: null, fecha_pago: null
   });
   const [contractPreview, setContractPreview] = useState(null);
   
