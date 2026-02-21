@@ -133,29 +133,29 @@ const EventGallery = () => {
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-violet-900 to-purple-950 flex items-center justify-center">
-      <div className="text-white text-xl">Cargando...</div>
+    <div className="min-h-screen bg-premium-radial flex items-center justify-center">
+      <div className="text-pearl text-xl">Cargando...</div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-violet-900 to-purple-950">
-      {/* Header con Logo PicParty */}
-      <header className="border-b border-white/10 backdrop-blur-sm bg-black/20 sticky top-0 z-50">
+    <div className="min-h-screen bg-premium-radial">
+      {/* Header Premium con Logo PicParty */}
+      <header className="header-premium sticky top-0 z-50">
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           <Link to="/" className="flex items-center gap-3">
             <img src={PICPARTY_LOGO} alt="PicParty" className="h-12 w-12 object-contain" />
-            <span className="text-2xl font-bold text-white">PicParty</span>
+            <span className="text-2xl font-bold text-gold">PicParty</span>
           </Link>
           <div className="flex gap-2">
             <Link to="/cotizador">
-              <Button variant="outline" className="border-green-500/50 text-green-400 hover:bg-green-500/20">💰 Cotizar</Button>
+              <Button className="btn-gold-outline">Cotizar</Button>
             </Link>
             <Link to="/picpartylive">
-              <Button variant="outline" className="border-pink-500/50 text-pink-400 hover:bg-pink-500/20">🔴 Live</Button>
+              <Button className="btn-gold">LIVE</Button>
             </Link>
             <Link to="/admin">
-              <Button variant="ghost" className="text-gray-400 hover:text-white">⚙️</Button>
+              <Button variant="ghost" className="text-pearl-muted hover:text-gold">⚙️</Button>
             </Link>
           </div>
         </div>
@@ -163,18 +163,18 @@ const EventGallery = () => {
 
       <main className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-5xl font-black text-white mb-2 bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">
+          <h1 className="text-5xl font-black mb-2 text-gold">
             PicParty
           </h1>
-          <p className="text-gray-300">Cabina Fotográfica • Memorias que Duran</p>
+          <p className="text-pearl-muted">Cabina Fotográfica • Memorias que Duran</p>
         </div>
 
         <div className="grid lg:grid-cols-4 gap-6">
           {/* Calendario Buscador */}
-          <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
+          <Card className="card-premium">
             <CardHeader className="pb-2">
-              <CardTitle className="text-white text-lg flex items-center gap-2">
-                📅 Busca tu evento por la fecha
+              <CardTitle className="text-pearl text-lg flex items-center gap-2">
+                Busca tu evento por la fecha
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -182,13 +182,13 @@ const EventGallery = () => {
                 mode="single"
                 selected={selectedDate}
                 onSelect={handleDateSelect}
-                className="rounded-md border border-white/10 bg-white/5 text-white"
+                className="rounded-md border border-gold/20 bg-night/50 text-pearl"
                 modifiers={{ hasEvent: eventDates }}
-                modifiersStyles={{ hasEvent: { backgroundColor: 'rgb(168 85 247 / 0.4)', borderRadius: '50%' } }}
+                modifiersStyles={{ hasEvent: { backgroundColor: 'rgba(212, 175, 55, 0.3)', borderRadius: '50%' } }}
               />
               {selectedDate && (
-                <Button variant="outline" className="w-full mt-3 border-white/20 text-white" onClick={resetFilter}>
-                  ✕ Mostrar todos
+                <Button variant="outline" className="w-full mt-3 btn-gold-outline" onClick={resetFilter}>
+                  Mostrar todos
                 </Button>
               )}
             </CardContent>
@@ -197,18 +197,18 @@ const EventGallery = () => {
           {/* Feed de Eventos */}
           <div className="lg:col-span-3">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold text-white">
+              <h3 className="text-xl font-semibold text-pearl">
                 {selectedDate ? `Eventos del ${selectedDate.toLocaleDateString('es-MX')}` : "Últimos Eventos"}
               </h3>
-              <Badge className="bg-purple-500/30 text-purple-300">{filteredEvents.length} evento(s)</Badge>
+              <Badge className="badge-gold">{filteredEvents.length} evento(s)</Badge>
             </div>
             
             {filteredEvents.length === 0 ? (
-              <Card className="bg-white/5 border-white/10 border-dashed p-12 text-center">
+              <Card className="card-premium border-dashed p-12 text-center">
                 <span className="text-6xl mb-4 block">📭</span>
-                <h3 className="text-white text-xl font-bold mb-2">Buzón Vacío</h3>
-                <p className="text-gray-400 mb-4">No hay eventos para mostrar</p>
-                <Button onClick={resetFilter} className="bg-purple-500 hover:bg-purple-600">
+                <h3 className="text-pearl text-xl font-bold mb-2">Buzón Vacío</h3>
+                <p className="text-pearl-muted mb-4">No hay eventos para mostrar</p>
+                <Button onClick={resetFilter} className="btn-gold">
                   Ver todos los eventos
                 </Button>
               </Card>
@@ -221,7 +221,7 @@ const EventGallery = () => {
         </div>
       </main>
 
-      <footer className="border-t border-white/10 mt-12 py-6 text-center text-gray-500">
+      <footer className="border-t border-gold/20 mt-12 py-6 text-center text-pearl-muted">
         <p>© 2025 PicParty - Cabina Fotográfica</p>
       </footer>
     </div>
