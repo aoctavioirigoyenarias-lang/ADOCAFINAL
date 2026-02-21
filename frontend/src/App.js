@@ -1831,59 +1831,59 @@ const PicPartyLive = () => {
               <div className="max-w-3xl mx-auto px-4">
                 <Button 
                   variant="ghost" 
-                  className="mb-4 text-gray-400 hover:text-white"
+                  className="mb-4 text-pearl-muted hover:text-gold"
                   onClick={() => setViewMode("menu")}
                 >
                   ← Volver al menú
                 </Button>
                 
-                <h2 className="text-2xl font-bold text-white text-center mb-6">
-                  📺 Selecciona el Efecto de Proyección
+                <h2 className="text-2xl font-bold text-pearl text-center mb-6">
+                  Selecciona el Efecto de Proyección
                 </h2>
 
                 <div className="grid md:grid-cols-3 gap-4 mb-6">
                   {/* Slideshow */}
                   <Card 
-                    className={`cursor-pointer transition-all hover:scale-105 ${projectionEffect === 'slideshow' ? 'ring-2 ring-cyan-500 bg-cyan-500/20' : 'bg-white/5'} border-white/10`}
+                    className={`cursor-pointer transition-all hover:scale-105 card-premium ${projectionEffect === 'slideshow' ? 'ring-2 ring-gold' : ''}`}
                     onClick={() => setProjectionEffect('slideshow')}
                   >
                     <CardContent className="p-6 text-center">
                       <div className="text-5xl mb-3">🖼️</div>
-                      <h3 className="text-white font-bold text-lg">Slideshow</h3>
-                      <p className="text-gray-400 text-sm mt-2">Una foto con transición suave (Fade)</p>
+                      <h3 className="text-pearl font-bold text-lg">Slideshow</h3>
+                      <p className="text-pearl-muted text-sm mt-2">Una foto con transición suave (Fade)</p>
                     </CardContent>
                   </Card>
 
                   {/* Mosaico */}
                   <Card 
-                    className={`cursor-pointer transition-all hover:scale-105 ${projectionEffect === 'mosaic' ? 'ring-2 ring-pink-500 bg-pink-500/20' : 'bg-white/5'} border-white/10`}
+                    className={`cursor-pointer transition-all hover:scale-105 card-premium ${projectionEffect === 'mosaic' ? 'ring-2 ring-gold' : ''}`}
                     onClick={() => setProjectionEffect('mosaic')}
                   >
                     <CardContent className="p-6 text-center">
                       <div className="text-5xl mb-3">🔲</div>
-                      <h3 className="text-white font-bold text-lg">Mosaico</h3>
-                      <p className="text-gray-400 text-sm mt-2">Cuadrícula dinámica de fotos</p>
+                      <h3 className="text-pearl font-bold text-lg">Mosaico</h3>
+                      <p className="text-pearl-muted text-sm mt-2">Cuadrícula dinámica de fotos</p>
                     </CardContent>
                   </Card>
 
                   {/* Pop-up */}
                   <Card 
-                    className={`cursor-pointer transition-all hover:scale-105 ${projectionEffect === 'popup' ? 'ring-2 ring-purple-500 bg-purple-500/20' : 'bg-white/5'} border-white/10`}
+                    className={`cursor-pointer transition-all hover:scale-105 card-premium ${projectionEffect === 'popup' ? 'ring-2 ring-gold' : ''}`}
                     onClick={() => setProjectionEffect('popup')}
                   >
                     <CardContent className="p-6 text-center">
                       <div className="text-5xl mb-3">✨</div>
-                      <h3 className="text-white font-bold text-lg">Pop-up</h3>
-                      <p className="text-gray-400 text-sm mt-2">Foto nueva aparece grande 5 seg</p>
+                      <h3 className="text-pearl font-bold text-lg">Pop-up</h3>
+                      <p className="text-pearl-muted text-sm mt-2">Foto nueva aparece grande 5 seg</p>
                     </CardContent>
                   </Card>
                 </div>
 
                 <Button
-                  className="w-full h-14 text-lg font-bold bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600"
+                  className="w-full h-14 text-lg font-bold btn-gold"
                   onClick={() => { setViewMode("projection"); fetchGalleryPhotos(session.code); }}
                 >
-                  🚀 Iniciar Proyección
+                  Iniciar Proyección
                 </Button>
               </div>
             )}
