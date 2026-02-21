@@ -2857,6 +2857,90 @@ const AdminPanel = () => {
     fetchData();
   };
 
+  // ========== EDITAR CONTRATO EXISTENTE ==========
+  const startEditContract = (contract) => {
+    setEditingContractId(contract.id);
+    setContractForm({
+      client_name: contract.client_name || "",
+      client_phone: contract.client_phone || "",
+      client_email: contract.client_email || "",
+      event_name: contract.event_name || "",
+      salon: contract.salon || "",
+      event_date: contract.event_date || "",
+      event_time: contract.event_time || "",
+      service_time: contract.service_time || "",
+      contract_type: contract.contract_type || "public",
+      include_cabina: contract.include_cabina || false,
+      cabina_hours: contract.cabina_hours || 0,
+      price_cabina: contract.price_cabina || 0,
+      include_video360: contract.include_video360 || false,
+      video360_hours: contract.video360_hours || 0,
+      price_video360: contract.price_video360 || 0,
+      include_key_moments: contract.include_key_moments || false,
+      key_moments_pieces: contract.key_moments_pieces || 0,
+      price_key_moments: contract.price_key_moments || 0,
+      include_live: contract.include_live || false,
+      price_live: contract.price_live || 700,
+      extras: contract.extras || [],
+      discount_amount: contract.discount_amount || 0,
+      special_price: contract.special_price || null,
+      notes: contract.notes || "",
+      cortesia: contract.cortesia || "",
+      manual_total: contract.net_price || 0,
+      anticipo_amount: contract.anticipo_amount || 0,
+      anticipo_status: contract.anticipo_status || "pendiente",
+      costo_proveedor: contract.costo_proveedor || null,
+      fecha_pago: contract.fecha_pago || null
+    });
+    setShowContractForm(true);
+    toast.info(`Editando contrato: ${contract.event_name}`);
+  };
+
+  const updateContract = async () => {
+    if (!editingContractId) return;
+    try {
+      await axios.put(`${API}/contracts/${editingContractId}`, contractForm);
+      toast.success("Contrato actualizado exitosamente");
+      setShowContractForm(false);
+      setEditingContractId(null);
+      setContractForm({
+        client_name: "", client_phone: "", client_email: "",
+        event_name: "", salon: "", event_date: "", event_time: "", service_time: "",
+        contract_type: "public",
+        include_cabina: false, cabina_hours: 0, price_cabina: 0,
+        include_video360: false, video360_hours: 0, price_video360: 0,
+        include_key_moments: false, key_moments_pieces: 0, price_key_moments: 0,
+        include_live: false, price_live: 700,
+        extras: [], discount_amount: 0, special_price: null, notes: "",
+        cortesia: "",
+        manual_total: 0, anticipo_amount: 0,
+        anticipo_status: "pendiente", costo_proveedor: null, fecha_pago: null
+      });
+      setContractPreview(null);
+      fetchData();
+    } catch (e) {
+      toast.error("Error al actualizar contrato");
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditingContractId(null);
+    setShowContractForm(false);
+    setContractForm({
+      client_name: "", client_phone: "", client_email: "",
+      event_name: "", salon: "", event_date: "", event_time: "", service_time: "",
+      contract_type: "public",
+      include_cabina: false, cabina_hours: 0, price_cabina: 0,
+      include_video360: false, video360_hours: 0, price_video360: 0,
+      include_key_moments: false, key_moments_pieces: 0, price_key_moments: 0,
+      include_live: false, price_live: 700,
+      extras: [], discount_amount: 0, special_price: null, notes: "",
+      cortesia: "",
+      manual_total: 0, anticipo_amount: 0,
+      anticipo_status: "pendiente", costo_proveedor: null, fecha_pago: null
+    });
+  };
+
   const printContractPDF = async (contract) => {
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
     const pageWidth = pdf.internal.pageSize.getWidth();
