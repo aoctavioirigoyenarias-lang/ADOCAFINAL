@@ -3348,11 +3348,11 @@ const AdminPanel = () => {
                     <div className="p-3 bg-night/30 rounded">
                       <div className="flex items-center gap-2 mb-2">
                         <Checkbox checked={contractForm.include_cabina} onCheckedChange={(c) => setContractForm({...contractForm, include_cabina: c, cabina_hours: c ? 2 : 0, price_cabina: c ? CATALOGO_CABINA[2] : 0})} />
-                        <Label className="text-green-400 font-bold">Cabina de Fotos</Label>
+                        <Label className="text-gold font-bold">Cabina de Fotos</Label>
                       </div>
                       {contractForm.include_cabina && (
                         <Select value={contractForm.cabina_hours.toString()} onValueChange={(v) => setContractForm({...contractForm, cabina_hours: parseInt(v), price_cabina: CATALOGO_CABINA[parseInt(v)]})}>
-                          <SelectTrigger className="bg-slate-600 border-green-500/30 text-green-400">
+                          <SelectTrigger className="bg-night border-gold/30 text-gold">
                             <SelectValue placeholder="Selecciona horas" />
                           </SelectTrigger>
                           <SelectContent>
@@ -3366,14 +3366,14 @@ const AdminPanel = () => {
                     </div>
                     
                     {/* PIC MOTION 360 */}
-                    <div className="p-3 bg-slate-700/50 rounded">
+                    <div className="p-3 bg-night/30 rounded">
                       <div className="flex items-center gap-2 mb-2">
                         <Checkbox checked={contractForm.include_video360} onCheckedChange={(c) => setContractForm({...contractForm, include_video360: c, video360_hours: c ? 2 : 0, price_video360: c ? CATALOGO_360[2] : 0})} />
-                        <Label className="text-cyan-400 font-bold">Pic Motion 360</Label>
+                        <Label className="text-gold font-bold">Pic Motion 360</Label>
                       </div>
                       {contractForm.include_video360 && (
                         <Select value={contractForm.video360_hours.toString()} onValueChange={(v) => setContractForm({...contractForm, video360_hours: parseInt(v), price_video360: CATALOGO_360[parseInt(v)]})}>
-                          <SelectTrigger className="bg-slate-600 border-cyan-500/30 text-cyan-400">
+                          <SelectTrigger className="bg-night border-gold/30 text-gold">
                             <SelectValue placeholder="Selecciona horas" />
                           </SelectTrigger>
                           <SelectContent>
@@ -3387,14 +3387,14 @@ const AdminPanel = () => {
                     </div>
                     
                     {/* KEY MOMENTS */}
-                    <div className="p-3 bg-slate-700/50 rounded">
+                    <div className="p-3 bg-night/30 rounded">
                       <div className="flex items-center gap-2 mb-2">
                         <Checkbox checked={contractForm.include_key_moments} onCheckedChange={(c) => setContractForm({...contractForm, include_key_moments: c, key_moments_pieces: c ? 80 : 0, price_key_moments: c ? CATALOGO_KEY_MOMENTS[80] : 0})} />
-                        <Label className="text-purple-400 font-bold">Key Moments</Label>
+                        <Label className="text-gold font-bold">Key Moments</Label>
                       </div>
                       {contractForm.include_key_moments && (
                         <Select value={contractForm.key_moments_pieces.toString()} onValueChange={(v) => setContractForm({...contractForm, key_moments_pieces: parseInt(v), price_key_moments: CATALOGO_KEY_MOMENTS[parseInt(v)]})}>
-                          <SelectTrigger className="bg-slate-600 border-purple-500/30 text-purple-400">
+                          <SelectTrigger className="bg-night border-gold/30 text-gold">
                             <SelectValue placeholder="Selecciona piezas" />
                           </SelectTrigger>
                           <SelectContent>
@@ -3408,60 +3408,60 @@ const AdminPanel = () => {
                     </div>
                     
                     {/* PICPARTYLIVE */}
-                    <div className="p-3 bg-slate-700/50 rounded">
+                    <div className="p-3 bg-night/30 rounded">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Checkbox checked={contractForm.include_live} onCheckedChange={(c) => setContractForm({...contractForm, include_live: c, price_live: c ? 700 : 0})} />
-                          <Label className="text-pink-400 font-bold">PicPartyLive</Label>
+                          <Label className="text-gold font-bold">PicPartyLive</Label>
                         </div>
-                        <span className="text-pink-400 text-sm">$700 NETO</span>
+                        <span className="text-gold text-sm">$700 NETO</span>
                       </div>
                       {contractForm.include_live && (
-                        <p className="text-yellow-400 text-xs mt-2 p-2 bg-yellow-500/10 rounded">
+                        <p className="text-gold/80 text-xs mt-2 p-2 bg-gold/10 rounded">
                           Internet y pantallas corren por cuenta del anfitrion.
                         </p>
                       )}
                     </div>
                     
                     {/* DESCUENTO EN PESOS */}
-                    <div className="p-3 bg-orange-500/10 border border-orange-500/30 rounded">
-                      <Label className="text-orange-400 font-bold text-sm">Descuento ($)</Label>
+                    <div className="p-3 bg-gold/10 border border-gold/30 rounded">
+                      <Label className="text-gold font-bold text-sm">Descuento ($)</Label>
                       <Input 
                         type="number" 
                         placeholder="Ej: 500" 
                         value={contractForm.discount_amount || ""} 
                         onChange={(e) => setContractForm({...contractForm, discount_amount: parseInt(e.target.value) || 0})} 
-                        className="bg-slate-700 border-orange-500/30 text-orange-300 mt-1" 
+                        className="input-premium mt-1" 
                       />
                     </div>
                   </div>
 
                   {/* Precio Especial (solo si es contrato especial) */}
                   {contractForm.contract_type === "special" && (
-                    <div className="p-3 bg-orange-500/10 border border-orange-500/30 rounded">
-                      <Label className="text-orange-400 font-bold">💰 Precio Especial (Convenio)</Label>
-                      <Input type="number" placeholder="Ingresa el precio final acordado" value={contractForm.special_price || ""} onChange={(e) => setContractForm({...contractForm, special_price: parseInt(e.target.value) || null})} className="bg-slate-700 border-orange-500/30 text-orange-300 mt-2" />
+                    <div className="p-3 bg-gold/10 border border-gold/30 rounded">
+                      <Label className="text-gold font-bold">Precio Especial (Convenio)</Label>
+                      <Input type="number" placeholder="Ingresa el precio final acordado" value={contractForm.special_price || ""} onChange={(e) => setContractForm({...contractForm, special_price: parseInt(e.target.value) || null})} className="input-premium mt-2" />
                     </div>
                   )}
 
                   {/* Notas */}
                   <div>
-                    <Label className="text-white">Notas adicionales</Label>
-                    <Textarea value={contractForm.notes} onChange={(e) => setContractForm({...contractForm, notes: e.target.value})} className="bg-slate-700 border-white/10 text-white" rows={2} />
+                    <Label className="text-pearl">Notas adicionales</Label>
+                    <Textarea value={contractForm.notes} onChange={(e) => setContractForm({...contractForm, notes: e.target.value})} className="input-premium" rows={2} />
                   </div>
 
                   {/* === APARTADO DE PROVEEDOR (USO INTERNO) === */}
-                  <div className="p-4 bg-slate-900/50 border border-slate-600/50 rounded-lg">
-                    <h4 className="text-slate-400 font-bold text-sm mb-3 flex items-center gap-2">
-                      <span className="w-5 h-5 bg-slate-600 rounded flex items-center justify-center text-xs">i</span>
+                  <div className="p-4 bg-night/70 border border-pearl-muted/20 rounded-lg">
+                    <h4 className="text-pearl-muted font-bold text-sm mb-3 flex items-center gap-2">
+                      <span className="w-5 h-5 bg-pearl-muted/20 rounded flex items-center justify-center text-xs">i</span>
                       APARTADO ADMINISTRATIVO (Uso Interno)
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {/* Estatus de Anticipo */}
                       <div>
-                        <Label className="text-slate-400 text-xs">Estatus Anticipo</Label>
+                        <Label className="text-pearl-muted text-xs">Estatus Anticipo</Label>
                         <Select value={contractForm.anticipo_status} onValueChange={(v) => setContractForm({...contractForm, anticipo_status: v})}>
-                          <SelectTrigger className="bg-slate-800 border-slate-600 text-white mt-1">
+                          <SelectTrigger className="bg-night border-pearl-muted/30 text-pearl mt-1">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -3473,27 +3473,27 @@ const AdminPanel = () => {
                       </div>
                       {/* Monto Anticipo */}
                       <div>
-                        <Label className="text-slate-400 text-xs">Monto Anticipo</Label>
+                        <Label className="text-pearl-muted text-xs">Monto Anticipo</Label>
                         <Input 
                           type="number" 
                           placeholder="$0" 
                           value={contractForm.anticipo_amount || ""} 
                           onChange={(e) => setContractForm({...contractForm, anticipo_amount: parseInt(e.target.value) || null})} 
-                          className="bg-slate-800 border-slate-600 text-white mt-1" 
+                          className="input-premium mt-1" 
                         />
                       </div>
                       {/* Costo Proveedor */}
                       <div>
-                        <Label className="text-slate-400 text-xs">Costo Proveedor</Label>
+                        <Label className="text-pearl-muted text-xs">Costo Proveedor</Label>
                         <Input 
                           type="number" 
                           placeholder="Tu costo real" 
                           value={contractForm.costo_proveedor || ""} 
                           onChange={(e) => setContractForm({...contractForm, costo_proveedor: parseInt(e.target.value) || null})} 
-                          className="bg-slate-800 border-slate-600 text-white mt-1" 
+                          className="input-premium mt-1" 
                         />
                         {contractForm.costo_proveedor && contractPreview && (
-                          <p className="text-green-400 text-xs mt-1">
+                          <p className="text-gold text-xs mt-1">
                             Utilidad: ${(contractPreview.netPrice - contractForm.costo_proveedor).toLocaleString()}
                           </p>
                         )}
@@ -3503,28 +3503,28 @@ const AdminPanel = () => {
 
                   {/* Botones */}
                   <div className="flex gap-3">
-                    <Button onClick={calculateContractPreview} variant="outline" className="border-white/20 text-white">
+                    <Button onClick={calculateContractPreview} className="btn-gold-outline">
                       Calcular
                     </Button>
-                    <Button onClick={createContract} className="bg-green-500 hover:bg-green-600">
+                    <Button onClick={createContract} className="btn-gold">
                       Crear Contrato
                     </Button>
                   </div>
 
                   {/* Preview del cálculo */}
                   {contractPreview && (
-                    <div className="p-4 bg-green-500/10 border border-green-500/30 rounded">
-                      <div className="flex justify-between text-white">
+                    <div className="p-4 bg-gold/10 border border-gold/30 rounded">
+                      <div className="flex justify-between text-pearl">
                         <span>Subtotal:</span>
                         <span>${contractPreview.subtotal.toLocaleString()} NETO</span>
                       </div>
                       {contractForm.discount_amount > 0 && (
-                        <div className="flex justify-between text-orange-400">
+                        <div className="flex justify-between text-gold">
                           <span>Descuento:</span>
                           <span>-${contractForm.discount_amount.toLocaleString()}</span>
                         </div>
                       )}
-                      <div className="flex justify-between text-green-400 font-bold text-xl mt-2 pt-2 border-t border-green-500/30">
+                      <div className="flex justify-between text-gold font-bold text-xl mt-2 pt-2 border-t border-gold/30">
                         <span>PRECIO NETO:</span>
                         <span>${contractPreview.netPrice.toLocaleString()}</span>
                       </div>
@@ -3536,13 +3536,13 @@ const AdminPanel = () => {
 
             {/* Lista de Contratos */}
             {contracts.length === 0 ? (
-              <Card className="bg-slate-800/50 border-white/10 border-dashed">
+              <Card className="card-premium border-dashed">
                 <CardContent className="p-8 text-center">
-                  <div className="w-16 h-16 mx-auto mb-3 bg-slate-700 rounded-lg flex items-center justify-center">
-                    <svg className="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                  <div className="w-16 h-16 mx-auto mb-3 bg-night rounded-lg flex items-center justify-center">
+                    <svg className="w-8 h-8 text-pearl-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                   </div>
-                  <p className="text-gray-400">No hay contratos creados</p>
-                  <p className="text-gray-500 text-sm">Crea tu primer contrato con el boton de arriba</p>
+                  <p className="text-pearl-muted">No hay contratos creados</p>
+                  <p className="text-pearl-muted/70 text-sm">Crea tu primer contrato con el boton de arriba</p>
                 </CardContent>
               </Card>
             ) : (
