@@ -435,10 +435,15 @@ const Cotizador = () => {
     try {
       const logoImg = new Image();
       logoImg.crossOrigin = "anonymous";
-      logoImg.src = PICPARTY_LOGO;
-      await new Promise((resolve) => { logoImg.onload = resolve; setTimeout(resolve, 2000); });
+      await new Promise((resolve, reject) => {
+        logoImg.onload = resolve;
+        logoImg.onerror = reject;
+        logoImg.src = PICPARTY_LOGO + "?t=" + Date.now();
+      });
       pdf.addImage(logoImg, 'PNG', 12, 5, 40, 40);
-    } catch(e) {}
+    } catch(e) {
+      console.error("Error cargando logo cotización:", e);
+    }
     
     pdf.setFontSize(28);
     pdf.setTextColor(30, 30, 30);
