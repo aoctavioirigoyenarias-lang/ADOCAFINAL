@@ -3217,7 +3217,7 @@ const AdminPanel = () => {
       logoImg.crossOrigin = "anonymous";
       logoImg.src = PICPARTY_LOGO;
       await new Promise(r => { logoImg.onload = r; setTimeout(r, 500); });
-      pdf.addImage(logoImg, 'PNG', margin, 8, 25, 25);
+      pdf.addImage(logoImg, 'PNG', margin, 5, 30, 30);
     } catch(e) {
       pdf.setFontSize(14);
       pdf.setTextColor(26, 11, 46);
@@ -3225,14 +3225,11 @@ const AdminPanel = () => {
       pdf.text("PIC PARTY", margin, 20);
     }
     
-    pdf.setFontSize(14);
-    pdf.setTextColor(26, 11, 46);
-    pdf.setFont(undefined, 'bold');
-    pdf.text("PIC PARTY", margin + 28, 16);
+    // Servicios debajo del logo
     pdf.setFontSize(7);
     pdf.setFont(undefined, 'normal');
     pdf.setTextColor(80, 80, 80);
-    pdf.text("Cabina de Fotos | Video 360 | Key Moments", margin + 28, 21);
+    pdf.text("Cabina de Fotos | Video 360 | Key Moments", margin + 33, 23);
     
     // Folio página 2
     pdf.setFontSize(10);
