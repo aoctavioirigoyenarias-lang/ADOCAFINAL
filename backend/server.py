@@ -530,26 +530,45 @@ async def create_contract(contract_data: ContractCreate):
 @api_router.put("/contracts/{contract_id}")
 async def update_contract(contract_id: str, contract_data: ContractCreate):
     """Actualizar contrato existente"""
-    # Recalcular precios
-    subtotal = contract_data.base_price * contract_data.duration_hours
-    extras_cost = len(contract_data.extras) * 500
-    subtotal += extras_cost
-    if contract_data.include_video360:
-        subtotal += 3000
-    if contract_data.include_live:
-        subtotal += 2000
+    # Calcular precios por servicio
+    subtotal = 0
     
-    discount_amount = subtotal * (contract_data.discount_percent / 100)
+    price_cabina = contract_data.price_cabina if contract_data.include_cabina else 0
+    subtotal += price_cabina
     
-    if contract_data.contract_type == "special" and contract_data.special_price is not None:
+    price_video360 = contract_data.price_video360 if contract_data.include_video360 else 0
+    subtotal += price_video360
+    
+    price_key_moments = contract_data.price_key_moments if contract_data.include_key_moments else 0
+    subtotal += price_key_moments
+    
+    price_live = contract_data.price_live if contract_data.include_live else 0
+    subtotal += price_live
+    
+    discount_amount = contract_data.discount_amount
+    
+    # Precio final - PRIORIDAD: manual_total > special_price > cálculo automático
+    if contract_data.manual_total and contract_data.manual_total > 0:
+        net_price = contract_data.manual_total
+    elif contract_data.contract_type == "special" and contract_data.special_price is not None:
         net_price = contract_data.special_price
     else:
         net_price = subtotal - discount_amount
     
+    # Calcular utilidad neta si hay costo de proveedor
+    utilidad_neta = None
+    if contract_data.costo_proveedor is not None:
+        utilidad_neta = net_price - contract_data.costo_proveedor
+    
     update_data = contract_data.model_dump()
     update_data['subtotal'] = subtotal
+    update_data['price_cabina'] = price_cabina
+    update_data['price_video360'] = price_video360
+    update_data['price_key_moments'] = price_key_moments
+    update_data['price_live'] = price_live
     update_data['discount_amount'] = discount_amount
     update_data['net_price'] = net_price
+    update_data['utilidad_neta'] = utilidad_neta
     
     result = await db.contracts.update_one(
         {"id": contract_id},
