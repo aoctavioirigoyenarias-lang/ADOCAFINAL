@@ -4299,11 +4299,10 @@ const AdminPanel = () => {
                           onChange={(e) => setEditEventForm({...editEventForm, name: e.target.value.toUpperCase()})} 
                           className="input-premium" 
                         />
-                        <Input 
-                          type="date" 
+                        <DatePicker 
                           value={editEventForm.date || ''} 
-                          onChange={(e) => setEditEventForm({...editEventForm, date: e.target.value})} 
-                          className="input-premium" 
+                          onChange={(date) => setEditEventForm({...editEventForm, date})} 
+                          placeholder="Fecha"
                         />
                         <Input 
                           placeholder="URL Fotoshare" 
