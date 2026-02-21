@@ -4097,12 +4097,13 @@ const AdminPanel = () => {
                       <div className="mt-3 p-3 bg-green-500/20 border border-green-500/50 rounded">
                         <div className="flex items-center gap-2">
                           <Label className="text-green-400 text-xs">Fecha de Liquidación</Label>
-                          <Input 
-                            type="date" 
-                            value={contractForm.fecha_pago || new Date().toISOString().split('T')[0]} 
-                            onChange={(e) => setContractForm({...contractForm, fecha_pago: e.target.value})} 
-                            className="input-premium w-40" 
-                          />
+                          <div className="w-48">
+                            <DatePicker 
+                              value={contractForm.fecha_pago || new Date().toISOString().split('T')[0]} 
+                              onChange={(fecha_pago) => setContractForm({...contractForm, fecha_pago})} 
+                              placeholder="Fecha pago"
+                            />
+                          </div>
                         </div>
                         <p className="text-green-400 text-sm font-bold mt-2">✓ SERVICIOS LIQUIDADOS</p>
                       </div>
