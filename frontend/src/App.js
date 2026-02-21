@@ -46,7 +46,7 @@ const EventCard = ({ event }) => {
   );
 
   return (
-    <Card className="bg-white/5 border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all cursor-pointer group overflow-hidden">
+    <Card className="card-premium hover:border-gold/50 transition-all cursor-pointer group overflow-hidden">
       <div className="relative overflow-hidden">
         {hasPhoto ? (
           <img src={event.thumbnail} alt={event.name} className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
@@ -54,29 +54,29 @@ const EventCard = ({ event }) => {
           <AutoCover />
         )}
         <div className="absolute top-3 left-3 flex gap-1">
-          {event.has_photos && <Badge className="bg-pink-500/90 text-xs">📸 Fotos</Badge>}
-          {event.has_video360 && <Badge className="bg-cyan-500/90 text-xs">🎥 360°</Badge>}
+          {event.has_photos && <Badge className="badge-gold text-xs">Fotos</Badge>}
+          {event.has_video360 && <Badge className="badge-gold text-xs">360°</Badge>}
         </div>
-        <Badge className="absolute top-3 right-3 bg-black/60 text-xs">{event.date}</Badge>
+        <Badge className="absolute top-3 right-3 badge-gold text-xs">{event.date}</Badge>
       </div>
       <CardContent className="pt-4">
-        <h4 className="text-xl font-black text-white mb-1">{event.name}</h4>
-        <p className="text-gray-400 text-sm mb-3">{event.description}</p>
-        <div className="flex items-center gap-2 text-gray-500 text-sm mb-3">
-          <span>📍 {event.location}</span>
+        <h4 className="text-xl font-black text-pearl mb-1">{event.name}</h4>
+        <p className="text-pearl-muted text-sm mb-3">{event.description}</p>
+        <div className="flex items-center gap-2 text-pearl-muted/70 text-sm mb-3">
+          <span>{event.location}</span>
           {event.time && <span>• {event.time}</span>}
         </div>
         <div className="flex gap-2">
           {event.fotoshare_url && (
             <a href={event.fotoshare_url} target="_blank" rel="noopener noreferrer" className="flex-1">
-              <Button className="w-full bg-gradient-to-r from-pink-500 to-violet-500 hover:from-pink-600 hover:to-violet-600 text-sm">
-                📸 Ver Fotos
+              <Button className="w-full btn-gold text-sm">
+                Ver Fotos
               </Button>
             </a>
           )}
           {event.video360_url && (
             <a href={event.video360_url} target="_blank" rel="noopener noreferrer" className="flex-1">
-              <Button className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-sm">🎥 Ver 360°</Button>
+              <Button className="w-full btn-gold-outline text-sm">Ver 360°</Button>
             </a>
           )}
         </div>
