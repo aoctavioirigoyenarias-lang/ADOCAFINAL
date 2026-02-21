@@ -2114,20 +2114,49 @@ const PicPartyLive = () => {
                     </CardContent>
                   </Card>
                 ) : (
-                  /* Grid de galería */
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {galleryPhotos.map((photo, idx) => (
-                      <Card key={photo._id || idx} className="bg-white/5 border-white/10 overflow-hidden group">
-                        <div className="relative aspect-square">
+                  /* === INSTAGRAM-STYLE GRID === */
+                  <div className="grid grid-cols-3 gap-0.5 md:gap-1">
+                    {galleryPhotos.map((photo, idx) => {
+                      const photoId = photo.id || photo._id;
+                      const isLiked = likedPhotos.includes(photoId);
+                      const showHeartAnim = likeAnimation === photoId;
+                      
+                      return (
+                        <div 
+                          key={photoId || idx} 
+                          className="relative aspect-square cursor-pointer overflow-hidden bg-black/20"
+                          onClick={() => handlePhotoTap(photo, idx)}
+                        >
                           <img 
                             src={photo.thumbnail_url || photo.cloudinary_url} 
-                            alt="Foto del evento"
-                            className="w-full h-full object-cover"
+                            alt=""
+                            className="w-full h-full object-cover transition-transform duration-200 hover:scale-105"
                             loading="lazy"
+                            draggable={false}
                           />
-                          {/* Overlay limpio - sin reacciones para fotos protagonistas */}
+                          
+                          {/* Heart animation on double tap */}
+                          {showHeartAnim && (
+                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                              <div className="animate-ping">
+                                <svg className="w-20 h-20 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24">
+                                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Small heart indicator if liked */}
+                          {isLiked && !showHeartAnim && (
+                            <div className="absolute bottom-2 right-2">
+                              <svg className="w-5 h-5 text-red-500 drop-shadow" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                              </svg>
+                            </div>
+                          )}
                         </div>
-                      </Card>
+                      );
+                    })}
                     ))}
                     {galleryPhotos.length === 0 && (
                       <div className="col-span-full text-center py-12">
