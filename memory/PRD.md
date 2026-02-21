@@ -1,127 +1,141 @@
 # PICPARTYLIVE - Product Requirements Document
 
-## Original Problem Statement
-Plataforma de fotos en vivo para eventos (bodas, quinceaños, fiestas). Permite a los invitados subir y ver fotos en tiempo real con proyección en pantalla.
+## Descripción del Producto
+PICPARTYLIVE es una plataforma de galería de fotos en vivo para eventos, que permite a los invitados subir fotos desde el navegador y verlas en tiempo real en la pantalla del evento.
 
-## Core Features Implemented
-
-### Admin Panel (`/admin`)
-- Login protegido (Usuario: OCTAVIO, Pass: CHELO1980)
-- Crear/editar sesiones Live con código automático de 4 dígitos
-- Teléfono del cliente obligatorio (sin límite de caracteres - acepta 10+ dígitos)
-- Últimos 4 dígitos del teléfono = clave de descarga
-- Botón "Sincronizar Cloudinary" para importar fotos externas
-- QR automático para cada evento
-- Ordenamiento por fecha de creación descendente (más recientes primero)
-- **PDFs optimizados para impresión B&W** (logo fijo, grises 10%, sin colores)
-
-### Sistema de Contratos (2 páginas PDF)
-- **Servicios dinámicos**: Cabina de Fotos, Video 360, Key Moments, PicPartyLive
-- **Precios personalizables** por servicio
-- **Nota automática PicPartyLive**: "Internet y pantallas por cuenta del anfitrión"
-- **Cláusulas legales** incluidas:
-  1. PRECIOS NETOS - Todos los montos son NETO
-  2. ANTICIPO Y LIQUIDACION - Si anticipo es $0, pago antes del evento
-  3. CONDICIONES CLIMATICAS - Cliente protege el equipo, tiempo perdido no reembolsable
-  4. DAÑOS AL EQUIPO - Cliente responsable de daños
-  5. CANCELACION - 15 días anticipación
-  6. DERECHOS DE IMAGEN
-  7. VIGENCIA - 15 días
-- **Apartado Administrativo (NO se imprime)**:
-  - Estatus de Anticipo: "Liquidado", "Pendiente", "Día del Evento"
-  - Monto de Anticipo recibido
-  - Costo Proveedor (gasto real)
-  - Utilidad Neta automática (Precio Neto - Costo Proveedor)
-- **Sección de firmas** al final del documento
-
-### Cotizador (`/cotizador`)
-- PICPARTYLIVE como primera opción (Paso 1, con badge "RECOMENDADO")
-- Precios: $1,000 NETO solo / $700 NETO en combo con Cabina o 360
-- Teléfono opcional
-- Genera PDF con folio único (optimizado B&W)
-
-### Galería Live (`/live?code=XXXX`) - Estilo Instagram
-- **Grid 3 columnas** compacto sin espacios
-- **Double tap para like** con animación de corazón
-- **Lightbox fullscreen** al tocar una foto
-- Navegación con flechas y contador de fotos
-- Header minimalista (solo nombre + contador)
-- Tabs con iconos (subir + galería)
-- Descarga protegida con clave (últimos 4 dígitos del teléfono)
-- Likes persistentes en localStorage
-
-### Landing Page (`/picpartylive`)
-- Página de ventas con demo interactivo
-- Botón "Prueba GRATIS" genera demo temporal (24 horas)
-
-### Demo Mode
-- Sesiones temporales con prefijo DEMO-
-- Auto-limpieza después de 24 horas (apscheduler)
-
-## PDFs Optimizados para Impresión B&W
-- **Logo PicParty**: Fijo en esquina superior izquierda (35-40mm ancho)
-- **Cabeceras de tablas**: Gris claro 10% (RGB 245,245,245)
-- **Texto principal**: Gris Oxford (RGB 40,40,40)
-- **Total/Precio Neto**: Recuadro gris oscuro (RGB 50,50,50) con texto blanco
-- **Sin emojis**: Texto limpio sin caracteres especiales
-- **Contratos**: 2 páginas con cláusulas legales y firmas
-
-## Technical Stack
-- **Frontend**: React, React Router, Tailwind CSS, Shadcn/UI, jsPDF
-- **Backend**: FastAPI, Python
+## Stack Tecnológico
+- **Frontend**: React, React Router, Tailwind CSS, Shadcn/UI
+- **Backend**: FastAPI, Python, Pydantic
 - **Database**: MongoDB
-- **Auth**: JWT (Passlib, python-jose)
-- **Storage**: Cloudinary
-- **Background Jobs**: apscheduler
+- **File Storage**: Cloudinary
+- **Authentication**: JWT (Admin)
+- **PDF Generation**: jsPDF
 
-## Key Endpoints
-- `POST /api/live/sessions/create` - Crear sesión
-- `POST /api/live/sync-cloudinary/{code}` - Sincronizar fotos de Cloudinary
-- `GET /api/live/sessions` - Listar sesiones
-- `POST /api/quotes` - Crear cotización
-- `POST /api/contracts` - Crear contrato (con campos administrativos)
-- `POST /api/demo-session` - Crear demo temporal
+## Paleta de Colores (Premium Theme)
+- **Morado Noche** (`--premium-night: #0d0a14`): Fondo principal
+- **Púrpura Premium** (`--premium-purple: #1a1025`): Fondos secundarios
+- **Dorado Elegante** (`--premium-gold: #d4af37`): Acentos, botones CTA
+- **Dorado Claro** (`--premium-gold-light: #e8c968`): Hover states
+- **Blanco Perla** (`--premium-pearl: #f5f3f0`): Texto principal
+- **Perla Muted** (`--premium-pearl-muted: #c9c5c0`): Texto secundario
 
-## Key DB Schema
-### Contract Model
+## Rutas de la Aplicación
+- `/` - Galería principal de eventos
+- `/cotizador` - Generador de cotizaciones
+- `/picpartylive` - Landing page de ventas
+- `/live` - Galería en vivo para invitados
+- `/admin` - Panel de administración (protegido)
+
+## Credenciales de Admin
+- Usuario: `OCTAVIO`
+- Password: `CHELO1980`
+
+## Funcionalidades Implementadas
+
+### 1. Panel de Administración (Completado)
+- Login seguro con credenciales hardcodeadas
+- Gestión de contratos con precios netos
+- Generación de PDFs de contratos (2 páginas, B&W optimizado)
+- Gestión de sesiones PICPARTYLIVE
+- Sincronización con Cloudinary
+- Códigos QR para eventos
+
+### 2. Cotizador (Completado)
+- Catálogo de precios fijos (Cabina, Video 360, PICPARTYLIVE)
+- Descuentos automáticos por combo
+- Generación de PDF de cotización
+- Folio único por cotización
+
+### 3. Galería en Vivo (Completado)
+- Subida de fotos desde navegador
+- Galería estilo Instagram (3 columnas)
+- Lightbox fullscreen
+- Doble-tap para dar like
+- Modo proyección (Slideshow, Mosaico, Pop-up)
+- Descarga de fotos con contraseña
+
+### 4. Landing Page de Ventas (Completado)
+- Hero section con CTA
+- Features destacadas
+- Precios NETO
+- Demo gratuita 24h
+
+### 5. Visual Design (Completado - Diciembre 2025)
+- Paleta Premium implementada globalmente
+- Dark mode activado
+- Botones dorados destacados
+- Cards con glassmorphism
+- Headers premium con backdrop blur
+
+## Catálogo de Precios NETO
+
+### Cabina de Fotos
+- 2 horas: $2,699
+- 3 horas: $3,299
+- 4 horas: $3,799
+- 5 horas: $4,699
+
+### Video 360°
+- 2 horas: $3,299
+- 3 horas: $3,899
+- 4 horas: $4,499
+- 5 horas: $4,999
+
+### PICPARTYLIVE
+- Solo: $1,000 NETO (Promo Expo)
+- Con Cabina/360: $700 NETO (Precio combo)
+- Normal: $1,500 NETO
+
+### Key Moments
+- 80 piezas: $2,999
+- 100 piezas: $3,250
+- 140 piezas: $3,499
+- 200 piezas: $4,499
+
+## Integraciones de Terceros
+- **Cloudinary**: Almacenamiento de fotos (credentials en backend/.env)
+- **MongoDB**: Base de datos principal
+- **jsPDF**: Generación de PDFs en frontend
+
+## Estructura de Archivos Clave
 ```
-{
-  client_name, client_phone, client_email,
-  event_name, salon, event_date, event_time, service_time, duration_hours,
-  contract_type: "public" | "special",
-  // Servicios
-  include_cabina, price_cabina,
-  include_video360, price_video360,
-  include_key_moments, price_key_moments,
-  include_live, price_live,
-  // Totales
-  subtotal, discount_percent, discount_amount, net_price,
-  // Campos Administrativos (NO SE IMPRIMEN)
-  anticipo_status: "pendiente" | "liquidado" | "dia_evento",
-  anticipo_amount: Number | null,
-  costo_proveedor: Number | null,
-  utilidad_neta: Number | null
-}
+/app/
+├── backend/
+│   ├── .env                   # Credentials (Cloudinary, MongoDB)
+│   ├── server.py              # FastAPI application
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── App.js             # Aplicación React completa
+│   │   └── index.css          # Estilos Premium + Shadcn
+│   ├── tailwind.config.js     # Configuración con colores Premium
+│   └── package.json
+└── memory/
+    └── PRD.md
 ```
 
-## Pending Items
-~~1. **Cloudinary Sync** - Requiere API keys del usuario para funcionar~~
-   - ✅ COMPLETADO - 32 fotos sincronizadas exitosamente
+## Tareas Pendientes (Backlog)
 
-## Cloudinary Configuration
-- CLOUDINARY_CLOUD_NAME: dpvliv2wl
-- CLOUDINARY_API_KEY: configurado
-- CLOUDINARY_API_SECRET: configurado
-- Carpeta de prueba: `ADOCA/FEBRERO/28-02-26/PUBLICO_EXPO_BODA`
+### P2 - Refactoring
+- [ ] Descomponer `frontend/src/App.js` en componentes modulares
+- [ ] Organizar `backend/server.py` en rutas/modelos/servicios
+- [ ] Implementar tests automatizados
 
-## Future Tasks (Backlog)
-- [ ] Refactorizar App.js en componentes más pequeños
-- [ ] Refactorizar server.py en estructura modular
-- [ ] Desarrollar ruta /live-tv para proyección dedicada
+### P3 - Mejoras Futuras
+- [ ] Desarrollar ruta `/live-tv` para proyector
+- [ ] Añadir analytics de eventos
+- [ ] Implementar notificaciones push
 
-## Admin Credentials
-- Usuario: OCTAVIO
-- Password: CHELO1980
+## Changelog
 
-## Last Updated
-December 2025 - Contrato legal 2 páginas con cláusulas completas
+### Diciembre 2025
+- ✅ Implementación completa de paleta Premium (Morado Noche + Dorado Elegante)
+- ✅ Dark mode activado globalmente
+- ✅ Actualización de todos los componentes con nuevos estilos
+- ✅ Botón de "Subir Fotos" destacado en dorado
+
+### Versiones Anteriores
+- ✅ Sincronización con Cloudinary
+- ✅ Galería estilo Instagram con lightbox
+- ✅ Generación de contratos PDF profesionales
+- ✅ Sistema de cotización con precios NETO
