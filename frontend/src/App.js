@@ -4276,7 +4276,7 @@ const AdminPanel = () => {
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   <Input placeholder="NOMBRE *" value={newEvent.name} onChange={(e) => setNewEvent({...newEvent, name: e.target.value.toUpperCase()})} className="input-premium" />
                   <div className="relative">
-                    <Input type="date" value={newEvent.date} onChange={(e) => setNewEvent({...newEvent, date: e.target.value})} className="input-premium" />
+                    <DatePicker value={newEvent.date} onChange={(date) => setNewEvent({...newEvent, date})} placeholder="Fecha *" />
                   </div>
                   <Input placeholder="URL Fotoshare (IFRAME)" value={newEvent.fotoshare_url} onChange={(e) => setNewEvent({...newEvent, fotoshare_url: e.target.value})} className="input-premium" />
                   <Input placeholder="URL Video 360" value={newEvent.video360_url} onChange={(e) => setNewEvent({...newEvent, video360_url: e.target.value})} className="input-premium" />
