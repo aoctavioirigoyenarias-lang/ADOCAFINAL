@@ -3409,30 +3409,43 @@ const AdminPanel = () => {
                     <Textarea value={contractForm.notes} onChange={(e) => setContractForm({...contractForm, notes: e.target.value})} className="input-premium" rows={2} />
                   </div>
 
-                  {/* === APARTADO DE PROVEEDOR (USO INTERNO) === */}
+                  {/* Cortesía / Regalo */}
+                  <div className="p-3 bg-gold/10 border border-gold/30 rounded">
+                    <Label className="text-gold font-bold text-sm">Cortesía / Regalo</Label>
+                    <Input 
+                      placeholder="Ej: Foto impresa 20x30, Marco de madera, etc." 
+                      value={contractForm.cortesia || ""} 
+                      onChange={(e) => setContractForm({...contractForm, cortesia: e.target.value})} 
+                      className="input-premium mt-1" 
+                    />
+                    <p className="text-pearl-muted text-xs mt-1">Se imprimirá en el contrato como cortesía incluida</p>
+                  </div>
+
+                  {/* === APARTADO DE PAGOS (USO INTERNO) === */}
                   <div className="p-4 bg-night/70 border border-pearl-muted/20 rounded-lg">
                     <h4 className="text-pearl-muted font-bold text-sm mb-3 flex items-center gap-2">
-                      <span className="w-5 h-5 bg-pearl-muted/20 rounded flex items-center justify-center text-xs">i</span>
-                      APARTADO ADMINISTRATIVO (Uso Interno)
+                      <span className="w-5 h-5 bg-pearl-muted/20 rounded flex items-center justify-center text-xs">$</span>
+                      APARTADO DE PAGOS (Uso Interno)
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {/* Estatus de Anticipo */}
+                      {/* Abono de Servicio */}
                       <div>
-                        <Label className="text-pearl-muted text-xs">Estatus Anticipo</Label>
+                        <Label className="text-pearl-muted text-xs">Abono de Servicio</Label>
                         <Select value={contractForm.anticipo_status} onValueChange={(v) => setContractForm({...contractForm, anticipo_status: v})}>
                           <SelectTrigger className="bg-night border-pearl-muted/30 text-pearl mt-1">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="pendiente">Pendiente</SelectItem>
-                            <SelectItem value="liquidado">Liquidado</SelectItem>
+                            <SelectItem value="abonado">Abonado</SelectItem>
+                            <SelectItem value="pagado">PAGADO - Liquidado</SelectItem>
                             <SelectItem value="dia_evento">Día del Evento</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
-                      {/* Monto Anticipo */}
+                      {/* Monto Abono */}
                       <div>
-                        <Label className="text-pearl-muted text-xs">Monto Anticipo</Label>
+                        <Label className="text-pearl-muted text-xs">Monto Abono</Label>
                         <Input 
                           type="number" 
                           placeholder="$0" 
@@ -3458,6 +3471,22 @@ const AdminPanel = () => {
                         )}
                       </div>
                     </div>
+                    
+                    {/* Fecha de Pago (si está pagado) */}
+                    {contractForm.anticipo_status === "pagado" && (
+                      <div className="mt-3 p-3 bg-green-500/20 border border-green-500/50 rounded">
+                        <div className="flex items-center gap-2">
+                          <Label className="text-green-400 text-xs">Fecha de Liquidación</Label>
+                          <Input 
+                            type="date" 
+                            value={contractForm.fecha_pago || new Date().toISOString().split('T')[0]} 
+                            onChange={(e) => setContractForm({...contractForm, fecha_pago: e.target.value})} 
+                            className="input-premium w-40" 
+                          />
+                        </div>
+                        <p className="text-green-400 text-sm font-bold mt-2">✓ SERVICIOS LIQUIDADOS</p>
+                      </div>
+                    )}
                   </div>
 
                   {/* Botones */}
