@@ -1998,15 +1998,15 @@ const PicPartyLive = () => {
                     
                     {/* Pop-up de nueva foto */}
                     {newPhotoPopup && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/70 z-20">
+                      <div className="absolute inset-0 flex items-center justify-center bg-night/90 z-20">
                         <div className="relative" style={{ animation: 'scaleIn 0.5s ease-out' }}>
-                          <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-pink-500 px-4 py-1 rounded-full text-white font-bold">
-                            📸 ¡NUEVA FOTO!
+                          <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gold px-4 py-1 rounded-full text-night font-bold">
+                            ¡NUEVA FOTO!
                           </div>
                           <img 
                             src={newPhotoPopup.cloudinary_url}
                             alt="Nueva foto"
-                            className="max-w-[80vw] max-h-[80vh] object-contain rounded-xl shadow-2xl ring-4 ring-pink-500"
+                            className="max-w-[80vw] max-h-[80vh] object-contain rounded-xl shadow-2xl ring-4 ring-gold"
                           />
                         </div>
                       </div>
@@ -2015,7 +2015,7 @@ const PicPartyLive = () => {
                     {/* Mensaje de espera */}
                     {!newPhotoPopup && (
                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div className="text-center text-white/60">
+                        <div className="text-center text-pearl/60">
                           <div className="text-6xl mb-4 animate-pulse">📸</div>
                           <p className="text-xl">Esperando nuevas fotos...</p>
                         </div>
@@ -2027,10 +2027,10 @@ const PicPartyLive = () => {
                 {/* Sin fotos */}
                 {galleryPhotos.length === 0 && (
                   <div className="w-full h-full flex items-center justify-center">
-                    <div className="text-center text-white">
+                    <div className="text-center text-pearl">
                       <div className="text-8xl mb-4">📷</div>
                       <h3 className="text-2xl font-bold mb-2">Sin fotos aún</h3>
-                      <p className="text-gray-400">Las fotos aparecerán aquí en tiempo real</p>
+                      <p className="text-pearl-muted">Las fotos aparecerán aquí en tiempo real</p>
                     </div>
                   </div>
                 )}
