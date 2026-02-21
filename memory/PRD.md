@@ -102,9 +102,14 @@ Plataforma de fotos en vivo para eventos (bodas, quinceaños, fiestas). Permite 
 ```
 
 ## Pending Items
-1. **Cloudinary Sync** - Requiere API keys del usuario para funcionar
-   - CLOUDINARY_API_KEY
-   - CLOUDINARY_API_SECRET
+~~1. **Cloudinary Sync** - Requiere API keys del usuario para funcionar~~
+   - ✅ COMPLETADO - 32 fotos sincronizadas exitosamente
+
+## Cloudinary Configuration
+- CLOUDINARY_CLOUD_NAME: dpvliv2wl
+- CLOUDINARY_API_KEY: configurado
+- CLOUDINARY_API_SECRET: configurado
+- Carpeta de prueba: `ADOCA/FEBRERO/28-02-26/PUBLICO_EXPO_BODA`
 
 ## Future Tasks (Backlog)
 - [ ] Refactorizar App.js en componentes más pequeños
