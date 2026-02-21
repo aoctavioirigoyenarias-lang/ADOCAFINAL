@@ -3431,11 +3431,11 @@ const AdminPanel = () => {
                       )}
                     </div>
                     
-                    {/* PIC MOTION 360 */}
+                    {/* VIDEO 360 */}
                     <div className="p-3 bg-night/30 rounded">
                       <div className="flex items-center gap-2 mb-2">
                         <Checkbox checked={contractForm.include_video360} onCheckedChange={(c) => setContractForm({...contractForm, include_video360: c, video360_hours: c ? 2 : 0, price_video360: c ? CATALOGO_360[2] : 0})} />
-                        <Label className="text-gold font-bold">Pic Motion 360</Label>
+                        <Label className="text-gold font-bold">Video 360</Label>
                       </div>
                       {contractForm.include_video360 && (
                         <Select value={contractForm.video360_hours.toString()} onValueChange={(v) => setContractForm({...contractForm, video360_hours: parseInt(v), price_video360: CATALOGO_360[parseInt(v)]})}>
@@ -3489,17 +3489,6 @@ const AdminPanel = () => {
                       )}
                     </div>
                     
-                    {/* DESCUENTO EN PESOS */}
-                    <div className="p-3 bg-gold/10 border border-gold/30 rounded">
-                      <Label className="text-gold font-bold text-sm">Descuento ($)</Label>
-                      <Input 
-                        type="number" 
-                        placeholder="Ej: 500" 
-                        value={contractForm.discount_amount || ""} 
-                        onChange={(e) => setContractForm({...contractForm, discount_amount: parseInt(e.target.value) || 0})} 
-                        className="input-premium mt-1" 
-                      />
-                    </div>
                   </div>
 
                   {/* Precio Especial (solo si es contrato especial) */}
