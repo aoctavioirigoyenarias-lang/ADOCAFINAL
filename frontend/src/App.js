@@ -3284,8 +3284,18 @@ const AdminPanel = () => {
                       <Input placeholder="ej: 6:00 PM" value={contractForm.event_time} onChange={(e) => setContractForm({...contractForm, event_time: e.target.value})} className="input-premium" />
                     </div>
                     <div>
-                      <Label className="text-pearl">Horario Servicio</Label>
-                      <Input placeholder="ej: 7:00 PM - 11:00 PM" value={contractForm.service_time} onChange={(e) => setContractForm({...contractForm, service_time: e.target.value})} className="input-premium" />
+                      <Label className="text-pearl">Inicio de Servicio (Opcional)</Label>
+                      <Input placeholder="ej: 7:00 PM" value={contractForm.service_time} onChange={(e) => setContractForm({...contractForm, service_time: e.target.value})} className="input-premium" />
+                    </div>
+                  </div>
+
+                  {/* === TOTAL ACUMULADO EN TIEMPO REAL === */}
+                  <div className="p-3 bg-gold/20 border border-gold/40 rounded-lg">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gold font-bold">TOTAL ACUMULADO:</span>
+                      <span className="text-pearl text-2xl font-black">
+                        ${((contractForm.price_cabina || 0) + (contractForm.price_video360 || 0) + (contractForm.price_key_moments || 0) + (contractForm.price_live || 0) - (contractForm.discount_amount || 0)).toLocaleString()} NETO
+                      </span>
                     </div>
                   </div>
 
