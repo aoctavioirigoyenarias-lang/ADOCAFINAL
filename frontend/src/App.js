@@ -3197,11 +3197,11 @@ const AdminPanel = () => {
   // LOGIN SCREEN
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-950 via-violet-900 to-purple-950 flex items-center justify-center">
-        <Card className="w-full max-w-md bg-white/5 border-white/10">
+      <div className="min-h-screen bg-premium-radial flex items-center justify-center">
+        <Card className="w-full max-w-md card-premium">
           <CardHeader className="text-center">
             <img src={PICPARTY_LOGO} alt="PicParty" className="w-32 h-32 mx-auto mb-4" />
-            <CardTitle className="text-white text-2xl">Panel Admin</CardTitle>
+            <CardTitle className="text-gold text-2xl">Panel Admin</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
@@ -3210,7 +3210,7 @@ const AdminPanel = () => {
                   placeholder="Usuario" 
                   value={loginUser} 
                   onChange={(e) => setLoginUser(e.target.value.toUpperCase())} 
-                  className="bg-white/10 border-white/20 text-white"
+                  className="input-premium"
                   autoComplete="username"
                 />
               </div>
@@ -3220,32 +3220,32 @@ const AdminPanel = () => {
                   placeholder="Contraseña" 
                   value={loginPass} 
                   onChange={(e) => setLoginPass(e.target.value)} 
-                  className="bg-white/10 border-white/20 text-white"
+                  className="input-premium"
                   autoComplete="current-password"
                 />
               </div>
-              <Button type="submit" className="w-full bg-purple-500 hover:bg-purple-600">🔐 Ingresar</Button>
+              <Button type="submit" className="w-full btn-gold">Ingresar</Button>
             </form>
-            <Link to="/" className="block text-center mt-4 text-gray-400 hover:text-white">← Volver</Link>
+            <Link to="/" className="block text-center mt-4 text-pearl-muted hover:text-gold">← Volver</Link>
           </CardContent>
         </Card>
       </div>
     );
   }
 
-  if (loading) return <div className="min-h-screen bg-purple-950 flex items-center justify-center text-white">Cargando...</div>;
+  if (loading) return <div className="min-h-screen bg-night flex items-center justify-center text-pearl">Cargando...</div>;
 
   return (
-    <div className="min-h-screen bg-slate-900">
-      <header className="border-b border-white/10 bg-slate-800">
+    <div className="min-h-screen bg-night">
+      <header className="header-premium">
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <img src={PICPARTY_LOGO} alt="PicParty" className="h-10 w-10" />
-            <span className="text-xl font-bold text-white">Admin</span>
-            <Badge className="bg-green-500/20 text-green-400">🔐 Sesión activa</Badge>
+            <span className="text-xl font-bold text-gold">Admin</span>
+            <Badge className="badge-gold">Sesión activa</Badge>
           </div>
           <div className="flex gap-2">
-            <Link to="/"><Button variant="outline" className="border-white/20 text-white">← Inicio</Button></Link>
+            <Link to="/"><Button className="btn-gold-outline">← Inicio</Button></Link>
             <Button variant="destructive" onClick={() => { sessionStorage.removeItem("adminAuth"); setIsAuthenticated(false); }}>Salir</Button>
           </div>
         </div>
