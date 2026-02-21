@@ -3403,6 +3403,7 @@ const AdminPanel = () => {
         <Tabs defaultValue="contracts">
           <TabsList className="bg-night border border-gold/20">
             <TabsTrigger value="contracts" className="data-[state=active]:bg-gold data-[state=active]:text-night">Contratos ({contracts.length})</TabsTrigger>
+            <TabsTrigger value="reporte" className="data-[state=active]:bg-gold data-[state=active]:text-night">Reporte Pagos</TabsTrigger>
             <TabsTrigger value="events" className="data-[state=active]:bg-gold data-[state=active]:text-night">Galería Pro ({events.length})</TabsTrigger>
             <TabsTrigger value="live" className="data-[state=active]:bg-gold data-[state=active]:text-night">PICPARTYLIVE ({liveSessions.length})</TabsTrigger>
             <TabsTrigger value="cloudinary" className="data-[state=active]:bg-gold data-[state=active]:text-night">Cloudinary</TabsTrigger>
