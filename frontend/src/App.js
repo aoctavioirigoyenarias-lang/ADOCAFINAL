@@ -3217,14 +3217,7 @@ const AdminPanel = () => {
     
     // === HEADER PÁGINA 2 (mismo estilo) ===
     try {
-      const logoImg2 = new Image();
-      logoImg2.crossOrigin = "anonymous";
-      await new Promise((resolve, reject) => {
-        logoImg2.onload = resolve;
-        logoImg2.onerror = reject;
-        logoImg2.src = PICPARTY_LOGO + "?t=" + Date.now();
-      });
-      pdf.addImage(logoImg2, 'PNG', margin, 5, 30, 30);
+      pdf.addImage(PICPARTY_LOGO_BASE64, 'PNG', margin, 5, 30, 30);
     } catch(e) {
       console.error("Error cargando logo p2:", e);
       pdf.setFontSize(14);
