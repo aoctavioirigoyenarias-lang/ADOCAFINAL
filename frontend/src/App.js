@@ -22,7 +22,7 @@ import { jsPDF } from "jspdf";
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 const SITE_DOMAIN = "adoca.net";
-const PICPARTY_LOGO = "https://customer-assets.emergentagent.com/job_net-price-quotes/artifacts/udz3kgwy_logo%20pic%20party.png";
+const PICPARTY_LOGO = "https://customer-assets.emergentagent.com/job_a3564e90-ad20-475c-89a1-7a897b2adf08/artifacts/om0qxam1_logo%20pic%20party.png";
 
 // ============ DATEPICKER VISUAL ============
 const DatePicker = ({ value, onChange, placeholder = "Seleccionar fecha", className = "" }) => {
