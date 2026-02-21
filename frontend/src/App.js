@@ -3589,6 +3589,22 @@ const AdminPanel = () => {
                     </div>
                     <p className="text-pearl-muted/60 text-xs">* Suma automática de servicios. Puedes sobrescribir manualmente.</p>
                     
+                    {/* DESCUENTO O PROMOCIÓN */}
+                    <div className="flex justify-between items-center gap-4">
+                      <Label className="text-red-400">Descuento o Promoción:</Label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-red-400">-$</span>
+                        <Input 
+                          type="number" 
+                          placeholder="0" 
+                          value={contractForm.discount_amount || ""} 
+                          onChange={(e) => setContractForm({...contractForm, discount_amount: parseInt(e.target.value) || 0})} 
+                          className="input-premium w-32 text-right" 
+                        />
+                        <span className="text-red-400">MXN</span>
+                      </div>
+                    </div>
+                    
                     {/* ANTICIPO */}
                     <div className="flex justify-between items-center gap-4">
                       <Label className="text-pearl-muted">Anticipo recibido:</Label>
@@ -3605,19 +3621,26 @@ const AdminPanel = () => {
                       </div>
                     </div>
                     
-                    {/* SALDO EN TIEMPO REAL */}
+                    {/* SALDO EN TIEMPO REAL (considera descuento) */}
                     {(() => {
                       const totalCalc = contractForm.manual_total || ((contractForm.price_cabina || 0) + (contractForm.price_video360 || 0) + (contractForm.price_key_moments || 0) + (contractForm.price_live || 0));
-                      const saldo = totalCalc - (contractForm.anticipo_amount || 0);
+                      const totalConDescuento = totalCalc - (contractForm.discount_amount || 0);
+                      const saldo = totalConDescuento - (contractForm.anticipo_amount || 0);
                       return (
                         <>
+                          {contractForm.discount_amount > 0 && (
+                            <div className="flex justify-between items-center text-sm">
+                              <span className="text-pearl-muted">Total con descuento:</span>
+                              <span className="text-pearl">${totalConDescuento.toLocaleString()} MXN</span>
+                            </div>
+                          )}
                           <div className="flex justify-between items-center pt-3 border-t border-gold/30">
                             <span className="text-gold font-bold text-lg">SALDO:</span>
                             <span className={`text-2xl font-black ${saldo <= 0 ? 'text-green-400' : 'text-pearl'}`}>
                               ${Math.max(0, saldo).toLocaleString()} MXN
                             </span>
                           </div>
-                          {saldo <= 0 && totalCalc > 0 && (
+                          {saldo <= 0 && totalConDescuento > 0 && (
                             <div className="p-2 bg-green-500/20 border border-green-500/50 rounded text-center">
                               <span className="text-green-400 font-bold">✓ SERVICIO TOTALMENTE LIQUIDADO</span>
                             </div>
