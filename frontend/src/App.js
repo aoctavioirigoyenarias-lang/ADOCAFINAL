@@ -499,33 +499,33 @@ const Cotizador = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-violet-900 to-purple-950">
-      <header className="border-b border-white/10 backdrop-blur-sm bg-black/20 sticky top-0 z-10">
+    <div className="min-h-screen bg-premium-radial">
+      <header className="header-premium sticky top-0 z-10">
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           <Link to="/" className="flex items-center gap-2">
             <img src={PICPARTY_LOGO} alt="PicParty" className="h-10 w-10 object-contain" />
-            <span className="text-lg font-bold text-white">Cotizador</span>
+            <span className="text-lg font-bold text-gold">Cotizador</span>
           </Link>
-          <Link to="/"><Button variant="outline" size="sm" className="border-white/20 text-white">← Inicio</Button></Link>
+          <Link to="/"><Button className="btn-gold-outline">← Inicio</Button></Link>
         </div>
       </header>
 
       <main className="container mx-auto px-4 py-6 max-w-4xl">
         <div className="text-center mb-6">
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Cotiza tu Evento</h1>
-          <Badge className="bg-green-500/20 text-green-400">Precios Netos</Badge>
+          <h1 className="text-3xl md:text-4xl font-bold text-pearl mb-2">Cotiza tu Evento</h1>
+          <Badge className="badge-gold">Precios Netos</Badge>
         </div>
 
         <div className="space-y-6">
           {/* ========== PASO 1: PICPARTYLIVE (PRIORIDAD) ========== */}
-          <Card className="bg-gradient-to-br from-pink-900/30 to-purple-900/30 border-pink-500/50">
+          <Card className="card-premium border-gold/30">
             <CardHeader className="pb-3">
-              <CardTitle className="text-white text-xl flex items-center gap-2">
-                <span className="bg-pink-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">1</span>
-                <span className="text-pink-400">🔴 PICPARTYLIVE</span>
-                <Badge className="bg-pink-500/30 text-pink-200 text-xs ml-2">RECOMENDADO</Badge>
+              <CardTitle className="text-pearl text-xl flex items-center gap-2">
+                <span className="bg-gold text-night w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                <span className="text-gold">PICPARTYLIVE</span>
+                <Badge className="badge-gold text-xs ml-2">RECOMENDADO</Badge>
               </CardTitle>
-              <CardDescription className="text-gray-300">
+              <CardDescription className="text-pearl-muted">
                 Muro en vivo con almacenamiento ILIMITADO por 6 meses. Software de proyección en tiempo real. ¡Cero aplicaciones!
               </CardDescription>
             </CardHeader>
@@ -533,7 +533,7 @@ const Cotizador = () => {
               <div className="flex gap-4">
                 <Button 
                   variant={includeLive ? "default" : "outline"}
-                  className={`flex-1 h-16 text-lg ${includeLive ? "bg-pink-500 hover:bg-pink-600 text-white" : "border-pink-500/50 text-pink-300 hover:bg-pink-500/20"}`}
+                  className={`flex-1 h-16 text-lg ${includeLive ? "btn-gold" : "btn-gold-outline"}`}
                   onClick={() => setIncludeLive(!includeLive)}
                   data-testid="picpartylive-toggle"
                 >
@@ -543,33 +543,33 @@ const Cotizador = () => {
               
               {/* Precio dinámico */}
               {includeLive && (
-                <div className="p-4 bg-black/30 rounded-lg">
+                <div className="p-4 bg-night/50 rounded-lg border border-gold/20">
                   <div className="flex justify-between items-center">
                     <div>
-                      <p className="text-white font-semibold">
-                        {mainService ? "🎉 ¡COMBO ACTIVO!" : "PICPARTYLIVE Solo"}
+                      <p className="text-pearl font-semibold">
+                        {mainService ? "¡COMBO ACTIVO!" : "PICPARTYLIVE Solo"}
                       </p>
-                      <p className="text-gray-400 text-sm">
+                      <p className="text-pearl-muted text-sm">
                         {mainService 
                           ? "Al agregar Cabina o Video 360° abajo" 
                           : "Agrega un servicio abajo para precio especial"}
                       </p>
                     </div>
                     <div className="text-right">
-                      <span className="text-3xl font-black text-pink-400">
+                      <span className="text-3xl font-black text-gold">
                         {formatCurrency(getLivePrice())}
                       </span>
-                      <span className="text-gray-400 text-xs block">NETO</span>
+                      <span className="text-pearl-muted text-xs block">NETO</span>
                     </div>
                   </div>
                   
                   {/* BANNER DE AHORRO */}
                   {mainService && (
-                    <div className="mt-3 p-3 bg-green-500/20 border border-green-500/50 rounded-lg animate-pulse">
-                      <p className="text-green-400 text-center font-bold text-lg">
-                        💰 ¡ESTÁS GANANDO $800 DE DESCUENTO!
+                    <div className="mt-3 p-3 bg-gold/10 border border-gold/30 rounded-lg animate-pulse">
+                      <p className="text-gold text-center font-bold text-lg">
+                        ¡ESTÁS GANANDO $800 DE DESCUENTO!
                       </p>
-                      <p className="text-green-300 text-center text-xs">
+                      <p className="text-gold/80 text-center text-xs">
                         Precio normal $1,500 → Tu precio $700
                       </p>
                     </div>
@@ -578,9 +578,9 @@ const Cotizador = () => {
               )}
               
               {!includeLive && (
-                <p className="text-gray-500 text-sm text-center">
-                  Precio: <strong className="text-pink-400">$1,000 NETO</strong> solo, 
-                  o <strong className="text-green-400">$700 NETO</strong> con Cabina/360
+                <p className="text-pearl-muted text-sm text-center">
+                  Precio: <strong className="text-gold">$1,000 NETO</strong> solo, 
+                  o <strong className="text-gold">$700 NETO</strong> con Cabina/360
                 </p>
               )}
             </CardContent>
