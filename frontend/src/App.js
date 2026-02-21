@@ -3564,12 +3564,12 @@ const AdminPanel = () => {
                   <div className="p-4 bg-night/70 border border-pearl-muted/20 rounded-lg">
                     <h4 className="text-pearl-muted font-bold text-sm mb-3 flex items-center gap-2">
                       <span className="w-5 h-5 bg-pearl-muted/20 rounded flex items-center justify-center text-xs">$</span>
-                      APARTADO DE PAGOS (Uso Interno)
+                      USO INTERNO
                     </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {/* Abono de Servicio */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Estado del Pago */}
                       <div>
-                        <Label className="text-pearl-muted text-xs">Abono de Servicio</Label>
+                        <Label className="text-pearl-muted text-xs">Estado del Pago</Label>
                         <Select value={contractForm.anticipo_status} onValueChange={(v) => setContractForm({...contractForm, anticipo_status: v})}>
                           <SelectTrigger className="bg-night border-pearl-muted/30 text-pearl mt-1">
                             <SelectValue />
@@ -3582,17 +3582,6 @@ const AdminPanel = () => {
                           </SelectContent>
                         </Select>
                       </div>
-                      {/* Monto Abono */}
-                      <div>
-                        <Label className="text-pearl-muted text-xs">Monto Abono</Label>
-                        <Input 
-                          type="number" 
-                          placeholder="$0" 
-                          value={contractForm.anticipo_amount || ""} 
-                          onChange={(e) => setContractForm({...contractForm, anticipo_amount: parseInt(e.target.value) || null})} 
-                          className="input-premium mt-1" 
-                        />
-                      </div>
                       {/* Costo Proveedor */}
                       <div>
                         <Label className="text-pearl-muted text-xs">Costo Proveedor</Label>
@@ -3603,9 +3592,9 @@ const AdminPanel = () => {
                           onChange={(e) => setContractForm({...contractForm, costo_proveedor: parseInt(e.target.value) || null})} 
                           className="input-premium mt-1" 
                         />
-                        {contractForm.costo_proveedor && contractPreview && (
+                        {contractForm.costo_proveedor && contractForm.manual_total > 0 && (
                           <p className="text-gold text-xs mt-1">
-                            Utilidad: ${(contractPreview.netPrice - contractForm.costo_proveedor).toLocaleString()}
+                            Utilidad: ${(contractForm.manual_total - contractForm.costo_proveedor).toLocaleString()}
                           </p>
                         )}
                       </div>
