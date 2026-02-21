@@ -1749,14 +1749,14 @@ const PicPartyLive = () => {
                   <div className="w-20 h-20 mx-auto mb-4">
                     <img src={PICPARTY_LOGO} alt="PicParty" className="w-full h-full object-contain" />
                   </div>
-                  <h1 className="text-3xl font-black text-white mb-2">
+                  <h1 className="text-3xl font-black text-pearl mb-2">
                     Bienvenido
                   </h1>
-                  <p className="text-2xl font-bold bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">
+                  <p className="text-2xl font-bold text-gold">
                     {session.event_name}
                   </p>
                   {session.event_type && (
-                    <Badge className="mt-3 bg-purple-500/30 text-purple-200 text-base px-4 py-1">
+                    <Badge className="mt-3 badge-gold text-base px-4 py-1">
                       {session.event_type === 'boda' && 'Boda'}
                       {session.event_type === 'quinceanios' && 'Quinceaños'}
                       {session.event_type === 'cumpleanos' && 'Cumpleaños'}
@@ -1766,14 +1766,14 @@ const PicPartyLive = () => {
                       {session.event_type === 'otro' && `${session.event_type_custom || 'Evento'}`}
                     </Badge>
                   )}
-                  <p className="text-gray-400 mt-3">{galleryPhotos.length} fotos en la galería</p>
+                  <p className="text-pearl-muted mt-3">{galleryPhotos.length} fotos en la galería</p>
                 </div>
 
                 {/* 3 BOTONES PRINCIPALES */}
                 <div className="grid gap-4 mb-8">
                   {/* Botón PROYECTAR */}
                   <Button
-                    className="h-24 text-xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 shadow-lg shadow-cyan-500/30"
+                    className="h-24 text-xl font-bold card-premium border-gold/30 hover:border-gold/50 text-pearl"
                     onClick={() => setViewMode("projection-select")}
                   >
                     <div className="flex items-center gap-4">
@@ -1785,23 +1785,24 @@ const PicPartyLive = () => {
                     </div>
                   </Button>
 
-                  {/* Botón VER GALERÍA */}
+                  {/* Botón VER GALERÍA - DESTACADO EN DORADO */}
                   <Button
-                    className="h-24 text-xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 shadow-lg shadow-pink-500/30"
+                    className="h-24 text-xl font-bold btn-upload-gold"
                     onClick={() => setViewMode("gallery")}
+                    data-testid="btn-ver-galeria"
                   >
                     <div className="flex items-center gap-4">
                       <span className="text-4xl">📸</span>
                       <div className="text-left">
-                        <div>VER GALERÍA</div>
-                        <div className="text-sm font-normal opacity-80">Ver fotos y subir nuevas</div>
+                        <div>SUBIR / VER FOTOS</div>
+                        <div className="text-sm font-normal opacity-80">Sube fotos y ve la galería</div>
                       </div>
                     </div>
                   </Button>
 
                   {/* Botón DESCARGAR */}
                   <Button
-                    className="h-24 text-xl font-bold bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-700 hover:to-emerald-600 shadow-lg shadow-green-500/30"
+                    className="h-24 text-xl font-bold card-premium border-gold/30 hover:border-gold/50 text-pearl"
                     onClick={() => setViewMode("download")}
                   >
                     <div className="flex items-center gap-4">
@@ -1817,7 +1818,7 @@ const PicPartyLive = () => {
                 {/* Botón salir pequeño */}
                 <Button 
                   variant="ghost" 
-                  className="w-full text-gray-400 hover:text-white text-sm"
+                  className="w-full text-pearl-muted hover:text-gold text-sm"
                   onClick={handleLogout}
                 >
                   ← Salir del evento
