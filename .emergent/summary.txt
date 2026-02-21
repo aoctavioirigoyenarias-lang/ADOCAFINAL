@@ -1,74 +1,89 @@
 <analysis>**original_problem_statement:**
-The user's initial goal was to repair a non-existent application, which evolved into a complete rebuild of a live event photo-sharing platform called PICPARTYLIVE. The application is built from scratch based on a series of iterative, detailed prompts from the user.
+The user's initial goal was to build a live event photo-sharing platform, PICPARTYLIVE. This has evolved through a series of rapid, imperative prompts into an advanced administrative tool with a primary focus on sophisticated contract and quote generation.
 
-**Consolidated Product Requirements (based on all user prompts):**
-1.  **Branding & Core Routes**: The site is branded PICPARTYLIVE (and also referred to as ADOCA.NET). Key routes include  (main landing),  (guest access),  (quotes), and  (management).
-2.  **Admin Security & Privacy**: The  route is protected by a login (User: , Pass: ). Hardcoded identifiers have been removed from the UI.
-3.  **Admin Panel Features**:
-    *   Create, view, and edit live events, sorted with the newest on top.
-    *   Generate and manage professional, B&W-optimized, 2-page PDF contracts with dynamic pricing, legal clauses, and private admin fields (cost, profit).
-    *   **Cloudinary Sync**: A button to manually sync photos from a Cloudinary folder into the app's database.
-4.  **Guest Experience ( route)**:
-    *   An Instagram-style gallery experience with a 3-column grid, fullscreen photo viewer (lightbox), and double-tap-to-like functionality.
-    *   Guest photo uploads.
-    *   A protected feature to download all event photos as a ZIP.
-5.  **Sales & Quoting ()**:
-    *   A mobile-first quote generator with a fixed price catalog for services (sold by hours or pieces).
-    *   Generates a professional PDF of the quote.
-6.  **Visual Style**: The application must have a Premium look and feel, using a Morado Noche (deep purple/black) background, Dorado Elegante (soft gold) for accents and buttons, and Blanco Perlado for text.
+**Consolidated Product Requirements (based on latest user prompts):**
+1.  **Visual Identity**: A Premium dark theme using a Morado Noche () background, Dorado Elegante (gold) accents, and Blanco Perlado text. The header button must say EN VIVO.
+2.  **Admin Panel & Event Management**:
+    *   An admin panel at  (User: , Pass: ).
+    *   Ability to create and **edit** existing live events (Name, Date, URL). The 'Correo' field is removed from creation.
+    *   The date input must be a visual DatePicker calendar.
+3.  **Guest Gallery ( route)**:
+    *   An Instagram-style gallery with simplified event cards (only Name and Date).
+    *   **Double-tap-to-like** functionality on photos, showing an animated heart.
+    *   A like counter and heart icon under each photo.
+    *   Single-tap on a photo opens it in a fullscreen lightbox with a black background.
+4.  **Advanced PDF Contract Generation ( and Admin)**:
+    *   The application must generate a **2-page PDF contract** that is a clone of a specific example provided by the user.
+    *   **Page 1**: Header with logo, service details, and 6 full legal clauses.
+    *   **Page 2**: A table of SERVICIOS CONTRATADOS, a payment summary (Abono, Saldo), and signature areas.
+    *   **Folio System**: Automatically generate a unique folio number (e.g., ).
+    *   **Dynamic Calculations**: The PDF must show the deposit amount (), calculate the remaining balance (), and display ** SERVICIO TOTALMENTE LIQUIDADO ** if the balance is zero.
+    *   **UI for Contract Creation**: Must show a live running total as services are selected. Fields like 'Salón / Lugar' and 'Descuento' are removed. It includes an optional 'Inicio de Servicio' time and a 'Cortesía / Regalo' text field that prints on the contract.
 
 **User's preferred language**: Spanish. The next agent MUST respond in Spanish.
 
 **what currently exists?**
-A full-stack application with a React frontend and a FastAPI backend. The entire application logic is in two monolithic files:  and . The app includes a functional admin panel with advanced contract generation, a quote generator with a fixed price catalog, a fully functional Cloudinary photo sync, and a guest gallery with an Instagram-style UI/UX (lightbox, double-tap likes). The implementation of a new Premium color palette (deep purple and gold) has been started but is not complete, resulting in an inconsistent UI.
+A full-stack application with a React frontend and a FastAPI backend, both in monolithic files (, ). The Premium visual theme is fully implemented and consistent across the app. The admin panel has been significantly upgraded with event editing, a date picker, and a highly customized contract creation form. The guest gallery now includes the double-tap-to-like feature. The backend models and API endpoints have been updated to support these new features. The previous PDF generation logic is still in place but is about to be completely replaced.
 
 **Last working item**:
--   **Last item agent was working**: The agent was implementing the user's request for a Premium visual overhaul. This involved changing the application's color scheme to a Morado Noche (deep purple) background, Dorado Elegante (gold) accents, and Blanco Perlado (off-white) text. The agent began by adding new CSS variables for this palette to .
+-   **Last item agent was working**: The agent began a complete rewrite of the PDF contract generation logic within the  function in . The goal is to clone a specific 2-page contract layout provided by the user, including a new folio system, dynamic payment calculations, and a precise visual structure.
 -   **Status**: IN PROGRESS
 -   **Agent Testing Done**: N
--   **Which testing method agent to use?** screenshot tool. The agent needs to replace all old color classes in  with the new CSS variables and then take a screenshot of the main pages (gallery, admin, cotizador) to verify a consistent and correct application of the new theme.
+-   **Which testing method agent to use?** Manual user testing. The agent should complete the implementation, then create a contract in the UI, generate the PDF, and instruct the user to download and verify that the PDF matches the required 2-page layout and contains all the correct dynamic information (folio, payments, etc.).
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   Issue 1: Complete and Verify Premium Color Palette Implementation (Priority: P0)
+-   Issue 1: Complete the rewrite of the PDF Contract Generation (Priority: P0)
 
 **Issues Detail**:
 -   **Issue 1**:
-    -   **Description**: The user requested a complete visual overhaul to a Premium theme (deep purple background, gold accents). The agent has started applying CSS changes in  but has not updated the components in , leaving the UI in a visually inconsistent state.
-    -   **Attempted fixes**: New CSS variables (, , etc.) were added to  and applied to the  tag.
+    -   **Description**: The current  function does not meet the user's latest, very specific requirement for a 2-page contract that clones a provided example. The entire function needs to be rewritten using  to create the new structure, layout, and dynamic content.
+    -   **Attempted fixes**: The agent has identified the  function as the target for the rewrite but has not yet written the new code.
     -   **Next debug checklist**:
-        1.  Open .
-        2.  Systematically search for and replace all instances of hardcoded Tailwind CSS color utilities (e.g., , , , ) with the new CSS variables (e.g., , , , ).
-        3.  Pay close attention to buttons, modals, forms, headers, and backgrounds across all sections (Admin, Cotizador, Gallery, Landing Page).
-        4.  After making the changes, take a screenshot of the main gallery page to confirm the new theme is applied consistently.
-    -   **Why fix this issue and what will be achieved with the fix?**: To fulfill the user's latest critical design request and deliver a visually cohesive, premium-looking application.
+        1.  Open  and locate the  function.
+        2.  Implement the 2-page structure using .
+        3.  **Page 1**: Add the header (logo, text), and the 6 full legal clauses.
+        4.  **Page 2**: Create the SERVICIOS CONTRATADOS table, the payment summary section, and the signature lines.
+        5.  Implement the folio generation logic (e.g., ).
+        6.  Implement the payment calculation logic: display the deposit (), calculate and display the remaining .
+        7.  Add conditional logic to print ** SERVICIO TOTALMENTE LIQUIDADO ** if the balance is zero.
+        8.  Add the required footer to both pages: .
+    -   **Why fix this issue and what will be achieved with the fix?**: This is the user's final and most critical requirement to deliver a professional, standardized contract that matches their business's branding and workflow.
     -   **Status**: IN PROGRESS
     -   **Is recurring issue?**: N
     -   **Should Test frontend/backend/both after fix?**: Frontend
     -   **Blocked on other issue**: None
 
 **In progress Task List**:
--   **Task 1**: Apply Premium Color Palette to All Components.
-    -   **Where to resume**: .
-    -   **What will be achieved with this?**: A visually consistent application that matches the user's elegant design specification.
+-   **Task 1**: Rewrite the  function.
+    -   **Where to resume**: Inside the  function in .
+    -   **What will be achieved with this?**: A fully functional, professional, 2-page PDF contract generation system that meets all user specifications.
     -   **Status**: IN PROGRESS
     -   **Should Test frontend/backend/both after fix?**: Frontend
     -   **Blocked on something**: None
 
 **Upcoming and Future Tasks**
 -   **Future Tasks**:
-    -   **(P2)** **Refactor Monolithic Codebase**: This is a critical technical debt.  and  must be broken down into smaller, maintainable components and modules to ensure future stability and easier development.
-    -   **(P2)** **Enhance Projector Route**: Fully develop the  route.
+    -   **(P2) Refactor Monolithic Codebase**: This is a critical technical debt.  and  must be broken down into smaller, maintainable components and modules.
+    -   **(P2) Enhance Projector Route**: Fully develop the  route.
 
 **Completed work in this session**
--   **Cloudinary Sync Implemented & Fixed**: Successfully integrated the user's Cloudinary credentials and implemented the sync logic, allowing photos uploaded directly to Cloudinary to appear in the app's gallery.
--   **Instagram-style Gallery UX**: Transformed the photo gallery with a simplified 3-column grid, a fullscreen lightbox photo viewer, and a double-tap-to-like feature with an animation.
--   **Advanced PDF Contract Generation**: Overhauled the contract system to generate a professional, 2-page, B&W-optimized PDF. This includes dynamic pricing from a service catalog, specific legal clauses, and private admin-only fields (, ).
--   **UI Professionalization**: Removed distracting emojis from all user-facing documents (PDFs) and key UI components to create a cleaner, more professional appearance.
--   **Admin Panel Sorting**: Configured the events list in the admin panel to sort descending by creation date, showing the newest events first.
+-   **Premium Visual Overhaul**: Fully implemented the Morado Noche and Dorado Elegante color scheme across the entire application for a consistent, premium look.
+-   **Gallery UX Enhancement**: Implemented double-tap-to-like with an animated heart and simplified event cards by removing city and time.
+-   **Admin Panel Overhaul**:
+    -   Added the ability to **edit** existing events.
+    -   Replaced the date text input with a visual **DatePicker calendar**.
+    -   Removed the 'Correo' (Email) field from the event creation form.
+-   **Contract/Quote Logic Upgrade**:
+    -   Removed 'Salón / Lugar' and 'Descuento' fields.
+    -   Added a live running total calculator to the form.
+    -   Added a 'Cortesía / Regalo' field that prints on the contract.
+    -   Updated labels to 'Inicio de Servicio (Opcional)' and 'Abono de Servicio'.
+    -   Updated backend models and API endpoints to support all new fields (, ).
+-   **Header Update**: Changed the main call-to-action button from LIVE to EN VIVO.
 
 **Earlier issues found/mentioned but not fixed**
--   **Technical Debt**: The monolithic structure of  and  is a significant, unaddressed risk. It complicates development and increases the chance of regressions.
+-   **Technical Debt**: The monolithic structure of  and  remains a significant risk, making development increasingly complex and fragile.
 
 **Known issue recurrence from previous fork**
 -   N/A
@@ -77,7 +92,7 @@ A full-stack application with a React frontend and a FastAPI backend. The entire
 
 
 **Key Technical Concepts**
--   **Frontend**: React, React Router, Tailwind CSS, Axios, **jsPDF** (for document generation).
+-   **Frontend**: React, React Router, Tailwind CSS, Axios, **jsPDF** (for complex, multi-page document generation).
 -   **Backend**: FastAPI, Python, Pydantic.
 -   **Database**: MongoDB.
 -   **File Storage**: Cloudinary.
@@ -85,66 +100,61 @@ A full-stack application with a React frontend and a FastAPI backend. The entire
 
 **key DB schema**
 -   : 
--   : 
--   :  (Schema has been significantly expanded for the new contract system).
+-   :  (Schema expanded with new fields for advanced payment tracking and courtesy gifts).
 
 **changes in tech stack**
--   No new dependencies installed. Heavy utilization of the existing  library for frontend PDF generation.
+-   No new dependencies installed. Logic within existing libraries () has become significantly more complex.
 
 **All files of reference**
--   : **CRITICAL FILE.** The entire frontend is here. It needs to be updated to use the new color palette.
--   : **CRITICAL FILE.** The new Premium color palette CSS variables are defined here.
--   : The backend monolith. Contains the Cloudinary sync logic and the expanded contract model.
--   : Now populated with the user's Cloudinary credentials.
+-   : **CRITICAL FILE.** Contains the entire frontend, including all new UI logic and the  function that needs to be rewritten.
+-   : **CRITICAL FILE.** Contains all backend logic, including the new  endpoint for editing events and updated Pydantic models for contracts.
+-   : Defines the global CSS variables for the premium theme.
+-   : Extended to make the premium colors available as utility classes.
 
 **Areas that need refactoring**:
--   : **URGENT.** This file has grown even larger and more complex, making it extremely fragile. It must be broken down into smaller components.
+-   : **URGENT.** This file is now unmanageably large and complex. It is a major liability and must be broken down into components.
 -   : Should be organized into a standard FastAPI project structure (e.g., , , ).
 
 **key api endpoints**
--   : Now fully functional.
--   : Endpoint and model were heavily modified to support the new detailed contract structure with a price catalog, manual discounts, and admin-only fields.
--   : Now sorted by .
+-   : **NEW.** Used to save edits to existing events.
+-   : Endpoint logic and associated model were updated to handle new fields like  and .
 
 **Critical Info for New Agent**
--   Your immediate and only priority is to **complete the Premium color palette implementation**. The user wants a high-end look with a deep purple/black background and gold accents.
--   The color variables are already defined in . You must now go through  and replace all old color utility classes with the new CSS variables to ensure a consistent look.
--   The application's core functionality (Cloudinary sync, Instagram-style gallery, contract generation) is complete and working. Do not alter this logic.
--   The codebase is extremely fragile due to its monolithic nature. Be very targeted with your CSS class changes and use a screenshot to verify the final look before finishing.
+-   Your immediate and only priority is to **rewrite the  function** in  to match the user's 2-page contract specification. This is a complex  task.
+-   All previous user requests from this session (visuals, admin features, gallery UX) have been completed and verified. Do not modify that logic.
+-   The codebase is extremely fragile due to its monolithic nature. Be very targeted when rewriting the PDF function.
 
 **documents and test reports created in this job**
--   
+-    (Updated)
 
 **Last 10 User Messages and any pending HUMAN messages**
--   : User requests a Premium color palette (deep purple, elegant gold) and confirms the desire for the Instagram-style features. **This is the current, active task.**
--   : User requests the Instagram-style UI/UX overhaul (simplified cards, double-tap-to-like, fullscreen lightbox). (Completed)
--   : User provides their Cloudinary API credentials. (Completed & Integrated)
--   : User provides detailed requirements for the final contract system, including a fixed price catalog, B&W PDF design, specific legal clauses, and admin-only fields. (Completed)
--   : Further refinement requests for the professional contract PDF. (Completed)
--   : Request to optimize PDFs for B&W printing, use vector icons, and add admin fields. (Completed)
--   : User requests a radical cleaning of all emojis from the UI and PDFs to fix printing issues. (Completed)
--   : User asks for event list sorting (newest first) and confirmation of data storage locations. (Completed)
+-   : User issued a FINAL COMMAND to clone a specific 2-page PDF contract (), detailing the exact structure, folio system, and payment logic. **This is the current, active task.** (IN PROGRESS)
+-   : Agent confirmed via screenshots that all administrative and contract UI changes from the previous prompt were successfully deployed. (COMPLETED)
+-   : User interrupted and re-issued a set of final configuration requests for the admin panel and contract logic. (COMPLETED)
+-   : User issued an EJECT command with a list of administrative and contract optimizations. (SUPERSEDED/COMPLETED by Msg 192)
+-   : Agent confirmed via screenshots that the changes from the first aggressive prompt were complete and finished the task. (COMPLETED)
+-   : User issued a Super Prompt Agresivo with a list of non-negotiable UI, UX, and logic changes. (COMPLETED)
+-   : Agent confirmed the Premium color palette implementation was complete and updated . (COMPLETED)
 
 **Project Health Check:**
--   **Broken**: The user interface is visually inconsistent because the new Premium color theme has only been partially applied. Some elements are dark purple/gold, while others retain the old styling.
+-   **Mocked**: The PDF generation feature is effectively mocked by the old logic; the new, required functionality is missing.
 
 **3rd Party Integrations**
--   **Cloudinary**: Fully integrated for photo storage and API-based folder syncing. Credentials are saved in .
+-   **Cloudinary**: Used for photo storage. Credentials are in .
 -   **MongoDB**: Primary database.
--   **jsPDF**: Integrated on the frontend to generate Quote, QR, and Contract PDFs.
+-   **jsPDF**: Used for all frontend PDF generation.
 
 **Testing status**
 -   **Testing agent used after significant changes**: NO
 -   **Troubleshoot agent used after agent stuck in loop**: NO
 -   **Test files created**: None.
--   **Known regressions**: None functional, but the UI is in a broken visual state.
+-   **Known regressions**: None.
 
 **Credentials to test flow:**
 -   **Admin Panel Access**:
     -   URL: 
     -   Usuario: 
     -   Password: 
--   **Cloudinary Credentials**: Stored in .
 
 **What agent forgot to execute**
--   The agent started the color palette redesign by editing  but did not complete the task. It failed to apply the new CSS variables throughout the components in , leaving the UI in an inconsistent state. The work needs to be finished and verified.</analysis>
+-   The agent has been following a rapid series of imperative user commands. It was in the process of implementing the final, most complex command (PDF cloning) when the session ended. Nothing was forgotten, but the last task is incomplete.</analysis>
