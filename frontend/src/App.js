@@ -3028,6 +3028,18 @@ const AdminPanel = () => {
     y += 20;
     pdf.setTextColor(40, 40, 40);
     
+    // === CORTESÍA / REGALO ===
+    if (contract.cortesia) {
+      pdf.setFillColor(240, 248, 255);
+      pdf.rect(margin, y, pageWidth - (margin * 2), 10, 'F');
+      pdf.setFontSize(10);
+      pdf.setFont(undefined, 'bold');
+      pdf.text("CORTESIA INCLUIDA:", margin + 3, y + 7);
+      pdf.setFont(undefined, 'normal');
+      pdf.text(contract.cortesia, margin + 50, y + 7);
+      y += 14;
+    }
+    
     // === CONDICIONES DE PAGO ===
     pdf.setFillColor(245, 245, 245);
     pdf.rect(margin, y, pageWidth - (margin * 2), 8, 'F');
@@ -3042,12 +3054,23 @@ const AdminPanel = () => {
     const anticipoMonto = contract.anticipo_amount || 0;
     const saldoPendiente = contract.net_price - anticipoMonto;
     
-    pdf.text(`Anticipo recibido: $${anticipoMonto.toLocaleString('es-MX')} NETO`, margin, y);
+    pdf.text(`Abono recibido: $${anticipoMonto.toLocaleString('es-MX')} NETO`, margin, y);
     y += 5;
     pdf.text(`Saldo pendiente: $${saldoPendiente.toLocaleString('es-MX')} NETO`, margin, y);
     y += 8;
     
-    if (anticipoMonto === 0) {
+    // === SERVICIO LIQUIDADO ===
+    if (saldoPendiente <= 0 || contract.anticipo_status === 'pagado') {
+      pdf.setFillColor(34, 139, 34);
+      pdf.rect(margin, y, pageWidth - (margin * 2), 14, 'F');
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(12);
+      pdf.setFont(undefined, 'bold');
+      const fechaPago = contract.fecha_pago || new Date().toISOString().split('T')[0];
+      pdf.text(`SERVICIO LIQUIDADO - FOLIO ${contract.id?.slice(0,8).toUpperCase() || 'N/A'} - FECHA ${fechaPago}`, pageWidth / 2, y + 9, { align: 'center' });
+      pdf.setTextColor(40, 40, 40);
+      y += 18;
+    } else if (anticipoMonto === 0) {
       pdf.setFont(undefined, 'bold');
       pdf.text("IMPORTANTE: El pago total debe realizarse ANTES de iniciar el evento.", margin, y);
       y += 5;
