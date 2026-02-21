@@ -161,14 +161,14 @@ class ContractCreate(BaseModel):
     client_name: str
     client_phone: str
     client_email: Optional[str] = None
-    event_name: str
+    event_name: Optional[str] = None
     salon: Optional[str] = None
     event_date: str
     event_time: Optional[str] = None
     service_time: Optional[str] = None
     contract_type: str = "public"
     # Servicios con precios del catálogo
-    include_cabina: bool = True
+    include_cabina: bool = False
     cabina_hours: int = 0
     price_cabina: float = 0
     include_video360: bool = False
