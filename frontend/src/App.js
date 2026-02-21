@@ -2819,8 +2819,8 @@ const AdminPanel = () => {
   };
 
   const createContract = async () => {
-    if (!contractForm.client_name || !contractForm.client_phone || !contractForm.event_name || !contractForm.salon || !contractForm.event_date) {
-      toast.error("Complete los campos obligatorios");
+    if (!contractForm.client_name || !contractForm.client_phone || !contractForm.event_name || !contractForm.event_date) {
+      toast.error("Complete los campos obligatorios (Nombre, Teléfono, Evento, Fecha)");
       return;
     }
     try {
@@ -2836,7 +2836,8 @@ const AdminPanel = () => {
         include_key_moments: false, key_moments_pieces: 0, price_key_moments: 0,
         include_live: false, price_live: 700,
         extras: [], discount_amount: 0, special_price: null, notes: "",
-        anticipo_status: "pendiente", anticipo_amount: null, costo_proveedor: null
+        cortesia: "",
+        anticipo_status: "pendiente", anticipo_amount: null, costo_proveedor: null, fecha_pago: null
       });
       setContractPreview(null);
       fetchData();
