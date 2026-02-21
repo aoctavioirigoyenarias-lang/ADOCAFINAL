@@ -765,25 +765,6 @@ const Cotizador = () => {
                   </div>
                 </>
               )}
-                    <div className="flex justify-between text-gold">
-                      <span>Descuento ({clientData.descuento}%)</span>
-                      <span>-{formatCurrency((getServicePrice() + getLivePrice()) * (clientData.descuento / 100))}</span>
-                    </div>
-                  )}
-                  
-                  {/* TOTAL */}
-                  <div className="p-4 bg-gold/20 rounded-lg mt-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gold font-bold text-lg">TOTAL NETO</span>
-                      <span className="text-pearl text-3xl font-black">
-                        {formatCurrency(
-                          (getServicePrice() + getLivePrice()) * (1 - clientData.descuento / 100)
-                        )}
-                      </span>
-                    </div>
-                  </div>
-                </>
-              )}
               
               {/* Botones */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-4">
