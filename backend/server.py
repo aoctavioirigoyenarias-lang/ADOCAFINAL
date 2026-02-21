@@ -115,10 +115,10 @@ class Contract(BaseModel):
     client_email: Optional[str] = None
     # Datos del evento
     event_name: str
-    salon: str
+    salon: Optional[str] = None
     event_date: str
-    event_time: str  # Horario del evento
-    service_time: str  # Horario del servicio
+    event_time: Optional[str] = None  # Horario del evento
+    service_time: Optional[str] = None  # Inicio de servicio (Opcional)
     # Tipo de contrato
     contract_type: str = "public"  # "public" = Precio Neto, "special" = Precio Especial
     # Servicios - Cabina de Fotos (por horas)
@@ -142,9 +142,12 @@ class Contract(BaseModel):
     discount_amount: float = 0  # Descuento en PESOS ($)
     special_price: Optional[float] = None  # Solo para contratos especiales
     net_price: float
-    # === CAMPOS ADMINISTRATIVOS (USO INTERNO - NO SE IMPRIMEN) ===
-    anticipo_status: str = "pendiente"  # "liquidado", "pendiente", "dia_evento"
-    anticipo_amount: Optional[float] = None  # Monto del anticipo recibido
+    # Cortesía / Regalo
+    cortesia: Optional[str] = None
+    # === CAMPOS ADMINISTRATIVOS (USO INTERNO) ===
+    anticipo_status: str = "pendiente"  # "abonado", "pagado", "pendiente", "dia_evento"
+    anticipo_amount: Optional[float] = None  # Monto del abono recibido
+    fecha_pago: Optional[str] = None  # Fecha de liquidación
     costo_proveedor: Optional[float] = None  # Costo real del servicio
     utilidad_neta: Optional[float] = None  # Cálculo: net_price - costo_proveedor
     # Estado
