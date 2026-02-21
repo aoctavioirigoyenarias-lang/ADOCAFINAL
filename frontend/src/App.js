@@ -700,31 +700,6 @@ const Cotizador = () => {
             </CardContent>
           </Card>
 
-          {/* ========== PASO 4: Descuento (opcional) ========== */}
-          <Card className="card-premium">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-pearl text-lg flex items-center gap-2">
-                <span className="bg-gold/80 text-night w-6 h-6 rounded-full flex items-center justify-center text-sm">4</span>
-                Descuento
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-4">
-                <Input 
-                  type="number" 
-                  min="0" 
-                  max="100"
-                  placeholder="0"
-                  value={clientData.descuento || ""}
-                  onChange={(e) => setClientData({...clientData, descuento: parseInt(e.target.value) || 0})}
-                  className="input-premium w-24 text-center"
-                />
-                <span className="text-gold">%</span>
-                <span className="text-pearl-muted text-sm">Negociación directa</span>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* RESUMEN Y COTIZACIÓN */}
           <Card className="card-premium border-gold/30">
             <CardHeader className="pb-3">
@@ -769,15 +744,27 @@ const Cotizador = () => {
                 </div>
               )}
               
-              {/* Subtotal y descuento */}
+              {/* TOTAL */}
               {(mainService || includeLive) && (
                 <>
-                  <div className="flex justify-between text-pearl pt-2">
-                    <span>Subtotal</span>
-                    <span>{formatCurrency(getServicePrice() + getLivePrice())}</span>
+                  <div className="p-4 bg-gold/20 rounded-lg">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gold font-bold text-lg">TOTAL NETO</span>
+                      <span className="text-pearl text-3xl font-black">
+                        {formatCurrency(getServicePrice() + getLivePrice())}
+                      </span>
+                    </div>
                   </div>
                   
-                  {clientData.descuento > 0 && (
+                  {/* Notas legales */}
+                  <div className="p-3 bg-night/50 border border-gold/20 rounded-lg">
+                    <p className="text-pearl-muted text-xs leading-relaxed">
+                      <strong className="text-gold">Vigencia:</strong> 20 días naturales.<br/>
+                      <strong className="text-gold">Nota:</strong> Puede aplicar costo extra por flete o maniobras.
+                    </p>
+                  </div>
+                </>
+              )}
                     <div className="flex justify-between text-gold">
                       <span>Descuento ({clientData.descuento}%)</span>
                       <span>-{formatCurrency((getServicePrice() + getLivePrice()) * (clientData.descuento / 100))}</span>
