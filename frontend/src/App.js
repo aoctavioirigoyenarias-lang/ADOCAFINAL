@@ -2421,6 +2421,15 @@ const AdminPanel = () => {
     event_date: "",
     code: ""
   });
+  
+  // Estado para edición de eventos de Galería Pro
+  const [editingEventId, setEditingEventId] = useState(null);
+  const [editEventForm, setEditEventForm] = useState({
+    name: "",
+    date: "",
+    fotoshare_url: "",
+    video360_url: ""
+  });
 
   useEffect(() => {
     if (sessionStorage.getItem("adminAuth") === "true") setIsAuthenticated(true);
