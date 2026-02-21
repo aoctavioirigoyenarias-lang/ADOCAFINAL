@@ -2047,27 +2047,30 @@ const PicPartyLive = () => {
                   ← Volver al menú
                 </Button>
 
-                <div className="text-center mb-6">
-                  <h2 className="text-2xl font-bold text-white">📸 Galería de {session.event_name}</h2>
-                  <p className="text-gray-400">{galleryPhotos.length} fotos</p>
+                {/* Instagram-style header - Solo nombre y contador */}
+                <div className="text-center mb-4">
+                  <h2 className="text-xl font-bold text-white">{session.event_name}</h2>
+                  <p className="text-gray-500 text-sm">{galleryPhotos.length} fotos</p>
                 </div>
 
-                {/* TABS: Subir / Ver */}
-                <div className="flex gap-2 mb-4">
-                  <Button 
-                    variant={activeTab === "upload" ? "default" : "outline"}
-                    className={activeTab === "upload" ? "flex-1 bg-pink-500" : "flex-1 border-white/20 text-white"}
+                {/* TABS: Subir / Ver - Estilo minimalista */}
+                <div className="flex border-b border-white/10 mb-4">
+                  <button 
+                    className={`flex-1 py-3 text-center transition-all ${activeTab === "upload" ? "border-b-2 border-white text-white" : "text-gray-500"}`}
                     onClick={() => setActiveTab("upload")}
                   >
-                    ➕ Subir Fotos
-                  </Button>
-                  <Button 
-                    variant={activeTab === "gallery" ? "default" : "outline"}
-                    className={activeTab === "gallery" ? "flex-1 bg-purple-500" : "flex-1 border-white/20 text-white"}
+                    <svg className="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                  </button>
+                  <button 
+                    className={`flex-1 py-3 text-center transition-all ${activeTab === "gallery" ? "border-b-2 border-white text-white" : "text-gray-500"}`}
                     onClick={() => { setActiveTab("gallery"); fetchGalleryPhotos(session.code); }}
                   >
-                    🖼️ Ver Fotos ({galleryPhotos.length})
-                  </Button>
+                    <svg className="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                    </svg>
+                  </button>
                 </div>
 
                 {activeTab === "upload" ? (
