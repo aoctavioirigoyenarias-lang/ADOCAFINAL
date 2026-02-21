@@ -3790,6 +3790,72 @@ const AdminPanel = () => {
             )}
           </TabsContent>
 
+          {/* ============ PESTAÑA REPORTE DE PAGOS ============ */}
+          <TabsContent value="reporte" className="space-y-4 mt-4">
+            <Card className="card-premium border-gold/30">
+              <CardHeader>
+                <CardTitle className="text-pearl flex items-center gap-2">
+                  <span className="text-gold">$</span> Reporte de Pagos
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-gold/30">
+                        <th className="text-left text-gold py-3 px-2">Nombre</th>
+                        <th className="text-left text-gold py-3 px-2">Celular</th>
+                        <th className="text-left text-gold py-3 px-2">Fecha Evento</th>
+                        <th className="text-right text-gold py-3 px-2">Total Neto</th>
+                        <th className="text-right text-gold py-3 px-2">Abono</th>
+                        <th className="text-right text-gold py-3 px-2">Saldo</th>
+                        <th className="text-center text-gold py-3 px-2">Estado</th>
+                        <th className="text-center text-gold py-3 px-2">Recibo</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {contracts.map((contract) => {
+                        const total = contract.net_price || 0;
+                        const abono = contract.anticipo_amount || 0;
+                        const saldo = total - abono;
+                        const liquidado = saldo <= 0;
+                        return (
+                          <tr key={contract.id} className="border-b border-pearl-muted/20 hover:bg-gold/5">
+                            <td className="py-3 px-2 text-pearl">{contract.client_name}</td>
+                            <td className="py-3 px-2 text-pearl-muted">{contract.client_phone}</td>
+                            <td className="py-3 px-2 text-pearl-muted">{contract.event_date}</td>
+                            <td className="py-3 px-2 text-right text-pearl font-bold">${total.toLocaleString()}</td>
+                            <td className="py-3 px-2 text-right text-green-400">${abono.toLocaleString()}</td>
+                            <td className={`py-3 px-2 text-right font-bold ${liquidado ? 'text-green-400' : 'text-red-400'}`}>
+                              ${Math.max(0, saldo).toLocaleString()}
+                            </td>
+                            <td className="py-3 px-2 text-center">
+                              {liquidado ? (
+                                <Badge className="bg-green-500/20 text-green-400 border-green-500/50">LIQUIDADO</Badge>
+                              ) : (
+                                <Badge className="bg-red-500/20 text-red-400 border-red-500/50">SALDO PENDIENTE</Badge>
+                              )}
+                            </td>
+                            <td className="py-3 px-2 text-center">
+                              {liquidado && (
+                                <Button size="sm" className="btn-gold-outline text-xs" onClick={() => generateRecibo(contract)}>
+                                  Recibo
+                                </Button>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+                {contracts.length === 0 && (
+                  <p className="text-pearl-muted text-center py-8">No hay contratos registrados</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* ============ PESTAÑA GALERÍA PRO ============ */}
           <TabsContent value="events" className="space-y-4 mt-4">
             <Card className="card-premium border-gold/30">
