@@ -2519,6 +2519,28 @@ const AdminPanel = () => {
     fetchData();
   };
 
+  // Guardar edición de evento de Galería Pro
+  const saveEventEdit = async (eventId) => {
+    if (!editEventForm.name || !editEventForm.date) {
+      toast.error("Nombre y fecha son requeridos");
+      return;
+    }
+    try {
+      await axios.put(`${API}/events/${eventId}`, {
+        name: editEventForm.name,
+        date: editEventForm.date,
+        fotoshare_url: editEventForm.fotoshare_url || "",
+        video360_url: editEventForm.video360_url || ""
+      });
+      toast.success("Evento actualizado correctamente");
+      setEditingEventId(null);
+      setEditEventForm({ name: "", date: "", fotoshare_url: "", video360_url: "" });
+      fetchData();
+    } catch (e) {
+      toast.error("Error al actualizar evento");
+    }
+  };
+
   const createLiveSession = async () => {
     if (!newSession.event_name || !newSession.event_date) { 
       toast.error("Nombre y fecha son requeridos"); 
