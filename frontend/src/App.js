@@ -4158,7 +4158,7 @@ const AdminPanel = () => {
               </Card>
             ) : (
               [...contracts]
-                .sort((a, b) => new Date(a.event_date || '2099-12-31') - new Date(b.event_date || '2099-12-31'))
+                .sort((a, b) => new Date(b.event_date || '1900-01-01') - new Date(a.event_date || '1900-01-01'))
                 .map(contract => (
                 <Card key={contract.id} className="card-premium">
                   <CardContent className="p-4">
