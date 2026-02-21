@@ -604,6 +604,28 @@ async def update_contract_status(contract_id: str, status: str):
     
     return {"message": f"Estado actualizado a {status}"}
 
+@api_router.put("/contracts/{contract_id}/links")
+async def update_contract_links(contract_id: str, link_fotos: str = None, link_videos: str = None):
+    """Actualizar los links de Fotoshare (usado por STAFF)"""
+    update_data = {}
+    if link_fotos is not None:
+        update_data["link_fotos"] = link_fotos
+    if link_videos is not None:
+        update_data["link_videos"] = link_videos
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="Debe proporcionar al menos un link")
+    
+    result = await db.contracts.update_one(
+        {"id": contract_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Contrato no encontrado")
+    
+    return {"message": "Links actualizados", "id": contract_id}
+
 @api_router.delete("/contracts/{contract_id}")
 async def delete_contract(contract_id: str):
     """Eliminar contrato"""
