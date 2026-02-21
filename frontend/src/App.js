@@ -747,45 +747,45 @@ const Cotizador = () => {
           </Card>
 
           {/* RESUMEN Y COTIZACIÓN */}
-          <Card className="bg-gradient-to-br from-purple-900/50 to-pink-900/30 border-purple-500/30">
+          <Card className="card-premium border-gold/30">
             <CardHeader className="pb-3">
-              <CardTitle className="text-white text-xl">Resumen de Cotización</CardTitle>
+              <CardTitle className="text-gold text-xl">Resumen de Cotización</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Desglose */}
-              <div className="space-y-2 text-gray-300">
+              <div className="space-y-2 text-pearl-muted">
                 {/* PICPARTYLIVE primero en el resumen */}
                 {includeLive && (
-                  <div className="flex justify-between items-center py-2 border-b border-white/10">
-                    <span className="text-pink-400">
-                      🔴 PICPARTYLIVE 
+                  <div className="flex justify-between items-center py-2 border-b border-gold/20">
+                    <span className="text-gold">
+                      PICPARTYLIVE 
                       <span className="text-xs ml-2 opacity-70">
                         ({mainService ? "Combo" : "Solo"})
                       </span>
                     </span>
-                    <span className="font-bold">{formatCurrency(getLivePrice())}</span>
+                    <span className="font-bold text-pearl">{formatCurrency(getLivePrice())}</span>
                   </div>
                 )}
                 
                 {mainService && serviceHours > 0 && (
-                  <div className="flex justify-between items-center py-2 border-b border-white/10">
-                    <span className={mainService === "cabina" ? "text-pink-300" : "text-cyan-300"}>
+                  <div className="flex justify-between items-center py-2 border-b border-gold/20">
+                    <span className="text-gold">
                       {mainService === "cabina" ? "📸 Cabina de Fotos" : "🎥 Video 360°"} ({serviceHours}h)
                     </span>
-                    <span className="font-bold">{formatCurrency(getServicePrice())}</span>
+                    <span className="font-bold text-pearl">{formatCurrency(getServicePrice())}</span>
                   </div>
                 )}
                 
                 {!mainService && !includeLive && (
-                  <p className="text-gray-500 text-center py-4">Selecciona al menos un servicio</p>
+                  <p className="text-pearl-muted text-center py-4">Selecciona al menos un servicio</p>
                 )}
               </div>
               
               {/* Banner de ahorro en el resumen */}
               {includeLive && mainService && (
-                <div className="p-3 bg-green-500/20 border border-green-500/50 rounded-lg">
-                  <p className="text-green-400 text-center font-bold">
-                    💰 ¡AHORRO DE $800 APLICADO!
+                <div className="p-3 bg-gold/10 border border-gold/30 rounded-lg">
+                  <p className="text-gold text-center font-bold">
+                    ¡AHORRO DE $800 APLICADO!
                   </p>
                 </div>
               )}
@@ -793,23 +793,23 @@ const Cotizador = () => {
               {/* Subtotal y descuento */}
               {(mainService || includeLive) && (
                 <>
-                  <div className="flex justify-between text-white pt-2">
+                  <div className="flex justify-between text-pearl pt-2">
                     <span>Subtotal</span>
                     <span>{formatCurrency(getServicePrice() + getLivePrice())}</span>
                   </div>
                   
                   {clientData.descuento > 0 && (
-                    <div className="flex justify-between text-orange-400">
+                    <div className="flex justify-between text-gold">
                       <span>Descuento ({clientData.descuento}%)</span>
                       <span>-{formatCurrency((getServicePrice() + getLivePrice()) * (clientData.descuento / 100))}</span>
                     </div>
                   )}
                   
                   {/* TOTAL */}
-                  <div className="p-4 bg-purple-500/30 rounded-lg mt-4">
+                  <div className="p-4 bg-gold/20 rounded-lg mt-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-purple-200 font-bold text-lg">TOTAL NETO</span>
-                      <span className="text-white text-3xl font-black">
+                      <span className="text-gold font-bold text-lg">TOTAL NETO</span>
+                      <span className="text-pearl text-3xl font-black">
                         {formatCurrency(
                           (getServicePrice() + getLivePrice()) * (1 - clientData.descuento / 100)
                         )}
@@ -823,7 +823,7 @@ const Cotizador = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-4">
                 <Button 
                   onClick={calculateQuote} 
-                  className="w-full bg-purple-500 hover:bg-purple-600 h-12 text-lg"
+                  className="w-full btn-gold h-12 text-lg"
                   disabled={!mainService && !includeLive}
                   data-testid="generar-cotizacion-btn"
                 >
@@ -832,19 +832,19 @@ const Cotizador = () => {
                 
                 <Button 
                   onClick={downloadPDF} 
-                  className="w-full bg-green-500 hover:bg-green-600 h-12 text-lg"
+                  className="w-full btn-gold-outline h-12 text-lg"
                   disabled={!quote}
                   data-testid="descargar-pdf-btn"
                 >
-                  📄 Descargar PDF
+                  Descargar PDF
                 </Button>
               </div>
               
               {/* Folio generado */}
               {folio && (
-                <div className="text-center pt-4 border-t border-white/10">
-                  <p className="text-gray-400 text-sm">Folio de cotización:</p>
-                  <p className="text-white text-xl font-mono font-bold">{folio}</p>
+                <div className="text-center pt-4 border-t border-gold/20">
+                  <p className="text-pearl-muted text-sm">Folio de cotización:</p>
+                  <p className="text-gold text-xl font-mono font-bold">{folio}</p>
                 </div>
               )}
             </CardContent>
