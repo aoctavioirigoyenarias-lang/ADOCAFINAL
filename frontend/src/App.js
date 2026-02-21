@@ -431,13 +431,13 @@ const Cotizador = () => {
     pdf.setFillColor(245, 245, 245);
     pdf.rect(0, 0, pageWidth, 50, 'F');
     
-    // Logo fijo esquina izquierda
+    // Logo imagen gráfica esquina izquierda
     try {
       const logoImg = new Image();
       logoImg.crossOrigin = "anonymous";
       logoImg.src = PICPARTY_LOGO;
       await new Promise((resolve) => { logoImg.onload = resolve; setTimeout(resolve, 2000); });
-      pdf.addImage(logoImg, 'PNG', 15, 8, 35, 35);
+      pdf.addImage(logoImg, 'PNG', 12, 5, 40, 40);
     } catch(e) {}
     
     pdf.setFontSize(28);
