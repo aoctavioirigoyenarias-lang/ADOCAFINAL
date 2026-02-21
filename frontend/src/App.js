@@ -3371,7 +3371,10 @@ const AdminPanel = () => {
 
   // ========== GENERAR RECIBO DE PAGO (TICKET VIRTUAL) ==========
   const generateRecibo = async (contract) => {
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [80, 150] }); // Formato ticket
+    // Calcular altura dinámica (más alto si tiene links)
+    const hasLinks = contract.link_fotos || contract.link_videos;
+    const ticketHeight = hasLinks ? 200 : 170;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [80, ticketHeight] });
     const pageWidth = pdf.internal.pageSize.getWidth();
     const margin = 5;
     
@@ -3453,12 +3456,57 @@ const AdminPanel = () => {
     pdf.text("** SERVICIO LIQUIDADO **", pageWidth / 2, y + 5.5, { align: 'center' });
     y += 14;
     
-    // Fecha de emisión
+    // ============ LINKS DE FOTOSHARE ============
+    if (hasLinks) {
+      pdf.setTextColor(0, 0, 0);
+      pdf.setFontSize(8);
+      pdf.setFont(undefined, 'bold');
+      pdf.text("Tus Fotos y Videos aqui:", pageWidth / 2, y, { align: 'center' });
+      y += 6;
+      
+      pdf.setFontSize(6);
+      pdf.setFont(undefined, 'normal');
+      if (contract.link_fotos) {
+        pdf.text("FOTOS:", margin, y);
+        y += 4;
+        pdf.setTextColor(0, 0, 255);
+        pdf.text(contract.link_fotos, margin, y);
+        pdf.setTextColor(0, 0, 0);
+        y += 6;
+      }
+      if (contract.link_videos) {
+        pdf.text("VIDEOS:", margin, y);
+        y += 4;
+        pdf.setTextColor(0, 0, 255);
+        pdf.text(contract.link_videos, margin, y);
+        pdf.setTextColor(0, 0, 0);
+        y += 6;
+      }
+      y += 2;
+    }
+    
+    // Línea divisora
+    pdf.setDrawColor(150);
+    pdf.line(margin, y, pageWidth - margin, y);
+    y += 5;
+    
+    // ============ DATOS FISCALES ============
     pdf.setTextColor(0, 0, 0);
     pdf.setFontSize(6);
-    pdf.setFont(undefined, 'normal');
-    pdf.text(`Emitido: ${new Date().toLocaleString('es-MX')}`, pageWidth / 2, y, { align: 'center' });
+    pdf.setFont(undefined, 'bold');
+    pdf.text("DATOS FISCALES:", margin, y);
     y += 4;
+    pdf.setFont(undefined, 'normal');
+    pdf.text("Adan Octavio Irigoyen Arias", margin, y);
+    y += 3;
+    pdf.text("RFC: IIAA8004021A9", margin, y);
+    y += 6;
+    
+    // Fecha de emisión
+    pdf.setTextColor(100, 100, 100);
+    pdf.setFontSize(5);
+    pdf.text(`Emitido: ${new Date().toLocaleString('es-MX')}`, pageWidth / 2, y, { align: 'center' });
+    y += 3;
     pdf.text("(614) 272 5008 | WWW.PICPARTY.NET", pageWidth / 2, y, { align: 'center' });
     
     // Guardar
