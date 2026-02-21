@@ -2168,7 +2168,7 @@ const PicPartyLive = () => {
                         <div className="w-16 h-16 mx-auto mb-3">
                           <img src={PICPARTY_LOGO} alt="PicParty" className="w-full h-full object-contain opacity-50" />
                         </div>
-                        <p className="text-gray-400">No hay fotos aún. Sé el primero en subir.</p>
+                        <p className="text-pearl-muted">No hay fotos aún. Sé el primero en subir.</p>
                       </div>
                     )}
                   </div>
@@ -2181,40 +2181,40 @@ const PicPartyLive = () => {
               <div className="max-w-md mx-auto px-4">
                 <Button 
                   variant="ghost" 
-                  className="mb-4 text-gray-400 hover:text-white"
+                  className="mb-4 text-pearl-muted hover:text-gold"
                   onClick={() => setViewMode("menu")}
                 >
                   ← Volver al menú
                 </Button>
 
-                <Card className="bg-white/5 border-white/10 backdrop-blur">
+                <Card className="card-premium">
                   <CardHeader className="text-center">
                     <div className="text-5xl mb-2">📥</div>
-                    <CardTitle className="text-white">Descargar Evento</CardTitle>
-                    <CardDescription className="text-gray-400">
+                    <CardTitle className="text-pearl">Descargar Evento</CardTitle>
+                    <CardDescription className="text-pearl-muted">
                       Descarga todas las fotos del evento. Usa los últimos 4 dígitos del teléfono del cliente.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <Label className="text-white">Contraseña de Descarga</Label>
+                      <Label className="text-pearl">Contraseña de Descarga</Label>
                       <Input 
                         type="password"
                         placeholder="Últimos 4 dígitos del teléfono"
                         maxLength={4}
                         value={downloadPassword}
                         onChange={(e) => setDownloadPassword(e.target.value.replace(/\D/g, ''))}
-                        className="bg-white/10 border-white/20 text-white mt-1 text-center text-xl tracking-widest"
+                        className="input-premium mt-1 text-center text-xl tracking-widest"
                       />
-                      <p className="text-gray-500 text-xs mt-1">Ej: Si el teléfono es 5512345678, la clave es 5678</p>
+                      <p className="text-pearl-muted text-xs mt-1">Ej: Si el teléfono es 5512345678, la clave es 5678</p>
                       {downloadError && (
                         <p className="text-red-400 text-sm mt-1">{downloadError}</p>
                       )}
                     </div>
                     
-                    <div className="bg-gray-800/50 p-3 rounded-lg">
-                      <p className="text-gray-300 text-sm">
-                        <strong>📊 Resumen:</strong><br/>
+                    <div className="bg-night/50 p-3 rounded-lg border border-gold/20">
+                      <p className="text-pearl-muted text-sm">
+                        <strong className="text-gold">Resumen:</strong><br/>
                         • Evento: {session.event_name}<br/>
                         • Fotos disponibles: {galleryPhotos.length}<br/>
                         • Carpeta: {session.cloudinary_folder || 'ADOCA/...'}
@@ -2222,11 +2222,11 @@ const PicPartyLive = () => {
                     </div>
 
                     <Button
-                      className="w-full bg-green-600 hover:bg-green-700"
+                      className="w-full btn-gold"
                       onClick={handleDownload}
                       disabled={isDownloading || galleryPhotos.length === 0}
                     >
-                      {isDownloading ? '⏳ Preparando...' : '📥 Descargar Fotos'}
+                      {isDownloading ? 'Preparando...' : 'Descargar Fotos'}
                     </Button>
                   </CardContent>
                 </Card>
