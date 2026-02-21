@@ -3849,7 +3849,7 @@ const AdminPanel = () => {
                   <div className="grid grid-cols-3 gap-3">
                     <div>
                       <Label className="text-pearl">Fecha Evento *</Label>
-                      <Input type="date" value={contractForm.event_date} onChange={(e) => setContractForm({...contractForm, event_date: e.target.value})} className="input-premium" />
+                      <DatePicker value={contractForm.event_date} onChange={(event_date) => setContractForm({...contractForm, event_date})} placeholder="Seleccionar fecha" />
                     </div>
                     <div>
                       <Label className="text-pearl">Horario Evento</Label>
