@@ -60,12 +60,7 @@ const EventCard = ({ event }) => {
         <Badge className="absolute top-3 right-3 badge-gold text-xs">{event.date}</Badge>
       </div>
       <CardContent className="pt-4">
-        <h4 className="text-xl font-black text-pearl mb-1">{event.name}</h4>
-        <p className="text-pearl-muted text-sm mb-3">{event.description}</p>
-        <div className="flex items-center gap-2 text-pearl-muted/70 text-sm mb-3">
-          <span>{event.location}</span>
-          {event.time && <span>• {event.time}</span>}
-        </div>
+        <h4 className="text-xl font-black text-pearl mb-2">{event.name}</h4>
         <div className="flex gap-2">
           {event.fotoshare_url && (
             <a href={event.fotoshare_url} target="_blank" rel="noopener noreferrer" className="flex-1">
