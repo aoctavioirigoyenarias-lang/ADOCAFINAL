@@ -3577,28 +3577,73 @@ const AdminPanel = () => {
             <Card className="card-premium">
               <CardHeader><CardTitle className="text-pearl">Crear Evento de Galería</CardTitle></CardHeader>
               <CardContent>
-                <div className="grid grid-cols-3 gap-3">
-                  <Input placeholder="NOMBRE" value={newEvent.name} onChange={(e) => setNewEvent({...newEvent, name: e.target.value.toUpperCase()})} className="input-premium" />
-                  <Input type="date" value={newEvent.date} onChange={(e) => setNewEvent({...newEvent, date: e.target.value})} className="input-premium" />
-                  <Input placeholder="Ubicación" value={newEvent.location} onChange={(e) => setNewEvent({...newEvent, location: e.target.value})} className="input-premium" />
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  <Input placeholder="NOMBRE *" value={newEvent.name} onChange={(e) => setNewEvent({...newEvent, name: e.target.value.toUpperCase()})} className="input-premium" />
+                  <div className="relative">
+                    <Input type="date" value={newEvent.date} onChange={(e) => setNewEvent({...newEvent, date: e.target.value})} className="input-premium" />
+                  </div>
                   <Input placeholder="URL Fotoshare (IFRAME)" value={newEvent.fotoshare_url} onChange={(e) => setNewEvent({...newEvent, fotoshare_url: e.target.value})} className="input-premium" />
                   <Input placeholder="URL Video 360" value={newEvent.video360_url} onChange={(e) => setNewEvent({...newEvent, video360_url: e.target.value})} className="input-premium" />
-                  <Button onClick={createEvent} className="btn-gold">Crear</Button>
+                  <Button onClick={createEvent} className="btn-gold col-span-2 md:col-span-1">Crear Evento</Button>
                 </div>
               </CardContent>
             </Card>
+            
+            {/* Lista de Eventos con Edición */}
             {events.map(event => (
               <Card key={event.id} className="card-premium">
-                <CardContent className="p-4 flex justify-between items-center">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded flex items-center justify-center text-2xl bg-gold/20">📸</div>
-                    <div>
-                      <h3 className="text-pearl font-bold">{event.name}</h3>
-                      <p className="text-pearl-muted text-sm">{event.date} • {event.location}</p>
-                      <Badge className="badge-gold text-xs mt-1">Solo visualización IFRAME</Badge>
+                <CardContent className="p-4">
+                  {editingEventId === event.id ? (
+                    /* === MODO EDICIÓN === */
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        <Input 
+                          placeholder="NOMBRE" 
+                          value={editEventForm.name || ''} 
+                          onChange={(e) => setEditEventForm({...editEventForm, name: e.target.value.toUpperCase()})} 
+                          className="input-premium" 
+                        />
+                        <Input 
+                          type="date" 
+                          value={editEventForm.date || ''} 
+                          onChange={(e) => setEditEventForm({...editEventForm, date: e.target.value})} 
+                          className="input-premium" 
+                        />
+                        <Input 
+                          placeholder="URL Fotoshare" 
+                          value={editEventForm.fotoshare_url || ''} 
+                          onChange={(e) => setEditEventForm({...editEventForm, fotoshare_url: e.target.value})} 
+                          className="input-premium" 
+                        />
+                        <Input 
+                          placeholder="URL Video 360" 
+                          value={editEventForm.video360_url || ''} 
+                          onChange={(e) => setEditEventForm({...editEventForm, video360_url: e.target.value})} 
+                          className="input-premium" 
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button size="sm" className="btn-gold" onClick={() => saveEventEdit(event.id)}>Guardar</Button>
+                        <Button size="sm" variant="outline" className="btn-gold-outline" onClick={() => setEditingEventId(null)}>Cancelar</Button>
+                      </div>
                     </div>
-                  </div>
-                  <Button variant="destructive" size="sm" onClick={() => deleteEvent(event.id)}>Eliminar</Button>
+                  ) : (
+                    /* === MODO VISUALIZACIÓN === */
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-4">
+                        <div className="w-14 h-14 rounded flex items-center justify-center text-2xl bg-gold/20">📸</div>
+                        <div>
+                          <h3 className="text-pearl font-bold">{event.name}</h3>
+                          <p className="text-pearl-muted text-sm">{event.date}</p>
+                          <Badge className="badge-gold text-xs mt-1">Solo visualización IFRAME</Badge>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button size="sm" className="btn-gold-outline" onClick={() => { setEditingEventId(event.id); setEditEventForm({name: event.name, date: event.date, fotoshare_url: event.fotoshare_url, video360_url: event.video360_url}); }}>Editar</Button>
+                        <Button size="sm" variant="destructive" onClick={() => deleteEvent(event.id)}>Eliminar</Button>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
