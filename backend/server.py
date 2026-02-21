@@ -114,7 +114,7 @@ class Contract(BaseModel):
     client_phone: str
     client_email: Optional[str] = None
     # Datos del evento
-    event_name: str
+    event_name: Optional[str] = None
     salon: Optional[str] = None
     event_date: str
     event_time: Optional[str] = None  # Horario del evento
@@ -122,7 +122,7 @@ class Contract(BaseModel):
     # Tipo de contrato
     contract_type: str = "public"  # "public" = Precio Neto, "special" = Precio Especial
     # Servicios - Cabina de Fotos (por horas)
-    include_cabina: bool = True
+    include_cabina: bool = False
     cabina_hours: int = 0
     price_cabina: float = 0
     # Video 360 / Pic Motion 360 (por horas)
