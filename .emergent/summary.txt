@@ -1,89 +1,84 @@
 <analysis>**original_problem_statement:**
-The user's initial goal was to build a live event photo-sharing platform, PICPARTYLIVE. This has evolved through a series of rapid, imperative prompts into an advanced administrative tool with a primary focus on sophisticated contract and quote generation.
+The user's goal is to finalize PICPARTYLIVE, an advanced administrative tool for their live event photo-sharing business. The core of the application is a sophisticated contract and quote generation system with role-based access for different user types (Admin/Ventas vs. Staff).
 
 **Consolidated Product Requirements (based on latest user prompts):**
-1.  **Visual Identity**: A Premium dark theme using a Morado Noche () background, Dorado Elegante (gold) accents, and Blanco Perlado text. The header button must say EN VIVO.
-2.  **Admin Panel & Event Management**:
-    *   An admin panel at  (User: , Pass: ).
-    *   Ability to create and **edit** existing live events (Name, Date, URL). The 'Correo' field is removed from creation.
-    *   The date input must be a visual DatePicker calendar.
-3.  **Guest Gallery ( route)**:
-    *   An Instagram-style gallery with simplified event cards (only Name and Date).
-    *   **Double-tap-to-like** functionality on photos, showing an animated heart.
-    *   A like counter and heart icon under each photo.
-    *   Single-tap on a photo opens it in a fullscreen lightbox with a black background.
-4.  **Advanced PDF Contract Generation ( and Admin)**:
-    *   The application must generate a **2-page PDF contract** that is a clone of a specific example provided by the user.
-    *   **Page 1**: Header with logo, service details, and 6 full legal clauses.
-    *   **Page 2**: A table of SERVICIOS CONTRATADOS, a payment summary (Abono, Saldo), and signature areas.
-    *   **Folio System**: Automatically generate a unique folio number (e.g., ).
-    *   **Dynamic Calculations**: The PDF must show the deposit amount (), calculate the remaining balance (), and display ** SERVICIO TOTALMENTE LIQUIDADO ** if the balance is zero.
-    *   **UI for Contract Creation**: Must show a live running total as services are selected. Fields like 'Salón / Lugar' and 'Descuento' are removed. It includes an optional 'Inicio de Servicio' time and a 'Cortesía / Regalo' text field that prints on the contract.
+1.  **Visual Identity**: A Premium dark theme with a Morado Noche () background and Dorado Elegante (gold) accents.
+2.  **Role-Based Access Control**:
+    *   **Admin/Ventas ()**: Full access to create/edit contracts, view a Reporte de Pagos dashboard, and generate all PDF documents (contracts, quotes, receipts).
+    *   **Staff ()**: A restricted view limited to a Galería de Imágenes por Evento. Staff can select an event, download associated image templates (PNG/JPG) from Cloudinary, and paste two specific  links (, ) for that event. They have no access to financial data or contract creation.
+3.  **Admin Contract Management**:
+    *   A simplified creation form with only 'Nombre Cliente', 'Teléfono', and 'Fecha' (using a visual calendar). 'Salón', 'Nombre Evento', and 'Email' fields are permanently removed.
+    *   **Service Catalog**: Only four services are available: Cabina de Fotos, Video 360, Key Moments, and PicPartyLive.
+    *   **Dynamic Pricing**: 'Total' is auto-calculated from selected services but can be manually overridden. A 'Descuento o Promoción' field is included. The  is calculated in real-time (). A  message appears if the balance is zero.
+4.  **PDF Generation**:
+    *   **2-Page Contract**: A clone of a user-provided PDF ('Contrato_MARU'), featuring legal clauses, a service table, and a detailed payment summary.
+    *   **Virtual Receipt (Ticket)**: Generated from the Reporte de Pagos for fully paid events. It must include the PIC PARTY logo, the customer's data, the user's fiscal information (RFC: , Name: ), and the two  links under the title Tus Fotos y Videos aquí.
+5.  **Public Homepage**: The main event gallery must only display the **Top 3 most recent events**.
+6.  **Media Handling**: The application is optimized for **images only (PNG/JPG)**. All video/audio upload functionality is removed.
 
 **User's preferred language**: Spanish. The next agent MUST respond in Spanish.
 
 **what currently exists?**
-A full-stack application with a React frontend and a FastAPI backend, both in monolithic files (, ). The Premium visual theme is fully implemented and consistent across the app. The admin panel has been significantly upgraded with event editing, a date picker, and a highly customized contract creation form. The guest gallery now includes the double-tap-to-like feature. The backend models and API endpoints have been updated to support these new features. The previous PDF generation logic is still in place but is about to be completely replaced.
+A full-stack application with a monolithic React frontend () and FastAPI backend (). The premium dark theme and core contract management functionalities (creation, editing, dynamic pricing, PDF generation) are implemented. A Reporte de Pagos tab provides a financial overview. The application has been modified to support role-based access, but the UI separation and specific features for the 'STAFF' role are still under development.
 
 **Last working item**:
--   **Last item agent was working**: The agent began a complete rewrite of the PDF contract generation logic within the  function in . The goal is to clone a specific 2-page contract layout provided by the user, including a new folio system, dynamic payment calculations, and a precise visual structure.
+-   **Last item agent was working**: Implementing the distinct, restricted user experience for the  role. This involved adding the user, creating a conditional UI structure in  to show a different view for , and starting the implementation of the components for that view (gallery, link inputs). The agent was also in the process of updating the PDF receipt generation to include the new Fotoshare links and fiscal data.
 -   **Status**: IN PROGRESS
 -   **Agent Testing Done**: N
--   **Which testing method agent to use?** Manual user testing. The agent should complete the implementation, then create a contract in the UI, generate the PDF, and instruct the user to download and verify that the PDF matches the required 2-page layout and contains all the correct dynamic information (folio, payments, etc.).
+-   **Which testing method agent to use?** Manual testing. The agent must:
+    1.  Log in as  to verify the UI is restricted to the event gallery and link input fields.
+    2.  As , select an event, and test the functionality for pasting links.
+    3.  Log in as  (admin), create a contract, mark it as fully paid, and generate the final PDF receipt to confirm it correctly includes the fiscal data and the  links entered by the  user.
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   Issue 1: Complete the rewrite of the PDF Contract Generation (Priority: P0)
+-   Issue 1: Complete Staff Role Implementation & Final PDF Adjustments (Priority: P0)
 
 **Issues Detail**:
 -   **Issue 1**:
-    -   **Description**: The current  function does not meet the user's latest, very specific requirement for a 2-page contract that clones a provided example. The entire function needs to be rewritten using  to create the new structure, layout, and dynamic content.
-    -   **Attempted fixes**: The agent has identified the  function as the target for the rewrite but has not yet written the new code.
+    -   **Description**: The application needs to enforce a strict separation between / and  user roles. The  view is incomplete, and the backend needs to be updated to store the new  links. The PDF receipt logic must be finalized to pull this new data and include the user's fiscal information.
+    -   **Attempted fixes**: The agent added the  user and began creating a conditional rendering flow in . The backend models and PDF functions have not yet been fully updated.
     -   **Next debug checklist**:
-        1.  Open  and locate the  function.
-        2.  Implement the 2-page structure using .
-        3.  **Page 1**: Add the header (logo, text), and the 6 full legal clauses.
-        4.  **Page 2**: Create the SERVICIOS CONTRATADOS table, the payment summary section, and the signature lines.
-        5.  Implement the folio generation logic (e.g., ).
-        6.  Implement the payment calculation logic: display the deposit (), calculate and display the remaining .
-        7.  Add conditional logic to print ** SERVICIO TOTALMENTE LIQUIDADO ** if the balance is zero.
-        8.  Add the required footer to both pages: .
-    -   **Why fix this issue and what will be achieved with the fix?**: This is the user's final and most critical requirement to deliver a professional, standardized contract that matches their business's branding and workflow.
+        1.  **Backend ()**:
+            *   Add  and  to the  Pydantic model.
+            *   Update the  endpoint to allow saving these new link fields.
+        2.  **Frontend ()**:
+            *   Finalize the conditional rendering to show a dedicated  component when .
+            *   Complete the  component: It must contain the event selector, a gallery view, and the two new input fields for  links with a save button that calls the updated  endpoint.
+            *   Modify the  function to fetch the contract's  and .
+            *   In the same function, add the fiscal data (RFC: , Name: ) and the fetched links to the generated PDF.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is the user's final core requirement, which will create clear operational roles, streamline the event media sharing process, and complete the financial reporting loop.
     -   **Status**: IN PROGRESS
     -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: Frontend
+    -   **Should Test frontend/backend/both after fix?**: Both
     -   **Blocked on other issue**: None
 
 **In progress Task List**:
--   **Task 1**: Rewrite the  function.
-    -   **Where to resume**: Inside the  function in .
-    -   **What will be achieved with this?**: A fully functional, professional, 2-page PDF contract generation system that meets all user specifications.
+-   **Task 1**: Finalize Role-Based UI.
+    -   **Where to resume**: , completing the conditional rendering logic and building the dedicated  component.
+    -   **What will be achieved with this?**: A secure, role-based interface where Staff users have limited, specific functionality.
     -   **Status**: IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?**: Frontend
+    -   **Should Test frontend/backend/both after fix?**: Both
     -   **Blocked on something**: None
 
 **Upcoming and Future Tasks**
 -   **Future Tasks**:
-    -   **(P2) Refactor Monolithic Codebase**: This is a critical technical debt.  and  must be broken down into smaller, maintainable components and modules.
-    -   **(P2) Enhance Projector Route**: Fully develop the  route.
+    -   **(P2) Refactor Monolithic Codebase**: The  and  files are critically large and complex, posing a significant maintenance risk. They must be broken down into smaller, manageable modules (e.g., components, routes, services).
+    -   **(P2) Enhance Projector Route**: Fully develop the  projector view route.
 
 **Completed work in this session**
--   **Premium Visual Overhaul**: Fully implemented the Morado Noche and Dorado Elegante color scheme across the entire application for a consistent, premium look.
--   **Gallery UX Enhancement**: Implemented double-tap-to-like with an animated heart and simplified event cards by removing city and time.
--   **Admin Panel Overhaul**:
-    -   Added the ability to **edit** existing events.
-    -   Replaced the date text input with a visual **DatePicker calendar**.
-    -   Removed the 'Correo' (Email) field from the event creation form.
--   **Contract/Quote Logic Upgrade**:
-    -   Removed 'Salón / Lugar' and 'Descuento' fields.
-    -   Added a live running total calculator to the form.
-    -   Added a 'Cortesía / Regalo' field that prints on the contract.
-    -   Updated labels to 'Inicio de Servicio (Opcional)' and 'Abono de Servicio'.
-    -   Updated backend models and API endpoints to support all new fields (, ).
--   **Header Update**: Changed the main call-to-action button from LIVE to EN VIVO.
+-   **Contract Creation Unlocked**: Fixed a critical bug that blocked saving new contracts by removing faulty frontend validation and making the  field optional on the backend.
+-   **Corrected Pricing Logic**: Fixed the  calculation formula to  and removed a hardcoded default value that was causing errors.
+-   **UI Cleanup & Feature Addition**:
+    -   Added a Descuento o Promoción field to the contract form and PDF.
+    -   Removed extraneous 'Vigencia' and 'Flete' text from the admin form.
+    -   Implemented the Reporte Pagos tab with a detailed financial overview table.
+-   **Homepage Gallery Update**: Modified the homepage to display only the Top 3 most recent events.
+-   **Role-Based Access (Initiated)**: Created the  user and laid the groundwork for a separate UI view.
 
 **Earlier issues found/mentioned but not fixed**
--   **Technical Debt**: The monolithic structure of  and  remains a significant risk, making development increasingly complex and fragile.
+-   **PDF Logo Regression**: The user reported in  that the PIC PARTY logo disappeared from the PDF again after a previous fix. This needs to be re-verified and permanently fixed during the final PDF adjustments.
+-   **Technical Debt**: The monolithic architecture of  and  remains unaddressed and is the largest underlying issue.
 
 **Known issue recurrence from previous fork**
 -   N/A
@@ -92,69 +87,69 @@ A full-stack application with a React frontend and a FastAPI backend, both in mo
 
 
 **Key Technical Concepts**
--   **Frontend**: React, React Router, Tailwind CSS, Axios, **jsPDF** (for complex, multi-page document generation).
+-   **Frontend**: React, React Router, Tailwind CSS, Axios, **jsPDF** (for complex document generation).
 -   **Backend**: FastAPI, Python, Pydantic.
 -   **Database**: MongoDB.
 -   **File Storage**: Cloudinary.
--   **Authentication**: JWT.
+-   **Authentication**: Custom JWT with roles (, ).
 
 **key DB schema**
--   : 
--   :  (Schema expanded with new fields for advanced payment tracking and courtesy gifts).
+-   : Schema has been expanded to include  (Number),  (Number), and will require  (String, optional) and  (String, optional). The  field is now optional.
 
 **changes in tech stack**
--   No new dependencies installed. Logic within existing libraries () has become significantly more complex.
+-   None.
 
 **All files of reference**
--   : **CRITICAL FILE.** Contains the entire frontend, including all new UI logic and the  function that needs to be rewritten.
--   : **CRITICAL FILE.** Contains all backend logic, including the new  endpoint for editing events and updated Pydantic models for contracts.
--   : Defines the global CSS variables for the premium theme.
--   : Extended to make the premium colors available as utility classes.
+-   : **CRITICAL FILE.** The entire frontend application resides here. You will need to modify it to complete the role-based views and update the PDF generation logic.
+-   : **CRITICAL FILE.** Contains all backend logic. You will need to update the  model and the corresponding  endpoint.
 
 **Areas that need refactoring**:
--   : **URGENT.** This file is now unmanageably large and complex. It is a major liability and must be broken down into components.
--   : Should be organized into a standard FastAPI project structure (e.g., , , ).
+-   ** & **: Both files are urgently in need of refactoring. Their monolithic nature makes them extremely difficult to maintain and prone to regressions. This is the most significant technical debt in the project.
 
 **key api endpoints**
--   : **NEW.** Used to save edits to existing events.
--   : Endpoint logic and associated model were updated to handle new fields like  and .
+-   : Logic has been updated to handle the  role.
+-   : This endpoint must be updated to accept and save the new  and  fields.
 
 **Critical Info for New Agent**
--   Your immediate and only priority is to **rewrite the  function** in  to match the user's 2-page contract specification. This is a complex  task.
--   All previous user requests from this session (visuals, admin features, gallery UX) have been completed and verified. Do not modify that logic.
--   The codebase is extremely fragile due to its monolithic nature. Be very targeted when rewriting the PDF function.
+-   Your primary and only focus is to complete the user's final request: implement the restricted  view and finalize the PDF receipt with the required  links and fiscal data.
+-   The user has expressed significant frustration with regressions. **Do not modify** any existing, functional logic (pricing, contract editing, etc.) unless absolutely necessary to complete the current task.
+-   **Verify the PDF logo.** There is a known regression where the logo disappears. Ensure it is present on all generated PDFs (Contract, Quote, Receipt) in the final implementation.
+-   The codebase is fragile due to its monolithic structure. Make targeted, precise changes.
 
 **documents and test reports created in this job**
--    (Updated)
+-   
 
 **Last 10 User Messages and any pending HUMAN messages**
--   : User issued a FINAL COMMAND to clone a specific 2-page PDF contract (), detailing the exact structure, folio system, and payment logic. **This is the current, active task.** (IN PROGRESS)
--   : Agent confirmed via screenshots that all administrative and contract UI changes from the previous prompt were successfully deployed. (COMPLETED)
--   : User interrupted and re-issued a set of final configuration requests for the admin panel and contract logic. (COMPLETED)
--   : User issued an EJECT command with a list of administrative and contract optimizations. (SUPERSEDED/COMPLETED by Msg 192)
--   : Agent confirmed via screenshots that the changes from the first aggressive prompt were complete and finished the task. (COMPLETED)
--   : User issued a Super Prompt Agresivo with a list of non-negotiable UI, UX, and logic changes. (COMPLETED)
--   : Agent confirmed the Premium color palette implementation was complete and updated . (COMPLETED)
+-   : The user's final, definitive command to implement the  role, add fields for  links, enable template downloads, and add fiscal data to the PDF receipt. (IN PROGRESS)
+-   : User requests optimization to handle only images (PNG/JPG) and simplify the staff's media workflow. (IN PROGRESS)
+-   : The agent confirmed a critical fix, successfully creating a contract after being blocked. (COMPLETED)
+-   : User issued a rescue prompt for a critical deployment error where the 'Crear Contrato' button was blocked and the PDF logo was missing. (COMPLETED)
+-   : User's closing prompt, requesting a discount field, a visual grid calendar, and a Top 3 event gallery. (COMPLETED)
+-   : User's prompt for a new Reporte de Pagos tab and a virtual receipt PDF. (COMPLETED)
+-   : User's final check before a session close, verifying the auto-sum logic. (COMPLETED)
+-   : User's frustrated master prompt to fix a series of regressions related to form fields and the calendar. (COMPLETED)
+-   : User's final blocking order to freeze code and only address a missing logo and navigation button. (COMPLETED)
+-   : User's request to enable editing of existing contracts, specifically for prices. (COMPLETED)
 
 **Project Health Check:**
--   **Mocked**: The PDF generation feature is effectively mocked by the old logic; the new, required functionality is missing.
+-   **Broken**: The role-based access control is partially implemented. The  user's experience is not functional.
+-   **Mocked**: The UI for adding  links may exist, but it is not connected to the backend, and the PDF generation does not yet include this data.
 
 **3rd Party Integrations**
--   **Cloudinary**: Used for photo storage. Credentials are in .
+-   **Cloudinary**: For image storage and retrieval.
 -   **MongoDB**: Primary database.
--   **jsPDF**: Used for all frontend PDF generation.
+-   **jsPDF**: For all frontend PDF generation.
 
 **Testing status**
 -   **Testing agent used after significant changes**: NO
 -   **Troubleshoot agent used after agent stuck in loop**: NO
 -   **Test files created**: None.
--   **Known regressions**: None.
+-   **Known regressions**: The logo on the PDF has disappeared in the past after other changes were made. This should be carefully checked.
 
 **Credentials to test flow:**
--   **Admin Panel Access**:
-    -   URL: 
-    -   Usuario: 
-    -   Password: 
+-   **Admin URL**: 
+-   **Admin User**:  / 
+-   **Staff User**:  / 
 
 **What agent forgot to execute**
--   The agent has been following a rapid series of imperative user commands. It was in the process of implementing the final, most complex command (PDF cloning) when the session ended. Nothing was forgotten, but the last task is incomplete.</analysis>
+-   The previous agent did not consistently perform regression testing, leading to previously fixed issues (like the PDF logo) re-emerging. The next agent must ensure that all core functionalities remain intact after implementing the final set of changes.</analysis>
