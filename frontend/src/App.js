@@ -3700,12 +3700,20 @@ const AdminPanel = () => {
 
                   {/* Botones */}
                   <div className="flex gap-3">
-                    <Button onClick={calculateContractPreview} className="btn-gold-outline">
-                      Calcular
-                    </Button>
-                    <Button onClick={createContract} className="btn-gold">
-                      Crear Contrato
-                    </Button>
+                    {editingContractId ? (
+                      <>
+                        <Button onClick={cancelEdit} className="btn-gold-outline">
+                          Cancelar
+                        </Button>
+                        <Button onClick={updateContract} className="btn-gold">
+                          Guardar Cambios
+                        </Button>
+                      </>
+                    ) : (
+                      <Button onClick={createContract} className="btn-gold">
+                        Crear Contrato
+                      </Button>
+                    )}
                   </div>
 
                   {/* Preview del cálculo */}
