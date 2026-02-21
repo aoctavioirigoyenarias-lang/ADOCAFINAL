@@ -2452,7 +2452,10 @@ const AdminPanel = () => {
   });
 
   useEffect(() => {
-    if (sessionStorage.getItem("adminAuth") === "true") setIsAuthenticated(true);
+    if (sessionStorage.getItem("adminAuth") === "true") {
+      setIsAuthenticated(true);
+      setUserRole(sessionStorage.getItem("userRole") || "admin");
+    }
   }, []);
 
   useEffect(() => {
@@ -2461,15 +2464,23 @@ const AdminPanel = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    const isValidMain = loginUser === ADMIN_USER && loginPass === ADMIN_PASS;
+    const isAdmin = loginUser === ADMIN_USER && loginPass === ADMIN_PASS;
+    const isStaff = loginUser === STAFF_USER && loginPass === STAFF_PASS;
     
-    if (isValidMain) {
+    if (isAdmin) {
       setIsAuthenticated(true);
+      setUserRole("admin");
       sessionStorage.setItem("adminAuth", "true");
-      toast.success("🔐 Acceso autorizado");
+      sessionStorage.setItem("userRole", "admin");
+      toast.success("🔐 Acceso ADMIN autorizado");
+    } else if (isStaff) {
+      setIsAuthenticated(true);
+      setUserRole("staff");
+      sessionStorage.setItem("adminAuth", "true");
+      sessionStorage.setItem("userRole", "staff");
+      toast.success("👤 Acceso STAFF autorizado");
     } else {
       toast.error("Credenciales incorrectas");
-      console.log("Login attempt - User:", loginUser, "Pass length:", loginPass.length);
     }
   };
 
