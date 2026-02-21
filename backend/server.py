@@ -160,10 +160,10 @@ class ContractCreate(BaseModel):
     client_phone: str
     client_email: Optional[str] = None
     event_name: str
-    salon: str
+    salon: Optional[str] = None
     event_date: str
-    event_time: str
-    service_time: str
+    event_time: Optional[str] = None
+    service_time: Optional[str] = None
     contract_type: str = "public"
     # Servicios con precios del catálogo
     include_cabina: bool = True
@@ -181,9 +181,12 @@ class ContractCreate(BaseModel):
     discount_amount: float = 0  # Descuento en PESOS ($)
     special_price: Optional[float] = None
     notes: Optional[str] = None
-    # Campos administrativos (no se imprimen)
+    # Cortesía / Regalo
+    cortesia: Optional[str] = None
+    # Campos administrativos
     anticipo_status: str = "pendiente"
     anticipo_amount: Optional[float] = None
+    fecha_pago: Optional[str] = None
     costo_proveedor: Optional[float] = None
 
 # ============ COLORES AUTOMÁTICOS PARA PORTADAS ============
