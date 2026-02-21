@@ -3217,12 +3217,16 @@ const AdminPanel = () => {
     
     // === HEADER PÁGINA 2 (mismo estilo) ===
     try {
-      const logoImg = new Image();
-      logoImg.crossOrigin = "anonymous";
-      logoImg.src = PICPARTY_LOGO;
-      await new Promise(r => { logoImg.onload = r; setTimeout(r, 500); });
-      pdf.addImage(logoImg, 'PNG', margin, 5, 30, 30);
+      const logoImg2 = new Image();
+      logoImg2.crossOrigin = "anonymous";
+      await new Promise((resolve, reject) => {
+        logoImg2.onload = resolve;
+        logoImg2.onerror = reject;
+        logoImg2.src = PICPARTY_LOGO + "?t=" + Date.now();
+      });
+      pdf.addImage(logoImg2, 'PNG', margin, 5, 30, 30);
     } catch(e) {
+      console.error("Error cargando logo p2:", e);
       pdf.setFontSize(14);
       pdf.setTextColor(26, 11, 46);
       pdf.setFont(undefined, 'bold');
