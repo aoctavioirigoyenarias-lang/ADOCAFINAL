@@ -97,10 +97,14 @@ const EventGallery = () => {
         await axios.post(`${API}/seed-events`);
         const newResponse = await axios.get(`${API}/events`);
         setAllEvents(newResponse.data);
-        setFilteredEvents(newResponse.data.slice(0, 5));
+        // TOP 3: Ordenar por fecha más reciente y mostrar solo 3
+        const sorted = [...newResponse.data].sort((a, b) => new Date(b.date) - new Date(a.date));
+        setFilteredEvents(sorted.slice(0, 3));
       } else {
         setAllEvents(response.data);
-        setFilteredEvents(response.data.slice(0, 5));
+        // TOP 3: Ordenar por fecha más reciente y mostrar solo 3
+        const sorted = [...response.data].sort((a, b) => new Date(b.date) - new Date(a.date));
+        setFilteredEvents(sorted.slice(0, 3));
       }
       setEventDates(response.data?.map(e => new Date(e.date + 'T12:00:00')) || []);
     } catch (e) {
