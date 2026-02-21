@@ -27,14 +27,24 @@ PICPARTYLIVE es una plataforma de galería de fotos en vivo para eventos, que pe
 - `/admin` - Panel de administración (protegido)
 
 ## Credenciales de Admin
-- Usuario: `OCTAVIO`
-- Password: `CHELO1980`
+- **Admin**: Usuario: `OCTAVIO` / Password: `CHELO1980`
+- **Staff**: Usuario: `STAFF` / Password: `PICPARTY2026`
 
 ## Funcionalidades Implementadas
 
-### 1. Galería de Eventos (Actualizada Dic 2025)
+### 0. Control de Acceso por Roles (Nuevo - Febrero 2026)
+- **ADMIN (OCTAVIO)**: Acceso completo - Contratos, Reporte Pagos, Galería Pro, PICPARTYLIVE, Cloudinary
+- **STAFF**: Vista restringida - Solo "Galería de Eventos por Contrato"
+  - Selector de eventos (contratos)
+  - Ver info del evento y servicios contratados
+  - Campos para pegar links de fotoshare.co (Fotos y Videos)
+  - Botón para descargar templates de Cloudinary
+
+### 1. Galería de Eventos (Actualizada Feb 2026)
 - Tarjetas de evento limpias: Solo **Nombre** y **Fecha** (sin Ciudad ni Horario)
+- **Orden cronológico inverso**: El último evento SUBIDO aparece siempre arriba (ordenado por `created_at` DESC)
 - Botón header: "EN VIVO" en dorado negrita (antes "LIVE")
+- Muestra TOP 3 eventos más recientes
 - Fondo #1A0B2E obligatorio
 
 ### 2. Micrositio PICPARTYLIVE - Efecto Instagram
