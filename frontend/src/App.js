@@ -3421,8 +3421,8 @@ const AdminPanel = () => {
               <Card className="card-premium border-gold/30">
                 <CardHeader>
                   <CardTitle className="text-pearl flex justify-between items-center">
-                    <span>Nuevo Contrato</span>
-                    <Button variant="ghost" size="sm" onClick={() => setShowContractForm(false)} className="text-pearl-muted">✕</Button>
+                    <span>{editingContractId ? `Editando: ${contractForm.event_name}` : 'Nuevo Contrato'}</span>
+                    <Button variant="ghost" size="sm" onClick={cancelEdit} className="text-pearl-muted">✕</Button>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
