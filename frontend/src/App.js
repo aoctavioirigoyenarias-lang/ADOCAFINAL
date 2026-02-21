@@ -3253,99 +3253,99 @@ const AdminPanel = () => {
 
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="contracts">
-          <TabsList className="bg-slate-800 border border-white/10">
-            <TabsTrigger value="contracts" className="data-[state=active]:bg-green-500">📄 Contratos ({contracts.length})</TabsTrigger>
-            <TabsTrigger value="events" className="data-[state=active]:bg-purple-500">📸 Galería Pro ({events.length})</TabsTrigger>
-            <TabsTrigger value="live" className="data-[state=active]:bg-cyan-500">🔴 PICPARTYLIVE ({liveSessions.length})</TabsTrigger>
-            <TabsTrigger value="cloudinary" className="data-[state=active]:bg-orange-500">☁️ Cloudinary</TabsTrigger>
+          <TabsList className="bg-night border border-gold/20">
+            <TabsTrigger value="contracts" className="data-[state=active]:bg-gold data-[state=active]:text-night">Contratos ({contracts.length})</TabsTrigger>
+            <TabsTrigger value="events" className="data-[state=active]:bg-gold data-[state=active]:text-night">Galería Pro ({events.length})</TabsTrigger>
+            <TabsTrigger value="live" className="data-[state=active]:bg-gold data-[state=active]:text-night">PICPARTYLIVE ({liveSessions.length})</TabsTrigger>
+            <TabsTrigger value="cloudinary" className="data-[state=active]:bg-gold data-[state=active]:text-night">Cloudinary</TabsTrigger>
           </TabsList>
 
           {/* ============ PESTAÑA DE CONTRATOS ============ */}
           <TabsContent value="contracts" className="space-y-4 mt-4">
             <div className="flex justify-between items-center">
               <div>
-                <h2 className="text-white text-xl font-bold">Centro de Contratos</h2>
-                <p className="text-gray-400 text-sm">Gestiona contratos independientes con precios netos</p>
+                <h2 className="text-pearl text-xl font-bold">Centro de Contratos</h2>
+                <p className="text-pearl-muted text-sm">Gestiona contratos independientes con precios netos</p>
               </div>
-              <Button onClick={() => setShowContractForm(true)} className="bg-green-500 hover:bg-green-600">
-                📄 Crear Contrato
+              <Button onClick={() => setShowContractForm(true)} className="btn-gold">
+                Crear Contrato
               </Button>
             </div>
 
             {/* Formulario de Contrato */}
             {showContractForm && (
-              <Card className="bg-slate-800 border-green-500/30">
+              <Card className="card-premium border-gold/30">
                 <CardHeader>
-                  <CardTitle className="text-white flex justify-between items-center">
+                  <CardTitle className="text-pearl flex justify-between items-center">
                     <span>Nuevo Contrato</span>
-                    <Button variant="ghost" size="sm" onClick={() => setShowContractForm(false)} className="text-gray-400">✕</Button>
+                    <Button variant="ghost" size="sm" onClick={() => setShowContractForm(false)} className="text-pearl-muted">✕</Button>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {/* Tipo de Contrato */}
-                  <div className="flex gap-4 p-3 bg-slate-700 rounded">
+                  <div className="flex gap-4 p-3 bg-night/50 rounded">
                     <div className="flex items-center gap-2">
                       <input type="radio" name="contract_type" checked={contractForm.contract_type === "public"} 
                         onChange={() => setContractForm({...contractForm, contract_type: "public", special_price: null})} />
-                      <Label className="text-white">📋 Contrato Público (Precios Netos)</Label>
+                      <Label className="text-pearl">Contrato Público (Precios Netos)</Label>
                     </div>
                     <div className="flex items-center gap-2">
                       <input type="radio" name="contract_type" checked={contractForm.contract_type === "special"} 
                         onChange={() => setContractForm({...contractForm, contract_type: "special"})} />
-                      <Label className="text-orange-400">🤝 Contrato Proveedor/Especial</Label>
+                      <Label className="text-gold">Contrato Proveedor/Especial</Label>
                     </div>
                   </div>
 
                   {/* Datos del Cliente */}
                   <div className="grid grid-cols-3 gap-3">
                     <div>
-                      <Label className="text-white">Nombre Cliente *</Label>
-                      <Input value={contractForm.client_name} onChange={(e) => setContractForm({...contractForm, client_name: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
+                      <Label className="text-pearl">Nombre Cliente *</Label>
+                      <Input value={contractForm.client_name} onChange={(e) => setContractForm({...contractForm, client_name: e.target.value})} className="input-premium" />
                     </div>
                     <div>
-                      <Label className="text-white">Teléfono *</Label>
-                      <Input value={contractForm.client_phone} onChange={(e) => setContractForm({...contractForm, client_phone: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
+                      <Label className="text-pearl">Teléfono *</Label>
+                      <Input value={contractForm.client_phone} onChange={(e) => setContractForm({...contractForm, client_phone: e.target.value})} className="input-premium" />
                     </div>
                     <div>
-                      <Label className="text-white">Email</Label>
-                      <Input value={contractForm.client_email} onChange={(e) => setContractForm({...contractForm, client_email: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
+                      <Label className="text-pearl">Email</Label>
+                      <Input value={contractForm.client_email} onChange={(e) => setContractForm({...contractForm, client_email: e.target.value})} className="input-premium" />
                     </div>
                   </div>
 
                   {/* Datos del Evento */}
                   <div className="grid grid-cols-3 gap-3">
                     <div>
-                      <Label className="text-white">Nombre Evento *</Label>
-                      <Input value={contractForm.event_name} onChange={(e) => setContractForm({...contractForm, event_name: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
+                      <Label className="text-pearl">Nombre Evento *</Label>
+                      <Input value={contractForm.event_name} onChange={(e) => setContractForm({...contractForm, event_name: e.target.value})} className="input-premium" />
                     </div>
                     <div>
-                      <Label className="text-white">Salón *</Label>
-                      <Input value={contractForm.salon} onChange={(e) => setContractForm({...contractForm, salon: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
+                      <Label className="text-pearl">Salón *</Label>
+                      <Input value={contractForm.salon} onChange={(e) => setContractForm({...contractForm, salon: e.target.value})} className="input-premium" />
                     </div>
                     <div>
-                      <Label className="text-white">Fecha Evento *</Label>
-                      <Input type="date" value={contractForm.event_date} onChange={(e) => setContractForm({...contractForm, event_date: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
+                      <Label className="text-pearl">Fecha Evento *</Label>
+                      <Input type="date" value={contractForm.event_date} onChange={(e) => setContractForm({...contractForm, event_date: e.target.value})} className="input-premium" />
                     </div>
                   </div>
 
                   {/* Horarios */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <Label className="text-white">Horario Evento</Label>
-                      <Input placeholder="ej: 6:00 PM" value={contractForm.event_time} onChange={(e) => setContractForm({...contractForm, event_time: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
+                      <Label className="text-pearl">Horario Evento</Label>
+                      <Input placeholder="ej: 6:00 PM" value={contractForm.event_time} onChange={(e) => setContractForm({...contractForm, event_time: e.target.value})} className="input-premium" />
                     </div>
                     <div>
-                      <Label className="text-white">Horario Servicio</Label>
-                      <Input placeholder="ej: 7:00 PM - 11:00 PM" value={contractForm.service_time} onChange={(e) => setContractForm({...contractForm, service_time: e.target.value})} className="bg-slate-700 border-white/10 text-white" />
+                      <Label className="text-pearl">Horario Servicio</Label>
+                      <Input placeholder="ej: 7:00 PM - 11:00 PM" value={contractForm.service_time} onChange={(e) => setContractForm({...contractForm, service_time: e.target.value})} className="input-premium" />
                     </div>
                   </div>
 
                   {/* === CATÁLOGO DE SERVICIOS === */}
-                  <div className="p-4 bg-slate-800/50 border border-slate-600/50 rounded-lg space-y-4">
-                    <Label className="text-white font-bold text-sm block">SERVICIOS A CONTRATAR (Precios NETO)</Label>
+                  <div className="p-4 bg-night/50 border border-gold/20 rounded-lg space-y-4">
+                    <Label className="text-gold font-bold text-sm block">SERVICIOS A CONTRATAR (Precios NETO)</Label>
                     
                     {/* CABINA DE FOTOS */}
-                    <div className="p-3 bg-slate-700/50 rounded">
+                    <div className="p-3 bg-night/30 rounded">
                       <div className="flex items-center gap-2 mb-2">
                         <Checkbox checked={contractForm.include_cabina} onCheckedChange={(c) => setContractForm({...contractForm, include_cabina: c, cabina_hours: c ? 2 : 0, price_cabina: c ? CATALOGO_CABINA[2] : 0})} />
                         <Label className="text-green-400 font-bold">Cabina de Fotos</Label>
