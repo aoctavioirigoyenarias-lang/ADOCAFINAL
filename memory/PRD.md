@@ -40,12 +40,15 @@ Plataforma de fotos en vivo para eventos (bodas, quinceaños, fiestas). Permite 
 - Teléfono opcional
 - Genera PDF con folio único (optimizado B&W)
 
-### Galería Live (`/live?code=XXXX`)
-- Vista móvil: galería directa
-- Vista PC/Tablet: menú maestro (Proyectar, Ver Galería, Descargar)
-- Subida de fotos en tiempo real
-- **Galería limpia sin emojis de reacciones** - fotos protagonistas
+### Galería Live (`/live?code=XXXX`) - Estilo Instagram
+- **Grid 3 columnas** compacto sin espacios
+- **Double tap para like** con animación de corazón
+- **Lightbox fullscreen** al tocar una foto
+- Navegación con flechas y contador de fotos
+- Header minimalista (solo nombre + contador)
+- Tabs con iconos (subir + galería)
 - Descarga protegida con clave (últimos 4 dígitos del teléfono)
+- Likes persistentes en localStorage
 
 ### Landing Page (`/picpartylive`)
 - Página de ventas con demo interactivo
