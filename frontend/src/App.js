@@ -2839,7 +2839,8 @@ const AdminPanel = () => {
         include_live: false, price_live: 700,
         extras: [], discount_amount: 0, special_price: null, notes: "",
         cortesia: "",
-        anticipo_status: "pendiente", anticipo_amount: null, costo_proveedor: null, fecha_pago: null
+        manual_total: 0, anticipo_amount: 0,
+        anticipo_status: "pendiente", costo_proveedor: null, fecha_pago: null
       });
       setContractPreview(null);
       fetchData();
