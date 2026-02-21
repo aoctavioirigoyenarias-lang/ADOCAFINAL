@@ -2408,7 +2408,7 @@ const AdminPanel = () => {
     // Key Moments (por piezas)
     include_key_moments: false, key_moments_pieces: 0, price_key_moments: 0,
     // PicPartyLive
-    include_live: false, price_live: 700,
+    include_live: false, price_live: 0,
     extras: [], discount_amount: 0, special_price: null, notes: "",
     // Cortesía / Regalo
     cortesia: "",
