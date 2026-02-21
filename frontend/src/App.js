@@ -3342,6 +3342,103 @@ const AdminPanel = () => {
     toast.success(`Contrato ${folio} descargado correctamente`);
   };
 
+  // ========== GENERAR RECIBO DE PAGO (TICKET VIRTUAL) ==========
+  const generateRecibo = async (contract) => {
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [80, 150] }); // Formato ticket
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const margin = 5;
+    
+    // Logo
+    try {
+      const logoImg = new Image();
+      logoImg.crossOrigin = "anonymous";
+      logoImg.src = PICPARTY_LOGO;
+      await new Promise(r => { logoImg.onload = r; setTimeout(r, 1000); });
+      pdf.addImage(logoImg, 'PNG', (pageWidth - 20) / 2, 5, 20, 20);
+    } catch(e) {
+      pdf.setFontSize(12);
+      pdf.setFont(undefined, 'bold');
+      pdf.text("PIC PARTY", pageWidth / 2, 15, { align: 'center' });
+    }
+    
+    let y = 30;
+    
+    // Título
+    pdf.setFontSize(10);
+    pdf.setFont(undefined, 'bold');
+    pdf.text("RECIBO DE PAGO", pageWidth / 2, y, { align: 'center' });
+    y += 6;
+    pdf.setFontSize(8);
+    pdf.setFont(undefined, 'normal');
+    pdf.text("EVENTO LIQUIDADO", pageWidth / 2, y, { align: 'center' });
+    y += 8;
+    
+    // Línea divisora
+    pdf.setDrawColor(150);
+    pdf.line(margin, y, pageWidth - margin, y);
+    y += 6;
+    
+    // Datos del cliente
+    pdf.setFontSize(7);
+    pdf.setFont(undefined, 'bold');
+    pdf.text("Cliente:", margin, y);
+    pdf.setFont(undefined, 'normal');
+    pdf.text(contract.client_name || '', margin + 15, y);
+    y += 5;
+    
+    pdf.setFont(undefined, 'bold');
+    pdf.text("Tel:", margin, y);
+    pdf.setFont(undefined, 'normal');
+    pdf.text(contract.client_phone || '', margin + 15, y);
+    y += 5;
+    
+    pdf.setFont(undefined, 'bold');
+    pdf.text("Fecha:", margin, y);
+    pdf.setFont(undefined, 'normal');
+    pdf.text(contract.event_date || '', margin + 15, y);
+    y += 8;
+    
+    // Línea divisora
+    pdf.line(margin, y, pageWidth - margin, y);
+    y += 6;
+    
+    // Totales
+    pdf.setFontSize(8);
+    pdf.setFont(undefined, 'normal');
+    pdf.text("Total Neto:", margin, y);
+    pdf.text(`$${(contract.net_price || 0).toLocaleString()} MXN`, pageWidth - margin, y, { align: 'right' });
+    y += 5;
+    
+    pdf.text("Abono:", margin, y);
+    pdf.text(`$${(contract.anticipo_amount || 0).toLocaleString()} MXN`, pageWidth - margin, y, { align: 'right' });
+    y += 5;
+    
+    pdf.setFont(undefined, 'bold');
+    pdf.text("Saldo:", margin, y);
+    pdf.text("$0 MXN", pageWidth - margin, y, { align: 'right' });
+    y += 8;
+    
+    // Mensaje de liquidado
+    pdf.setFillColor(34, 139, 34);
+    pdf.rect(margin, y, pageWidth - (margin * 2), 8, 'F');
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(7);
+    pdf.text("** SERVICIO LIQUIDADO **", pageWidth / 2, y + 5.5, { align: 'center' });
+    y += 14;
+    
+    // Fecha de emisión
+    pdf.setTextColor(0, 0, 0);
+    pdf.setFontSize(6);
+    pdf.setFont(undefined, 'normal');
+    pdf.text(`Emitido: ${new Date().toLocaleString('es-MX')}`, pageWidth / 2, y, { align: 'center' });
+    y += 4;
+    pdf.text("(614) 272 5008 | WWW.PICPARTY.NET", pageWidth / 2, y, { align: 'center' });
+    
+    // Guardar
+    pdf.save(`Recibo_${contract.client_name.replace(/\s+/g, '_')}.pdf`);
+    toast.success("Recibo de pago generado");
+  };
+
   // LOGIN SCREEN
   if (!isAuthenticated) {
     return (
