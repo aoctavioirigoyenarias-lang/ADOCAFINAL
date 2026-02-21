@@ -91,6 +91,14 @@ PICPARTYLIVE es una plataforma de galería de fotos en vivo para eventos, que pe
 
 ## Changelog
 
+### 21 Febrero 2026 - Actualización de Servicios (COMPLETADO)
+- ✅ **Espejo IA DESHABILITADO** - Oculto de todas las opciones de selección
+- ✅ **4 servicios disponibles**: Cabina de Fotos, Video 360, Key Moments, PicPartyLive
+- ✅ Renombrado "Pic Motion 360" → "Video 360" en formulario de contratos
+- ✅ Campo "Descuento" eliminado del formulario de contratos
+- ✅ PDF actualizado: Header muestra "Cabina de Fotos | Video 360 | Key Moments" (sin Espejo IA)
+- ✅ Tabla de SERVICIOS CONTRATADOS en PDF usa nombres correctos
+
 ### 21 Febrero 2026 - Clonación PDF Contrato (COMPLETADO)
 - ✅ **PDF de 2 páginas clonado** del formato oficial `Contrato_MARU_PIC-2025-OJ5I.pdf`
 - ✅ **Página 1**: 6 cláusulas legales exactas (OBJETO, PAGO, RESPONSABILIDAD, REQUERIMIENTOS, CANCELACIÓN, USO DE IMAGEN)
