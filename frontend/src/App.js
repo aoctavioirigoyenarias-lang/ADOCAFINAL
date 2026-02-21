@@ -3047,10 +3047,14 @@ const AdminPanel = () => {
     try {
       const logoImg = new Image();
       logoImg.crossOrigin = "anonymous";
-      logoImg.src = PICPARTY_LOGO;
-      await new Promise(r => { logoImg.onload = r; setTimeout(r, 2000); });
+      await new Promise((resolve, reject) => {
+        logoImg.onload = resolve;
+        logoImg.onerror = reject;
+        logoImg.src = PICPARTY_LOGO + "?t=" + Date.now(); // Cache bust
+      });
       pdf.addImage(logoImg, 'PNG', margin, 5, 38, 38);
     } catch(e) {
+      console.error("Error cargando logo:", e);
       // Fallback solo si falla la carga de imagen
       pdf.setFontSize(18);
       pdf.setTextColor(26, 11, 46);
