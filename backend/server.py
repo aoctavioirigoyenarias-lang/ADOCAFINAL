@@ -155,6 +155,9 @@ class Contract(BaseModel):
     # Estado
     status: str = "draft"  # draft, confirmed, completed, cancelled
     notes: Optional[str] = None
+    # === LINKS DE FOTOSHARE (STAFF) ===
+    link_fotos: Optional[str] = None  # Link de fotoshare.co para fotos
+    link_videos: Optional[str] = None  # Link de fotoshare.co para videos
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class ContractCreate(BaseModel):
@@ -192,6 +195,9 @@ class ContractCreate(BaseModel):
     costo_proveedor: Optional[float] = None
     # TOTAL MANUAL (libertad de precios)
     manual_total: Optional[float] = None
+    # === LINKS DE FOTOSHARE (STAFF) ===
+    link_fotos: Optional[str] = None  # Link de fotoshare.co para fotos
+    link_videos: Optional[str] = None  # Link de fotoshare.co para videos
 
 # ============ COLORES AUTOMÁTICOS PARA PORTADAS ============
 AUTO_COLORS = [
