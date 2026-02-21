@@ -2356,6 +2356,8 @@ const AdminPanel = () => {
   const [loginPass, setLoginPass] = useState("");
   const [events, setEvents] = useState([]);
   const [liveSessions, setLiveSessions] = useState([]);
+  const [selectedEventCode, setSelectedEventCode] = useState(null);
+  const [eventPhotos, setEventPhotos] = useState([]);
   const [contracts, setContracts] = useState([]);
   const [preferences, setPreferences] = useState({ show_net_price: true });
   const [loading, setLoading] = useState(true);
