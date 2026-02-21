@@ -3440,8 +3440,8 @@ const AdminPanel = () => {
                     </div>
                   </div>
 
-                  {/* Datos del Cliente */}
-                  <div className="grid grid-cols-3 gap-3">
+                  {/* Datos del Cliente - SOLO Nombre y Teléfono */}
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
                       <Label className="text-pearl">Nombre Cliente *</Label>
                       <Input value={contractForm.client_name} onChange={(e) => setContractForm({...contractForm, client_name: e.target.value})} className="input-premium" />
@@ -3450,32 +3450,20 @@ const AdminPanel = () => {
                       <Label className="text-pearl">Teléfono *</Label>
                       <Input value={contractForm.client_phone} onChange={(e) => setContractForm({...contractForm, client_phone: e.target.value})} className="input-premium" />
                     </div>
-                    <div>
-                      <Label className="text-pearl">Email</Label>
-                      <Input value={contractForm.client_email} onChange={(e) => setContractForm({...contractForm, client_email: e.target.value})} className="input-premium" />
-                    </div>
                   </div>
 
-                  {/* Datos del Evento */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label className="text-pearl">Nombre Evento *</Label>
-                      <Input value={contractForm.event_name} onChange={(e) => setContractForm({...contractForm, event_name: e.target.value})} className="input-premium" />
-                    </div>
+                  {/* Fecha y Horarios */}
+                  <div className="grid grid-cols-3 gap-3">
                     <div>
                       <Label className="text-pearl">Fecha Evento *</Label>
                       <Input type="date" value={contractForm.event_date} onChange={(e) => setContractForm({...contractForm, event_date: e.target.value})} className="input-premium" />
                     </div>
-                  </div>
-
-                  {/* Horarios */}
-                  <div className="grid grid-cols-2 gap-3">
                     <div>
                       <Label className="text-pearl">Horario Evento</Label>
                       <Input placeholder="ej: 6:00 PM" value={contractForm.event_time} onChange={(e) => setContractForm({...contractForm, event_time: e.target.value})} className="input-premium" />
                     </div>
                     <div>
-                      <Label className="text-pearl">Inicio de Servicio (Opcional)</Label>
+                      <Label className="text-pearl">Inicio Servicio</Label>
                       <Input placeholder="ej: 7:00 PM" value={contractForm.service_time} onChange={(e) => setContractForm({...contractForm, service_time: e.target.value})} className="input-premium" />
                     </div>
                   </div>
