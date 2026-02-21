@@ -188,6 +188,8 @@ class ContractCreate(BaseModel):
     anticipo_amount: Optional[float] = None
     fecha_pago: Optional[str] = None
     costo_proveedor: Optional[float] = None
+    # TOTAL MANUAL (libertad de precios)
+    manual_total: Optional[float] = None
 
 # ============ COLORES AUTOMÁTICOS PARA PORTADAS ============
 AUTO_COLORS = [
