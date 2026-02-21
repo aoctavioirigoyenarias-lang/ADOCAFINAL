@@ -3043,29 +3043,26 @@ const AdminPanel = () => {
     // ==================== PÁGINA 1: CLÁUSULAS LEGALES ====================
     
     // === HEADER CON LOGO Y FOLIO ===
-    // Logo a la izquierda
+    // Logo a la izquierda (incluye texto PICPARTY)
     try {
       const logoImg = new Image();
       logoImg.crossOrigin = "anonymous";
       logoImg.src = PICPARTY_LOGO;
       await new Promise(r => { logoImg.onload = r; setTimeout(r, 2000); });
-      pdf.addImage(logoImg, 'PNG', margin, 8, 32, 32);
+      pdf.addImage(logoImg, 'PNG', margin, 5, 38, 38);
     } catch(e) {
+      // Fallback solo si falla la carga de imagen
       pdf.setFontSize(18);
       pdf.setTextColor(26, 11, 46);
       pdf.setFont(undefined, 'bold');
       pdf.text("PIC PARTY", margin, 25);
     }
     
-    // Texto del logo
-    pdf.setFontSize(16);
-    pdf.setTextColor(26, 11, 46);
-    pdf.setFont(undefined, 'bold');
-    pdf.text("PIC PARTY", margin + 35, 18);
+    // Servicios debajo del logo
     pdf.setFontSize(8);
     pdf.setFont(undefined, 'normal');
     pdf.setTextColor(80, 80, 80);
-    pdf.text("Cabina de Fotos | Video 360 | Key Moments", margin + 35, 24);
+    pdf.text("Cabina de Fotos | Video 360 | Key Moments", margin + 42, 28);
     
     // Folio y etiqueta CONTRATO a la derecha
     pdf.setFontSize(11);
