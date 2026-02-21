@@ -2410,6 +2410,7 @@ const AdminPanel = () => {
     anticipo_status: "pendiente", costo_proveedor: null, fecha_pago: null
   });
   const [contractPreview, setContractPreview] = useState(null);
+  const [editingContractId, setEditingContractId] = useState(null); // ID del contrato en edición
   
   // CATÁLOGO DE PRECIOS NETOS
   const CATALOGO_CABINA = { 2: 2699, 3: 3299, 4: 3799, 5: 4699 };
