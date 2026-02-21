@@ -91,6 +91,18 @@ PICPARTYLIVE es una plataforma de galería de fotos en vivo para eventos, que pe
 
 ## Changelog
 
+### 21 Febrero 2026 - Clonación PDF Contrato (COMPLETADO)
+- ✅ **PDF de 2 páginas clonado** del formato oficial `Contrato_MARU_PIC-2025-OJ5I.pdf`
+- ✅ **Página 1**: 6 cláusulas legales exactas (OBJETO, PAGO, RESPONSABILIDAD, REQUERIMIENTOS, CANCELACIÓN, USO DE IMAGEN)
+- ✅ **Página 2**: Tabla SERVICIOS CONTRATADOS, resumen de pagos, área de firmas
+- ✅ **Sistema de Folio Automático**: Formato `PIC-2026-[INICIALES][NÚMERO]` (ej: PIC-2026-JP36N)
+- ✅ **Lógica de Pagos Dinámica**: 
+  - Muestra Anticipo recibido y calcula SALDO automáticamente
+  - Mensaje "** SERVICIO TOTALMENTE LIQUIDADO **" si saldo = 0
+- ✅ **Footer en ambas páginas**: `(614) 272 5008 | SINCE 2014 | WWW.PICPARTY.NET`
+- ✅ **Cortesía/Regalo**: Se imprime en el PDF si está incluido
+- ✅ Nombre de archivo incluye folio: `Contrato_[CLIENTE]_[FOLIO].pdf`
+
 ### Diciembre 2025 - Super Prompt ADOCA.NET
 - ✅ Fondo obligatorio #1A0B2E (Morado Noche más profundo)
 - ✅ Botón "EN VIVO" en lugar de "LIVE" (dorado, negrita)
