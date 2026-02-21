@@ -2349,9 +2349,12 @@ const PicPartyLive = () => {
 // ============ ADMIN PANEL ============
 const ADMIN_USER = "OCTAVIO";
 const ADMIN_PASS = "CHELO1980";
+const STAFF_USER = "STAFF";
+const STAFF_PASS = "PICPARTY2026";
 
 const AdminPanel = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState(null); // "admin" o "staff"
   const [loginUser, setLoginUser] = useState("");
   const [loginPass, setLoginPass] = useState("");
   const [events, setEvents] = useState([]);
@@ -2363,6 +2366,8 @@ const AdminPanel = () => {
   const [loading, setLoading] = useState(true);
   const [photosCounts, setPhotosCounts] = useState({}); // Contador de fotos por evento
   const [newEvent, setNewEvent] = useState({ name: "", date: "", time: "", description: "", fotoshare_url: "", video360_url: "", location: "", has_photos: true, has_video360: false, color: "" });
+  // Links de Fotoshare para Staff
+  const [fotoshareLinks, setFotoshareLinks] = useState({ fotos: "", videos: "" });
   const [newSession, setNewSession] = useState({ 
     event_name: "", 
     event_type: "boda",
