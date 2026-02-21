@@ -3620,9 +3620,9 @@ const AdminPanel = () => {
                     <div className="p-4 bg-night/50 rounded-lg border border-gold/20">
                       <h3 className="text-gold text-lg font-bold mb-2">{selectedContract.client_name}</h3>
                       <div className="grid grid-cols-2 gap-2 text-pearl-muted text-sm">
-                        <p>Fecha: {new Date(selectedContract.event_date).toLocaleDateString('es-MX')}</p>
-                        <p>Teléfono: {selectedContract.client_phone}</p>
-                        <p>Estado: <Badge className={selectedContract.anticipo_status === "pagado" ? "bg-green-500/20 text-green-300" : "bg-yellow-500/20 text-yellow-300"}>{selectedContract.anticipo_status}</Badge></p>
+                        <span>Fecha: {new Date(selectedContract.event_date).toLocaleDateString('es-MX')}</span>
+                        <span>Teléfono: {selectedContract.client_phone}</span>
+                        <span className="flex items-center gap-2">Estado: <Badge className={selectedContract.anticipo_status === "pagado" ? "bg-green-500/20 text-green-300" : "bg-yellow-500/20 text-yellow-300"}>{selectedContract.anticipo_status}</Badge></span>
                       </div>
                     </div>
 
