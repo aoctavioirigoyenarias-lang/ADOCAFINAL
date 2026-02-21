@@ -14,7 +14,7 @@ module.exports = {
       },
       colors: {
         // Premium Palette Colors
-        night: 'var(--premium-night)',
+        night: '#1A0B2E',
         gold: {
           DEFAULT: 'var(--premium-gold)',
           light: 'var(--premium-gold-light)',
