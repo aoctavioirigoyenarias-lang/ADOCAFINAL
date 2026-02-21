@@ -97,14 +97,12 @@ const EventGallery = () => {
         await axios.post(`${API}/seed-events`);
         const newResponse = await axios.get(`${API}/events`);
         setAllEvents(newResponse.data);
-        // TOP 3: Ordenar por fecha más reciente y mostrar solo 3
-        const sorted = [...newResponse.data].sort((a, b) => new Date(b.date) - new Date(a.date));
-        setFilteredEvents(sorted.slice(0, 3));
+        // TOP 3: El backend ya ordena por created_at DESC (último subido primero)
+        setFilteredEvents(newResponse.data.slice(0, 3));
       } else {
         setAllEvents(response.data);
-        // TOP 3: Ordenar por fecha más reciente y mostrar solo 3
-        const sorted = [...response.data].sort((a, b) => new Date(b.date) - new Date(a.date));
-        setFilteredEvents(sorted.slice(0, 3));
+        // TOP 3: El backend ya ordena por created_at DESC (último subido primero)
+        setFilteredEvents(response.data.slice(0, 3));
       }
       setEventDates(response.data?.map(e => new Date(e.date + 'T12:00:00')) || []);
     } catch (e) {
@@ -122,17 +120,15 @@ const EventGallery = () => {
       setFilteredEvents(filtered);
       if (filtered.length === 0) toast.info("No hay eventos para esta fecha");
     } else {
-      // TOP 3: Mostrar los 3 eventos más recientes ordenados por fecha
-      const sortedByDate = [...allEvents].sort((a, b) => new Date(b.date) - new Date(a.date));
-      setFilteredEvents(sortedByDate.slice(0, 3));
+      // TOP 3: Mostrar los 3 eventos más recientes (ya ordenados por created_at del backend)
+      setFilteredEvents(allEvents.slice(0, 3));
     }
   }, [allEvents]);
 
   const resetFilter = () => {
     setSelectedDate(null);
-    // TOP 3: Mostrar los 3 eventos más recientes
-    const sortedByDate = [...allEvents].sort((a, b) => new Date(b.date) - new Date(a.date));
-    setFilteredEvents(sortedByDate.slice(0, 3));
+    // TOP 3: Mostrar los 3 eventos más recientes (ya ordenados por created_at del backend)
+    setFilteredEvents(allEvents.slice(0, 3));
   };
 
   if (loading) return (
