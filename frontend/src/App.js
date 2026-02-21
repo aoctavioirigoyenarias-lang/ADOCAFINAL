@@ -1089,6 +1089,16 @@ const PicPartyLive = () => {
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const fileInputRef = useRef(null);
   
+  // === INSTAGRAM-STYLE STATES ===
+  const [lightboxPhoto, setLightboxPhoto] = useState(null);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [likeAnimation, setLikeAnimation] = useState(null);
+  const [likedPhotos, setLikedPhotos] = useState(() => {
+    const saved = localStorage.getItem('picparty_liked_photos');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const lastTapRef = useRef(0);
+  
   // NUEVOS ESTADOS para Interfaz Maestra
   const [viewMode, setViewMode] = useState("menu"); // menu, gallery, projection, download
   const [projectionEffect, setProjectionEffect] = useState("slideshow"); // slideshow, mosaic, popup
