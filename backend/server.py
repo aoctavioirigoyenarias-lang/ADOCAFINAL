@@ -494,8 +494,10 @@ async def create_contract(contract_data: ContractCreate):
     # Descuento en PESOS ($)
     discount_amount = contract_data.discount_amount
     
-    # Precio final
-    if contract_data.contract_type == "special" and contract_data.special_price is not None:
+    # Precio final - PRIORIDAD: manual_total > special_price > cálculo automático
+    if contract_data.manual_total and contract_data.manual_total > 0:
+        net_price = contract_data.manual_total
+    elif contract_data.contract_type == "special" and contract_data.special_price is not None:
         net_price = contract_data.special_price
     else:
         net_price = subtotal - discount_amount
