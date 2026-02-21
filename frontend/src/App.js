@@ -3693,6 +3693,12 @@ const AdminPanel = () => {
                     )}
                   </div>
 
+                  {/* TEXTO LEGAL */}
+                  <div className="p-3 bg-night/30 border border-pearl-muted/20 rounded text-pearl-muted text-xs space-y-1">
+                    <p>* Vigencia: 15 días naturales a partir de la emisión.</p>
+                    <p>* Flete/Costos adicionales: Sujetos a cambios fuera de Chihuahua.</p>
+                  </div>
+
                   {/* Botones */}
                   <div className="flex gap-3">
                     {editingContractId ? (
