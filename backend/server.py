@@ -144,6 +144,8 @@ class Contract(BaseModel):
     net_price: float
     # Cortesía / Regalo
     cortesia: Optional[str] = None
+    # TOTAL MANUAL (libertad de precios)
+    manual_total: Optional[float] = None
     # === CAMPOS ADMINISTRATIVOS (USO INTERNO) ===
     anticipo_status: str = "pendiente"  # "abonado", "pagado", "pendiente", "dia_evento"
     anticipo_amount: Optional[float] = None  # Monto del abono recibido
