@@ -2907,7 +2907,7 @@ const AdminPanel = () => {
     pdf.setFontSize(8);
     pdf.setFont(undefined, 'normal');
     pdf.setTextColor(80, 80, 80);
-    pdf.text("Cabina de Fotos  Video 360  Espejo con IA", margin + 35, 24);
+    pdf.text("Cabina de Fotos | Video 360 | Key Moments", margin + 35, 24);
     
     // Folio y etiqueta CONTRATO a la derecha
     pdf.setFontSize(11);
@@ -3077,7 +3077,7 @@ const AdminPanel = () => {
     pdf.setFontSize(7);
     pdf.setFont(undefined, 'normal');
     pdf.setTextColor(80, 80, 80);
-    pdf.text("Cabina de Fotos  Video 360  Espejo con IA", margin + 28, 21);
+    pdf.text("Cabina de Fotos | Video 360 | Key Moments", margin + 28, 21);
     
     // Folio página 2
     pdf.setFontSize(10);
