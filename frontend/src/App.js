@@ -3470,21 +3470,22 @@ const AdminPanel = () => {
 
                   {/* === TOTAL Y SALDO EN TIEMPO REAL === */}
                   <div className="p-4 bg-gold/20 border border-gold/40 rounded-lg space-y-3">
-                    {/* TOTAL MANUAL */}
+                    {/* TOTAL CALCULADO AUTOMÁTICAMENTE */}
                     <div className="flex justify-between items-center gap-4">
-                      <Label className="text-gold font-bold">TOTAL (editable):</Label>
+                      <Label className="text-gold font-bold">TOTAL NETO:</Label>
                       <div className="flex items-center gap-2">
                         <span className="text-gold">$</span>
                         <Input 
                           type="number" 
-                          placeholder="Escribe el total" 
-                          value={contractForm.manual_total || ""} 
+                          placeholder="Auto o manual" 
+                          value={contractForm.manual_total || ((contractForm.price_cabina || 0) + (contractForm.price_video360 || 0) + (contractForm.price_key_moments || 0) + (contractForm.price_live || 0)) || ""} 
                           onChange={(e) => setContractForm({...contractForm, manual_total: parseInt(e.target.value) || 0})} 
                           className="input-premium w-32 text-right text-xl font-bold" 
                         />
                         <span className="text-gold font-bold">MXN</span>
                       </div>
                     </div>
+                    <p className="text-pearl-muted/60 text-xs">* Suma automática de servicios. Puedes sobrescribir manualmente.</p>
                     
                     {/* ANTICIPO */}
                     <div className="flex justify-between items-center gap-4">
@@ -3503,22 +3504,28 @@ const AdminPanel = () => {
                     </div>
                     
                     {/* SALDO EN TIEMPO REAL */}
-                    <div className="flex justify-between items-center pt-3 border-t border-gold/30">
-                      <span className="text-gold font-bold text-lg">SALDO:</span>
-                      <span className={`text-2xl font-black ${((contractForm.manual_total || 0) - (contractForm.anticipo_amount || 0)) <= 0 ? 'text-green-400' : 'text-pearl'}`}>
-                        ${Math.max(0, (contractForm.manual_total || 0) - (contractForm.anticipo_amount || 0)).toLocaleString()} MXN
-                      </span>
-                    </div>
-                    
-                    {/* MENSAJE DE LIQUIDACIÓN */}
-                    {((contractForm.manual_total || 0) - (contractForm.anticipo_amount || 0)) <= 0 && contractForm.manual_total > 0 && (
-                      <div className="p-2 bg-green-500/20 border border-green-500/50 rounded text-center">
-                        <span className="text-green-400 font-bold">✓ SERVICIO TOTALMENTE LIQUIDADO</span>
-                      </div>
-                    )}
+                    {(() => {
+                      const totalCalc = contractForm.manual_total || ((contractForm.price_cabina || 0) + (contractForm.price_video360 || 0) + (contractForm.price_key_moments || 0) + (contractForm.price_live || 0));
+                      const saldo = totalCalc - (contractForm.anticipo_amount || 0);
+                      return (
+                        <>
+                          <div className="flex justify-between items-center pt-3 border-t border-gold/30">
+                            <span className="text-gold font-bold text-lg">SALDO:</span>
+                            <span className={`text-2xl font-black ${saldo <= 0 ? 'text-green-400' : 'text-pearl'}`}>
+                              ${Math.max(0, saldo).toLocaleString()} MXN
+                            </span>
+                          </div>
+                          {saldo <= 0 && totalCalc > 0 && (
+                            <div className="p-2 bg-green-500/20 border border-green-500/50 rounded text-center">
+                              <span className="text-green-400 font-bold">✓ SERVICIO TOTALMENTE LIQUIDADO</span>
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
 
-                  {/* === CATÁLOGO DE SERVICIOS === */}
+                  {/* === CATÁLOGO DE SERVICIOS (4 ÚNICOS) === */}
                   <div className="p-4 bg-night/50 border border-gold/20 rounded-lg space-y-4">
                     <Label className="text-gold font-bold text-sm block">SERVICIOS A CONTRATAR (Precios NETO)</Label>
                     
