@@ -2691,14 +2691,20 @@ const AdminPanel = () => {
       event_type: session.event_type || "boda",
       event_type_custom: session.event_type_custom || "",
       event_date: session.event_date || "",
-      code: session.code || ""
+      code: session.code || "",
+      client_name: session.client_name || "",
+      client_phone: session.client_phone || "",
+      total_price: session.total_price || "",
+      anticipo_amount: session.anticipo_amount || "",
+      payment_status: session.payment_status || "pendiente"
     });
     setEditingSession(session);
   };
 
   const closeEditModal = () => {
     setEditingSession(null);
-    setEditForm({ event_name: "", event_type: "", event_type_custom: "", event_date: "", code: "" });
+    setEditForm({ event_name: "", event_type: "", event_type_custom: "", event_date: "", code: "", 
+      client_name: "", client_phone: "", total_price: "", anticipo_amount: "", payment_status: "pendiente" });
   };
 
   const saveSessionEdit = async () => {
@@ -2715,6 +2721,15 @@ const AdminPanel = () => {
       if (editForm.code && editForm.code !== editingSession.code) {
         params.append("code", editForm.code);
       }
+      if (editForm.client_name) params.append("client_name", editForm.client_name);
+      if (editForm.client_phone) params.append("client_phone", editForm.client_phone);
+      if (editForm.total_price !== "" && editForm.total_price !== null) {
+        params.append("total_price", editForm.total_price);
+      }
+      if (editForm.anticipo_amount !== "" && editForm.anticipo_amount !== null) {
+        params.append("anticipo_amount", editForm.anticipo_amount);
+      }
+      if (editForm.payment_status) params.append("payment_status", editForm.payment_status);
       
       await axios.put(`${API}/live/sessions/${editingSession.id}?${params.toString()}`);
       toast.success("✅ Evento actualizado correctamente");
