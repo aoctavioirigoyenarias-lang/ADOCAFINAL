@@ -834,44 +834,59 @@ const Cotizador = () => {
                     <span className="text-gold">
                       PICPARTYLIVE 
                       <span className="text-xs ml-2 opacity-70">
-                        ({mainService ? "Combo" : "Solo"})
+                        ({(services.cabina.selected || services.video360.selected || services.keyMoments.selected) ? "Combo" : "Solo"})
                       </span>
                     </span>
                     <span className="font-bold text-pearl">{formatCurrency(getLivePrice())}</span>
                   </div>
                 )}
                 
-                {mainService && serviceHours > 0 && (
+                {/* Cabina de Fotos */}
+                {services.cabina.selected && services.cabina.hours > 0 && (
                   <div className="flex justify-between items-center py-2 border-b border-gold/20">
-                    <span className="text-gold">
-                      {mainService === "cabina" ? "📸 Cabina de Fotos" : "🎥 Video 360°"} ({serviceHours}h)
-                    </span>
-                    <span className="font-bold text-pearl">{formatCurrency(getServicePrice())}</span>
+                    <span className="text-gold">📸 Cabina de Fotos ({services.cabina.hours}h)</span>
+                    <span className="font-bold text-pearl">{formatCurrency(getCabinaPrice())}</span>
                   </div>
                 )}
                 
-                {!mainService && !includeLive && (
+                {/* Video 360 */}
+                {services.video360.selected && services.video360.hours > 0 && (
+                  <div className="flex justify-between items-center py-2 border-b border-gold/20">
+                    <span className="text-gold">🎥 Video 360° ({services.video360.hours}h)</span>
+                    <span className="font-bold text-pearl">{formatCurrency(getVideo360Price())}</span>
+                  </div>
+                )}
+                
+                {/* Key Moments */}
+                {services.keyMoments.selected && services.keyMoments.pieces > 0 && (
+                  <div className="flex justify-between items-center py-2 border-b border-gold/20">
+                    <span className="text-gold">📷 Key Moments ({services.keyMoments.pieces} piezas)</span>
+                    <span className="font-bold text-pearl">{formatCurrency(getKeyMomentsPrice())}</span>
+                  </div>
+                )}
+                
+                {!hasAnyService() && (
                   <p className="text-pearl-muted text-center py-4">Selecciona al menos un servicio</p>
                 )}
               </div>
               
               {/* Banner de ahorro en el resumen */}
-              {includeLive && mainService && (
+              {getAhorro() > 0 && (
                 <div className="p-3 bg-gold/10 border border-gold/30 rounded-lg">
                   <p className="text-gold text-center font-bold">
-                    ¡AHORRO DE $800 APLICADO!
+                    ¡AHORRO DE ${getAhorro()} APLICADO EN PICPARTYLIVE!
                   </p>
                 </div>
               )}
               
               {/* TOTAL */}
-              {(mainService || includeLive) && (
+              {hasAnyService() && (
                 <>
                   <div className="p-4 bg-gold/20 rounded-lg">
                     <div className="flex justify-between items-center">
                       <span className="text-gold font-bold text-lg">TOTAL NETO</span>
                       <span className="text-pearl text-3xl font-black">
-                        {formatCurrency(getServicePrice() + getLivePrice())}
+                        {formatCurrency(getCabinaPrice() + getVideo360Price() + getKeyMomentsPrice() + getLivePrice())}
                       </span>
                     </div>
                   </div>
@@ -891,7 +906,7 @@ const Cotizador = () => {
                 <Button 
                   onClick={calculateQuote} 
                   className="w-full btn-gold h-12 text-lg"
-                  disabled={!mainService && !includeLive}
+                  disabled={!hasAnyService()}
                   data-testid="generar-cotizacion-btn"
                 >
                   Generar Cotización
