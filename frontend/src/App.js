@@ -31,8 +31,11 @@ const PICPARTY_LOGO_BASE64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYA
 const DatePicker = ({ value, onChange, placeholder = "Seleccionar fecha", className = "" }) => {
   const [open, setOpen] = useState(false);
   
-  // Convertir string YYYY-MM-DD a Date object
+  // Convertir string YYYY-MM-DD a Date object - usar 2026 como año base
   const selectedDate = value ? new Date(value + 'T12:00:00') : undefined;
+  
+  // Fecha por defecto para el calendario: mes actual de 2026
+  const defaultMonth = new Date(2026, new Date().getMonth(), 1);
   
   // Formatear fecha para mostrar
   const formatDate = (dateStr) => {
@@ -56,6 +59,7 @@ const DatePicker = ({ value, onChange, placeholder = "Seleccionar fecha", classN
         <Calendar
           mode="single"
           selected={selectedDate}
+          defaultMonth={defaultMonth}
           onSelect={(date) => {
             if (date) {
               const yyyy = date.getFullYear();
