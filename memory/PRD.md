@@ -24,6 +24,12 @@ PICPARTYLIVE es una plataforma de galería de fotos en vivo para eventos, que pe
    - Logo ahora se renderiza correctamente sin problemas de CORS
    - Implementado en: Contratos PDF, Cotizaciones, Recibos, QR PDF
 
+3. **PDF del QR PicPartyLive Mejorado** (P1 - Completado)
+   - Datos fiscales agregados: RFC: IIAA8004021A9, Tel: 614 272 5008, octavio@adoca.net
+   - Notas legales: almacenamiento 6 meses, proyección en pantallas no es responsabilidad de PicParty
+   - Nuevo botón "JPG WhatsApp" para descargar imagen optimizada para compartir por WhatsApp
+   - PDF con mejor diseño y más información del evento
+
 ## Paleta de Colores (Premium Theme - Actualizada)
 - **Morado Noche** (`#1A0B2E`): Fondo principal obligatorio
 - **Púrpura Premium** (`#2D1B4E`): Fondos secundarios
