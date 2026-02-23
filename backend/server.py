@@ -197,6 +197,40 @@ def get_auto_color(name: str) -> str:
     hash_val = sum(ord(c) for c in name)
     return AUTO_COLORS[hash_val % len(AUTO_COLORS)]
 
+# ============ MODELOS PROVEEDORES ============
+
+class Proveedor(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    nombre_empresa: str
+    contacto: str
+    telefono: str
+    servicios: List[str] = []
+    costo_cabina: Optional[float] = None
+    costo_video360: Optional[float] = None
+    costo_key_moments: Optional[float] = None
+    logo_url: Optional[str] = None
+    notas: Optional[str] = None
+    activo: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ProveedorCreate(BaseModel):
+    nombre_empresa: str
+    contacto: str
+    telefono: str
+    servicios: List[str] = []
+    costo_cabina: Optional[float] = None
+    costo_video360: Optional[float] = None
+    costo_key_moments: Optional[float] = None
+    logo_url: Optional[str] = None
+    notas: Optional[str] = None
+
+class StaffAssignment(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    staff_key: str
+    contract_id: Optional[str] = None
+    design_image_url: Optional[str] = None
+
 # ============ ROUTES ============
 
 @api_router.get("/")
