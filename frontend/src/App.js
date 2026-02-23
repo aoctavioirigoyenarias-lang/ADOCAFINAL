@@ -2514,6 +2514,7 @@ const AdminPanel = () => {
     if (sessionStorage.getItem("adminAuth") === "true") {
       setIsAuthenticated(true);
       setUserRole(sessionStorage.getItem("userRole") || "admin");
+      setUserName(sessionStorage.getItem("userName") || "Usuario");
     }
   }, []);
 
@@ -2523,21 +2524,19 @@ const AdminPanel = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    const isAdmin = loginUser === ADMIN_USER && loginPass === ADMIN_PASS;
-    const isStaff = loginUser === STAFF_USER && loginPass === STAFF_PASS;
+    const userUpper = loginUser.toUpperCase();
+    const user = USERS[userUpper];
     
-    if (isAdmin) {
+    if (user && user.password === loginPass) {
       setIsAuthenticated(true);
-      setUserRole("admin");
+      setUserRole(user.role);
+      setUserName(user.name);
       sessionStorage.setItem("adminAuth", "true");
-      sessionStorage.setItem("userRole", "admin");
-      toast.success("🔐 Acceso ADMIN autorizado");
-    } else if (isStaff) {
-      setIsAuthenticated(true);
-      setUserRole("staff");
-      sessionStorage.setItem("adminAuth", "true");
-      sessionStorage.setItem("userRole", "staff");
-      toast.success("👤 Acceso STAFF autorizado");
+      sessionStorage.setItem("userRole", user.role);
+      sessionStorage.setItem("userName", user.name);
+      
+      const roleEmoji = user.role === "admin" ? "🔐" : user.role === "ventas" ? "💼" : "👤";
+      toast.success(`${roleEmoji} Acceso ${user.role.toUpperCase()} autorizado - Bienvenido ${user.name}`);
     } else {
       toast.error("Credenciales incorrectas");
     }
@@ -2545,16 +2544,18 @@ const AdminPanel = () => {
 
   const fetchData = async () => {
     try {
-      const [eventsRes, sessionsRes, prefsRes, contractsRes] = await Promise.all([
+      const [eventsRes, sessionsRes, prefsRes, contractsRes, proveedoresRes] = await Promise.all([
         axios.get(`${API}/events`),
         axios.get(`${API}/live/sessions/all`),
         axios.get(`${API}/preferences`),
-        axios.get(`${API}/contracts`).catch(() => ({ data: [] }))
+        axios.get(`${API}/contracts`).catch(() => ({ data: [] })),
+        axios.get(`${API}/proveedores`).catch(() => ({ data: [] }))
       ]);
       setEvents(eventsRes.data);
       setLiveSessions(sessionsRes.data);
       setPreferences(prefsRes.data);
       setContracts(contractsRes.data);
+      setProveedores(proveedoresRes.data);
       
       // Obtener conteo de fotos para cada sesión
       fetchPhotosCounts(sessionsRes.data);
