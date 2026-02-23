@@ -2663,12 +2663,22 @@ const AdminPanel = () => {
       if (newSession.event_type === "otro" && newSession.event_type_custom) {
         params.append("event_type_custom", newSession.event_type_custom);
       }
+      if (newSession.client_name) {
+        params.append("client_name", newSession.client_name);
+      }
+      if (newSession.total_price) {
+        params.append("total_price", newSession.total_price);
+      }
+      if (newSession.anticipo_amount) {
+        params.append("anticipo_amount", newSession.anticipo_amount);
+      }
       
       await axios.post(`${API}/live/sessions/create?${params.toString()}`);
       toast.success(`✅ Sesión creada - Código: ${autoCode}`);
       setNewSession({ 
         event_name: "", event_type: "boda", 
-        event_type_custom: "", event_date: "", client_phone: "", is_vip: false, vip_pass: "" 
+        event_type_custom: "", event_date: "", client_phone: "", client_name: "",
+        is_vip: false, vip_pass: "", total_price: "", anticipo_amount: "", payment_status: "pendiente"
       });
       fetchData();
     } catch (e) { toast.error(e.response?.data?.detail || "Error al crear sesión"); }
