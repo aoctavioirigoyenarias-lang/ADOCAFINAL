@@ -3178,9 +3178,8 @@ const AdminPanel = () => {
       pdf.setLineWidth(3);
       pdf.roundedRect(pageWidth / 2 - 45, y, 90, 30, 5, 5, 'S');
       
-      // Texto del sello
+      // Texto del sello (el color ya está establecido arriba)
       pdf.setFontSize(28);
-      pdf.setTextColor(...selloColor);
       pdf.setFont(undefined, 'bold');
       pdf.text(selloText, pageWidth / 2, y + 21, { align: 'center' });
       
