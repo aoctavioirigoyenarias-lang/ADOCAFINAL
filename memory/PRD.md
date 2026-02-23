@@ -25,10 +25,16 @@ PICPARTYLIVE es una plataforma de galería de fotos en vivo para eventos, que pe
    - Implementado en: Contratos PDF, Cotizaciones, Recibos, QR PDF
 
 3. **PDF del QR PicPartyLive Mejorado** (P1 - Completado)
-   - Datos fiscales agregados: RFC: IIAA8004021A9, Tel: 614 272 5008, octavio@adoca.net
-   - Notas legales: almacenamiento 6 meses, proyección en pantallas no es responsabilidad de PicParty
-   - Nuevo botón "JPG WhatsApp" para descargar imagen optimizada para compartir por WhatsApp
-   - PDF con mejor diseño y más información del evento
+   - Datos de contacto: Tel: 614 272 5008, octavio@adoca.net (sin RFC)
+   - Notas legales: almacenamiento 6 meses, proyección en pantallas no responsabilidad de PicParty
+   - Nuevo botón "JPG WhatsApp" para descargar imagen optimizada para compartir
+
+4. **Ticket de Pago para Sesiones Live** (P1 - Completado)
+   - Nuevo botón "Ticket Pago" (azul) en cada sesión Live
+   - PDF incluye: Logo PicParty, datos del proveedor (RFC: IIAA8004021A9, Tel, correo)
+   - Muestra: datos del cliente, servicio contratado, monto total, anticipo, saldo
+   - Sello grande APARTADO (dorado) o LIQUIDADO (verde) según estado
+   - Campos agregados a sesiones: client_name, total_price, anticipo_amount, payment_status
 
 ## Paleta de Colores (Premium Theme - Actualizada)
 - **Morado Noche** (`#1A0B2E`): Fondo principal obligatorio
