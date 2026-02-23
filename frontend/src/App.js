@@ -2720,6 +2720,113 @@ const AdminPanel = () => {
     return found || { emoji: "📸", label: "Evento" };
   };
 
+  // Función para descargar el QR como JPG (para WhatsApp)
+  const downloadQRasJPG = async (session) => {
+    toast.info("Generando imagen JPG para WhatsApp...");
+    
+    try {
+      const qrUrl = `https://${SITE_DOMAIN}/live?code=${session.code}`;
+      
+      // Crear canvas para la imagen
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = 1080;  // Tamaño óptimo para WhatsApp
+      canvas.height = 1350;
+      
+      // Fondo blanco
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Logo PicParty (texto como fallback)
+      ctx.fillStyle = '#d4af37';
+      ctx.font = 'bold 48px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('PIC PARTY', canvas.width / 2, 80);
+      
+      // Subtítulo
+      ctx.fillStyle = '#666666';
+      ctx.font = '24px Arial';
+      ctx.fillText('Cabina Fotográfica', canvas.width / 2, 115);
+      
+      // Nombre del evento
+      ctx.fillStyle = '#1a1a1a';
+      ctx.font = 'bold 42px Arial';
+      ctx.fillText(session.event_name.toUpperCase(), canvas.width / 2, 200);
+      
+      // Fecha del evento
+      if (session.event_date) {
+        const formattedDate = new Date(session.event_date + 'T12:00:00').toLocaleDateString('es-MX', { 
+          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+        });
+        ctx.fillStyle = '#555555';
+        ctx.font = '28px Arial';
+        ctx.fillText(formattedDate, canvas.width / 2, 250);
+      }
+      
+      // Generar QR
+      const QRCode = (await import('qrcode')).default;
+      const qrCanvas = document.createElement('canvas');
+      await QRCode.toCanvas(qrCanvas, qrUrl, { 
+        width: 500,
+        margin: 2,
+        color: { dark: '#000000', light: '#FFFFFF' },
+        errorCorrectionLevel: 'H'
+      });
+      
+      // Dibujar QR centrado
+      ctx.drawImage(qrCanvas, (canvas.width - 500) / 2, 300, 500, 500);
+      
+      // Código
+      ctx.fillStyle = '#333333';
+      ctx.font = 'bold 32px Arial';
+      ctx.fillText(`Código: ${session.code}`, canvas.width / 2, 860);
+      
+      // Instrucciones
+      ctx.fillStyle = '#666666';
+      ctx.font = '24px Arial';
+      ctx.fillText('Escanea el código QR con tu celular', canvas.width / 2, 930);
+      ctx.fillText('para ver y compartir fotos del evento', canvas.width / 2, 960);
+      
+      // Notas legales
+      ctx.fillStyle = '#888888';
+      ctx.font = '18px Arial';
+      ctx.fillText('Las fotos se almacenan por 6 meses', canvas.width / 2, 1030);
+      ctx.fillText('La proyección en pantallas no es responsabilidad de PicParty', canvas.width / 2, 1055);
+      
+      // Contacto
+      ctx.fillStyle = '#555555';
+      ctx.font = '20px Arial';
+      ctx.fillText('Tel: 614 272 5008 | octavio@adoca.net', canvas.width / 2, 1120);
+      ctx.fillText('RFC: IIAA8004021A9', canvas.width / 2, 1150);
+      
+      // Footer
+      ctx.fillStyle = '#999999';
+      ctx.font = '18px Arial';
+      ctx.fillText('adoca.net | PicParty - Cabina Fotográfica', canvas.width / 2, 1220);
+      
+      // Convertir a JPG y descargar
+      const jpgDataUrl = canvas.toDataURL('image/jpeg', 0.92);
+      const fileName = `QR_PicParty_${session.event_name.replace(/\s+/g, '_')}_WhatsApp.jpg`;
+      
+      const downloadLink = document.createElement('a');
+      downloadLink.href = jpgDataUrl;
+      downloadLink.download = fileName;
+      downloadLink.style.display = 'none';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      
+      setTimeout(() => {
+        document.body.removeChild(downloadLink);
+      }, 1000);
+      
+      toast.success("¡Imagen JPG generada para WhatsApp!");
+      
+    } catch (error) {
+      console.error("Error generando JPG:", error);
+      toast.error("Error al generar imagen. Intenta de nuevo.");
+    }
+  };
+
   const printQRPDF = async (session) => {
     toast.info("Generando PDF optimizado para impresión...");
     
@@ -2735,17 +2842,23 @@ const AdminPanel = () => {
       
       // === LOGO PICPARTY - Esquina superior izquierda fija ===
       try {
-        const logoImg = new Image();
-        logoImg.crossOrigin = "anonymous";
-        // Usar logo base64 directamente para evitar problemas de CORS
         pdf.addImage(PICPARTY_LOGO_BASE64, 'PNG', 15, 10, 40, 40);
       } catch(e) {
         // Fallback: texto si falla el logo
         pdf.setFontSize(20);
-        pdf.setTextColor(212, 175, 55); // Color dorado
+        pdf.setTextColor(212, 175, 55);
         pdf.setFont(undefined, 'bold');
         pdf.text("PIC PARTY", 15, 35);
       }
+      
+      // === DATOS FISCALES - Esquina superior derecha ===
+      pdf.setFontSize(8);
+      pdf.setTextColor(100, 100, 100);
+      pdf.setFont(undefined, 'normal');
+      pdf.text("Adán Octavio Irigoyen Arias", pageWidth - 15, 15, { align: 'right' });
+      pdf.text("RFC: IIAA8004021A9", pageWidth - 15, 20, { align: 'right' });
+      pdf.text("Tel: 614 272 5008", pageWidth - 15, 25, { align: 'right' });
+      pdf.text("octavio@adoca.net", pageWidth - 15, 30, { align: 'right' });
       
       // === ENCABEZADO - Línea decorativa gris claro ===
       pdf.setDrawColor(200, 200, 200);
@@ -2758,13 +2871,13 @@ const AdminPanel = () => {
       pdf.setFontSize(14);
       pdf.setTextColor(100, 100, 100);
       pdf.setFont(undefined, 'normal');
-      pdf.text(cleanLabel.toUpperCase(), pageWidth / 2, 68, { align: 'center' });
+      pdf.text(cleanLabel.toUpperCase(), pageWidth / 2, 65, { align: 'center' });
       
       // === NOMBRE DEL EVENTO - Negro, prominente ===
-      pdf.setFontSize(28);
+      pdf.setFontSize(26);
       pdf.setTextColor(20, 20, 20);
       pdf.setFont(undefined, 'bold');
-      pdf.text(session.event_name.toUpperCase(), pageWidth / 2, 85, { align: 'center' });
+      pdf.text(session.event_name.toUpperCase(), pageWidth / 2, 80, { align: 'center' });
       
       // === QR EN ALTA RESOLUCIÓN - B&W NÍTIDO ===
       const QRCode = (await import('qrcode')).default;
@@ -2779,15 +2892,15 @@ const AdminPanel = () => {
         errorCorrectionLevel: 'H'
       });
       
-      const qrSize = 100;
+      const qrSize = 90;
       const qrDataUrl = qrCanvas.toDataURL('image/png');
-      pdf.addImage(qrDataUrl, 'PNG', (pageWidth - qrSize) / 2, 95, qrSize, qrSize);
+      pdf.addImage(qrDataUrl, 'PNG', (pageWidth - qrSize) / 2, 88, qrSize, qrSize);
       
       // === CÓDIGO DEL EVENTO ===
       pdf.setFontSize(16);
       pdf.setTextColor(50, 50, 50);
       pdf.setFont(undefined, 'bold');
-      pdf.text(`Código: ${session.code}`, pageWidth / 2, 205, { align: 'center' });
+      pdf.text(`Código: ${session.code}`, pageWidth / 2, 188, { align: 'center' });
       
       // Fecha del evento
       if (session.event_date) {
@@ -2797,21 +2910,29 @@ const AdminPanel = () => {
         const formattedDate = new Date(session.event_date + 'T12:00:00').toLocaleDateString('es-MX', { 
           weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
         });
-        pdf.text(formattedDate, pageWidth / 2, 215, { align: 'center' });
+        pdf.text(formattedDate, pageWidth / 2, 198, { align: 'center' });
       }
       
-      // === INSTRUCCIONES - Recuadro gris claro 10% ===
+      // === INSTRUCCIONES - Recuadro gris claro ===
       pdf.setFillColor(245, 245, 245);
-      pdf.roundedRect(20, 225, pageWidth - 40, 25, 3, 3, 'F');
+      pdf.roundedRect(20, 208, pageWidth - 40, 22, 3, 3, 'F');
       pdf.setFontSize(11);
       pdf.setTextColor(60, 60, 60);
-      pdf.text("Escanea el código QR con tu celular", pageWidth / 2, 235, { align: 'center' });
-      pdf.text("para ver y compartir fotos del evento", pageWidth / 2, 243, { align: 'center' });
+      pdf.text("Escanea el código QR con tu celular", pageWidth / 2, 217, { align: 'center' });
+      pdf.text("para ver y compartir fotos del evento", pageWidth / 2, 224, { align: 'center' });
+      
+      // === NOTAS LEGALES ===
+      pdf.setFontSize(9);
+      pdf.setTextColor(120, 120, 120);
+      pdf.setFont(undefined, 'italic');
+      pdf.text("* Las fotos y videos se almacenan por un período de 6 meses.", pageWidth / 2, 242, { align: 'center' });
+      pdf.text("* La proyección en pantallas del evento no es responsabilidad de PicParty.", pageWidth / 2, 249, { align: 'center' });
       
       // Footer
       pdf.setFontSize(9);
       pdf.setTextColor(150, 150, 150);
-      pdf.text("adoca.net | PicParty - Cabina Fotográfica", pageWidth / 2, 265, { align: 'center' });
+      pdf.setFont(undefined, 'normal');
+      pdf.text("adoca.net | PicParty - Cabina Fotográfica | Chihuahua, Chih.", pageWidth / 2, 265, { align: 'center' });
       
       // === DESCARGA FORZADA CON BLOB URL ===
       const fileName = `QR_PicParty_${session.event_name.replace(/\s+/g, '_')}_${session.event_date || 'evento'}.pdf`;
@@ -2846,7 +2967,7 @@ const AdminPanel = () => {
             style={{ color: '#60a5fa', textDecoration: 'underline', display: 'block', marginTop: '8px' }}
             onClick={(e) => e.stopPropagation()}
           >
-            👉 Haz clic aquí si no inició la descarga
+            Haz clic aquí si no inició la descarga
           </a>
         </div>,
         { duration: 10000 }
