@@ -4992,6 +4992,14 @@ const AdminPanel = () => {
                             </Button>
                             <Button 
                               size="sm" 
+                              className="bg-green-600 hover:bg-green-700 text-white" 
+                              onClick={() => downloadQRasJPG(session)}
+                              data-testid={`download-jpg-${session.code}`}
+                            >
+                              JPG WhatsApp
+                            </Button>
+                            <Button 
+                              size="sm" 
                               className="btn-gold-outline"
                               onClick={() => openEditModal(session)}
                               data-testid={`edit-${session.code}`}
