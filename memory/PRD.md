@@ -36,6 +36,17 @@ PICPARTYLIVE es una plataforma de galería de fotos en vivo para eventos, que pe
    - Sello grande APARTADO (dorado) o LIQUIDADO (verde) según estado
    - Campos agregados a sesiones: client_name, total_price, anticipo_amount, payment_status
 
+5. **Cotizador con Múltiples Servicios** (Bug Fix - Completado)
+   - Ahora permite seleccionar múltiples servicios simultáneamente
+   - Cabina + Video 360 + Key Moments + PicPartyLive en cualquier combinación
+   - Cada servicio tiene su propia selección independiente
+   - PicPartyLive da descuento de $300 cuando se combina con otro servicio
+   - Key Moments agregado al cotizador con 4 opciones (80, 100, 140, 200 piezas)
+
+6. **DatePicker en Contratos** (Verificado - Ya Funcionaba)
+   - El DatePicker visual con calendario navegable ya estaba funcionando correctamente
+   - Muestra mes/año actual (febrero 2026) con flechas de navegación
+
 ## Paleta de Colores (Premium Theme - Actualizada)
 - **Morado Noche** (`#1A0B2E`): Fondo principal obligatorio
 - **Púrpura Premium** (`#2D1B4E`): Fondos secundarios
