@@ -3310,6 +3310,240 @@ const AdminPanel = () => {
     }
   };
   
+  // Precios de PicPartyLive
+  const PRECIOS_PICPARTYLIVE = {
+    normal: { precio: 1500, label: "Normal" },
+    promo: { precio: 1000, label: "Promo Expo Boda" },
+    combo: { precio: 700, label: "Combo con otro servicio" }
+  };
+  
+  // Abrir modal de Ticket de Venta
+  const openTicketVentaModal = (session) => {
+    setTicketVentaForm({ precioTipo: "normal", anticipo: 0 });
+    setTicketVentaModal({ open: true, session });
+  };
+  
+  // Generar Ticket de Venta PDF
+  const generateTicketVenta = async () => {
+    const session = ticketVentaModal.session;
+    if (!session) return;
+    
+    toast.info("Generando Ticket de Venta...");
+    
+    try {
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      
+      // Fondo blanco
+      pdf.setFillColor(255, 255, 255);
+      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
+      
+      // Logo PicParty
+      try {
+        pdf.addImage(PICPARTY_LOGO_BASE64, 'PNG', 15, 10, 40, 40);
+      } catch(e) {
+        pdf.setFontSize(20);
+        pdf.setTextColor(212, 175, 55);
+        pdf.setFont(undefined, 'bold');
+        pdf.text("PIC PARTY", 15, 35);
+      }
+      
+      // Título del documento
+      pdf.setFontSize(22);
+      pdf.setTextColor(26, 11, 46);
+      pdf.setFont(undefined, 'bold');
+      pdf.text("TICKET DE VENTA", pageWidth / 2, 25, { align: 'center' });
+      
+      // Subtítulo
+      pdf.setFontSize(12);
+      pdf.setTextColor(100, 100, 100);
+      pdf.setFont(undefined, 'normal');
+      pdf.text("PicPartyLive - Muro de Fotos en Vivo", pageWidth / 2, 33, { align: 'center' });
+      
+      // Línea separadora
+      pdf.setDrawColor(200, 200, 200);
+      pdf.setLineWidth(0.5);
+      pdf.line(15, 55, pageWidth - 15, 55);
+      
+      let y = 70;
+      
+      // === DATOS DEL PROVEEDOR ===
+      pdf.setFillColor(245, 245, 245);
+      pdf.rect(15, y - 5, pageWidth - 30, 28, 'F');
+      
+      pdf.setFontSize(10);
+      pdf.setTextColor(80, 80, 80);
+      pdf.setFont(undefined, 'bold');
+      pdf.text("DATOS DEL PROVEEDOR:", 20, y);
+      
+      pdf.setFont(undefined, 'normal');
+      pdf.setFontSize(9);
+      y += 6;
+      pdf.text("Adán Octavio Irigoyen Arias", 20, y);
+      y += 5;
+      pdf.text("RFC: IIAA8004021A9", 20, y);
+      y += 5;
+      pdf.text("Tel: 614 272 5008 | octavio@adoca.net", 20, y);
+      
+      y += 18;
+      
+      // === DATOS DEL CLIENTE ===
+      pdf.setFillColor(250, 250, 250);
+      pdf.rect(15, y - 5, pageWidth - 30, 28, 'F');
+      
+      pdf.setFontSize(10);
+      pdf.setTextColor(80, 80, 80);
+      pdf.setFont(undefined, 'bold');
+      pdf.text("DATOS DEL CLIENTE:", 20, y);
+      
+      pdf.setFont(undefined, 'normal');
+      pdf.setFontSize(9);
+      y += 6;
+      pdf.text(`Nombre: ${session.client_name || session.event_name || 'No especificado'}`, 20, y);
+      y += 5;
+      pdf.text(`Celular: ${session.client_phone || 'No especificado'}`, 20, y);
+      y += 5;
+      
+      // Formatear fecha
+      let formattedDate = session.event_date || 'No especificada';
+      try {
+        formattedDate = new Date(session.event_date + 'T12:00:00').toLocaleDateString('es-MX', { 
+          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+        });
+      } catch(e) {}
+      pdf.text(`Fecha del Evento: ${formattedDate}`, 20, y);
+      
+      y += 18;
+      
+      // === SERVICIO CONTRATADO ===
+      pdf.setFillColor(245, 245, 245);
+      pdf.rect(15, y - 5, pageWidth - 30, 16, 'F');
+      
+      pdf.setFontSize(10);
+      pdf.setTextColor(80, 80, 80);
+      pdf.setFont(undefined, 'bold');
+      pdf.text("SERVICIO:", 20, y);
+      
+      pdf.setFont(undefined, 'normal');
+      pdf.setFontSize(9);
+      y += 6;
+      pdf.text(`PicPartyLive - Muro de Fotos en Vivo | Código: ${session.code}`, 20, y);
+      
+      y += 18;
+      
+      // === DESGLOSE DE PAGO ===
+      pdf.setFontSize(10);
+      pdf.setTextColor(26, 11, 46);
+      pdf.setFont(undefined, 'bold');
+      pdf.text("DESGLOSE DE PAGO", 20, y);
+      
+      y += 8;
+      pdf.setDrawColor(200, 200, 200);
+      pdf.line(20, y, pageWidth - 20, y);
+      y += 8;
+      
+      const precioInfo = PRECIOS_PICPARTYLIVE[ticketVentaForm.precioTipo];
+      const totalPrice = precioInfo.precio;
+      const anticipoAmount = parseFloat(ticketVentaForm.anticipo) || 0;
+      const saldoPendiente = totalPrice - anticipoAmount;
+      
+      // Precio seleccionado
+      pdf.setFontSize(11);
+      pdf.setTextColor(60, 60, 60);
+      pdf.setFont(undefined, 'normal');
+      pdf.text(`PicPartyLive (${precioInfo.label}):`, 25, y);
+      pdf.setFont(undefined, 'bold');
+      pdf.text(`$${totalPrice.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN`, pageWidth - 25, y, { align: 'right' });
+      
+      y += 8;
+      pdf.setFont(undefined, 'normal');
+      pdf.text("Anticipo recibido:", 25, y);
+      pdf.setTextColor(34, 139, 34);
+      pdf.setFont(undefined, 'bold');
+      pdf.text(`-$${anticipoAmount.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN`, pageWidth - 25, y, { align: 'right' });
+      
+      y += 3;
+      pdf.setDrawColor(150, 150, 150);
+      pdf.line(100, y, pageWidth - 25, y);
+      y += 8;
+      
+      // Saldo pendiente
+      pdf.setFontSize(12);
+      pdf.setTextColor(60, 60, 60);
+      pdf.setFont(undefined, 'bold');
+      pdf.text("SALDO PENDIENTE:", 25, y);
+      if (saldoPendiente > 0) {
+        pdf.setTextColor(200, 50, 50);
+      } else {
+        pdf.setTextColor(34, 139, 34);
+      }
+      pdf.text(`$${saldoPendiente.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN`, pageWidth - 25, y, { align: 'right' });
+      
+      y += 25;
+      
+      // === SELLO DE ESTADO ===
+      const isLiquidado = saldoPendiente <= 0;
+      const selloText = isLiquidado ? "LIQUIDADO" : "APARTADO";
+      
+      // Recuadro del sello
+      if (isLiquidado) {
+        pdf.setDrawColor(34, 139, 34);
+        pdf.setTextColor(34, 139, 34);
+      } else {
+        pdf.setDrawColor(212, 175, 55);
+        pdf.setTextColor(212, 175, 55);
+      }
+      pdf.setLineWidth(3);
+      pdf.roundedRect(pageWidth / 2 - 45, y, 90, 30, 5, 5, 'S');
+      
+      // Texto del sello
+      pdf.setFontSize(28);
+      pdf.setFont(undefined, 'bold');
+      pdf.text(selloText, pageWidth / 2, y + 21, { align: 'center' });
+      
+      y += 45;
+      
+      // Fecha de generación
+      pdf.setFontSize(8);
+      pdf.setTextColor(150, 150, 150);
+      pdf.setFont(undefined, 'normal');
+      const fechaGeneracion = new Date().toLocaleDateString('es-MX', { 
+        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+      pdf.text(`Documento generado el ${fechaGeneracion}`, pageWidth / 2, y, { align: 'center' });
+      
+      // Footer
+      pdf.setFontSize(9);
+      pdf.setTextColor(150, 150, 150);
+      pdf.text("adoca.net | PicParty - Cabina Fotográfica | Chihuahua, Chih.", pageWidth / 2, pageHeight - 15, { align: 'center' });
+      
+      // === DESCARGAR PDF ===
+      const fileName = `TicketVenta_PicPartyLive_${session.event_name.replace(/\s+/g, '_')}_${session.code}.pdf`;
+      const pdfBlob = pdf.output('blob');
+      const blobUrl = URL.createObjectURL(pdfBlob);
+      
+      const downloadLink = document.createElement('a');
+      downloadLink.href = blobUrl;
+      downloadLink.download = fileName;
+      downloadLink.style.display = 'none';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      
+      setTimeout(() => {
+        document.body.removeChild(downloadLink);
+        URL.revokeObjectURL(blobUrl);
+      }, 1000);
+      
+      toast.success("¡Ticket de Venta generado!");
+      setTicketVentaModal({ open: false, session: null });
+      
+    } catch (error) {
+      console.error("Error generando Ticket de Venta:", error);
+      toast.error("Error al generar Ticket. Intenta de nuevo.");
+    }
+  };
+  
   // Estado para mostrar enlace de descarga manual
   const [manualDownloadUrl, setManualDownloadUrl] = useState(null);
   const [manualDownloadName, setManualDownloadName] = useState("");
