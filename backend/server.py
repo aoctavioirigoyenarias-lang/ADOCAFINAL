@@ -103,6 +103,7 @@ class LiveSession(BaseModel):
     event_type_custom: Optional[str] = None
     event_date: str
     client_phone: Optional[str] = None
+    client_name: Optional[str] = None
     is_active: bool = True
     is_vip: bool = False
     vip_pass: Optional[str] = None
@@ -110,6 +111,10 @@ class LiveSession(BaseModel):
     is_demo: bool = False
     demo_expires_at: Optional[datetime] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    # Campos para ticket de pago
+    total_price: Optional[float] = None
+    anticipo_amount: Optional[float] = None
+    payment_status: str = "pendiente"  # pendiente, apartado, liquidado
 
 class Contract(BaseModel):
     """Modelo de Contrato Empresarial"""
