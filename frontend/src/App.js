@@ -600,12 +600,6 @@ const Cotizador = () => {
     toast.success("PDF descargado correctamente");
   };
 
-  // Seleccionar servicio y horas
-  const selectService = (service, hours) => {
-    setMainService(service);
-    setServiceHours(hours);
-  };
-
   return (
     <div className="min-h-screen bg-premium-radial">
       <header className="header-premium sticky top-0 z-10">
@@ -621,7 +615,7 @@ const Cotizador = () => {
       <main className="container mx-auto px-4 py-6 max-w-4xl">
         <div className="text-center mb-6">
           <h1 className="text-3xl md:text-4xl font-bold text-pearl mb-2">Cotiza tu Evento</h1>
-          <Badge className="badge-gold">Precios Netos</Badge>
+          <Badge className="badge-gold">Precios Netos - Selecciona MÚLTIPLES servicios</Badge>
         </div>
 
         <div className="space-y-6">
@@ -640,14 +634,59 @@ const Cotizador = () => {
             <CardContent className="space-y-4">
               <div className="flex gap-4">
                 <Button 
-                  variant={includeLive ? "default" : "outline"}
-                  className={`flex-1 h-16 text-lg ${includeLive ? "btn-gold" : "btn-gold-outline"}`}
-                  onClick={() => setIncludeLive(!includeLive)}
+                  variant={services.picpartyLive.selected ? "default" : "outline"}
+                  className={`flex-1 h-16 text-lg ${services.picpartyLive.selected ? "btn-gold" : "btn-gold-outline"}`}
+                  onClick={togglePicPartyLive}
                   data-testid="picpartylive-toggle"
                 >
-                  {includeLive ? "✓ PICPARTYLIVE Incluido" : "Agregar PICPARTYLIVE"}
+                  {services.picpartyLive.selected ? "✓ PICPARTYLIVE Incluido" : "Agregar PICPARTYLIVE"}
                 </Button>
               </div>
+              
+              {/* Precio dinámico */}
+              {services.picpartyLive.selected && (
+                <div className="p-4 bg-night/50 rounded-lg border border-gold/20">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-pearl font-semibold">
+                        {(services.cabina.selected || services.video360.selected || services.keyMoments.selected) ? "¡COMBO ACTIVO!" : "PICPARTYLIVE Solo"}
+                      </p>
+                      <p className="text-pearl-muted text-sm">
+                        {(services.cabina.selected || services.video360.selected || services.keyMoments.selected) 
+                          ? "Precio especial por combo" 
+                          : "Agrega otro servicio para precio especial"}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-3xl font-black text-gold">
+                        {formatCurrency(getLivePrice())}
+                      </span>
+                      <span className="text-pearl-muted text-xs block">NETO</span>
+                    </div>
+                  </div>
+                  
+                  {/* BANNER DE AHORRO */}
+                  {getAhorro() > 0 && (
+                    <div className="mt-3 p-3 bg-gold/10 border border-gold/30 rounded-lg animate-pulse">
+                      <p className="text-gold text-center font-bold text-lg">
+                        ¡ESTÁS GANANDO ${getAhorro()} DE DESCUENTO!
+                      </p>
+                      <p className="text-gold/80 text-center text-xs">
+                        Precio normal $1,000 → Tu precio $700
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {!services.picpartyLive.selected && (
+                <p className="text-pearl-muted text-sm text-center">
+                  Precio: <strong className="text-gold">$1,000 NETO</strong> solo, 
+                  o <strong className="text-gold">$700 NETO</strong> con otro servicio
+                </p>
+              )}
+            </CardContent>
+          </Card>
               
               {/* Precio dinámico */}
               {includeLive && (
