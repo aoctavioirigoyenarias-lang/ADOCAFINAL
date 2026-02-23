@@ -2793,16 +2793,15 @@ const AdminPanel = () => {
       ctx.fillText('Las fotos se almacenan por 6 meses', canvas.width / 2, 1030);
       ctx.fillText('La proyección en pantallas no es responsabilidad de PicParty', canvas.width / 2, 1055);
       
-      // Contacto
+      // Contacto (sin RFC)
       ctx.fillStyle = '#555555';
       ctx.font = '20px Arial';
       ctx.fillText('Tel: 614 272 5008 | octavio@adoca.net', canvas.width / 2, 1120);
-      ctx.fillText('RFC: IIAA8004021A9', canvas.width / 2, 1150);
       
       // Footer
       ctx.fillStyle = '#999999';
       ctx.font = '18px Arial';
-      ctx.fillText('adoca.net | PicParty - Cabina Fotográfica', canvas.width / 2, 1220);
+      ctx.fillText('adoca.net | PicParty - Cabina Fotográfica', canvas.width / 2, 1180);
       
       // Convertir a JPG y descargar
       const jpgDataUrl = canvas.toDataURL('image/jpeg', 0.92);
