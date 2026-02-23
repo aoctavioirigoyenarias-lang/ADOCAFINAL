@@ -3420,6 +3420,103 @@ const AdminPanel = () => {
     toast.success(`Contrato ${folio} descargado correctamente`);
   };
 
+  // ========== GENERAR CONTRATO PROVEEDOR (PDF INTERNO) ==========
+  const printProveedorPDF = async (contract) => {
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const margin = 15;
+
+    // Header
+    pdf.setFillColor(26, 11, 46);
+    pdf.rect(0, 0, pageWidth, 35, 'F');
+    pdf.setFontSize(18);
+    pdf.setTextColor(255, 215, 0);
+    pdf.setFont(undefined, 'bold');
+    pdf.text("CONTRATO PROVEEDOR", pageWidth / 2, 15, { align: 'center' });
+    pdf.setFontSize(10);
+    pdf.setFont(undefined, 'normal');
+    pdf.text("DOCUMENTO INTERNO - PIC PARTY", pageWidth / 2, 25, { align: 'center' });
+
+    let y = 50;
+    pdf.setTextColor(0, 0, 0);
+
+    // Datos del Evento
+    pdf.setFontSize(12);
+    pdf.setFont(undefined, 'bold');
+    pdf.text("DATOS DEL EVENTO", margin, y);
+    y += 8;
+    pdf.setFont(undefined, 'normal');
+    pdf.setFontSize(10);
+    pdf.text(`Cliente: ${contract.client_name || 'N/A'}`, margin, y); y += 6;
+    pdf.text(`Fecha: ${contract.event_date || 'N/A'}`, margin, y); y += 6;
+    pdf.text(`Horario Evento: ${contract.event_time || 'N/A'}`, margin, y); y += 6;
+    pdf.text(`Inicio Servicio: ${contract.service_time || 'N/A'}`, margin, y); y += 6;
+    pdf.text(`Teléfono: ${contract.client_phone || 'N/A'}`, margin, y); y += 12;
+
+    // Servicios Contratados
+    pdf.setFont(undefined, 'bold');
+    pdf.setFontSize(12);
+    pdf.text("SERVICIOS CONTRATADOS", margin, y);
+    y += 8;
+    pdf.setFont(undefined, 'normal');
+    pdf.setFontSize(10);
+
+    if (contract.include_cabina) {
+      pdf.text(`✓ Cabina de Fotos - ${contract.cabina_hours || 3} horas`, margin, y);
+      y += 6;
+    }
+    if (contract.include_video360) {
+      pdf.text(`✓ Video 360 - ${contract.video360_hours || 3} horas`, margin, y);
+      y += 6;
+    }
+    if (contract.include_key_moments) {
+      pdf.text(`✓ Key Moments - ${contract.key_moments_pieces || 50} piezas`, margin, y);
+      y += 6;
+    }
+    if (contract.include_live) {
+      pdf.text(`✓ PicPartyLive`, margin, y);
+      y += 6;
+    }
+
+    y += 10;
+
+    // Costos Proveedor (vacío para llenar)
+    pdf.setFont(undefined, 'bold');
+    pdf.setFontSize(12);
+    pdf.text("COSTOS PROVEEDOR", margin, y);
+    y += 8;
+
+    pdf.setDrawColor(200);
+    pdf.setFont(undefined, 'normal');
+    pdf.setFontSize(10);
+    
+    const services = ["Cabina de Fotos", "Video 360", "Key Moments", "Transporte/Flete", "TOTAL"];
+    services.forEach(s => {
+      pdf.text(s + ":", margin, y);
+      pdf.line(margin + 50, y, pageWidth - margin, y);
+      y += 8;
+    });
+
+    y += 10;
+
+    // Firmas
+    pdf.setFont(undefined, 'bold');
+    pdf.text("FIRMA PROVEEDOR:", margin, y);
+    pdf.line(margin + 50, y, margin + 120, y);
+    y += 15;
+    pdf.text("FIRMA PIC PARTY:", margin, y);
+    pdf.line(margin + 50, y, margin + 120, y);
+
+    // Footer
+    pdf.setFontSize(8);
+    pdf.setFont(undefined, 'normal');
+    pdf.setTextColor(100);
+    pdf.text(`Generado: ${new Date().toLocaleString('es-MX')} | PIC PARTY`, pageWidth / 2, 270, { align: 'center' });
+
+    pdf.save(`Proveedor_${contract.client_name?.replace(/\s+/g, '_') || 'contrato'}.pdf`);
+    toast.success("Contrato Proveedor generado");
+  };
+
   // ========== GENERAR RECIBO DE PAGO (TICKET VIRTUAL) ==========
   const generateRecibo = async (contract) => {
     // Calcular altura dinámica (más alto si tiene links)
