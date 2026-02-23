@@ -5042,6 +5042,39 @@ const AdminPanel = () => {
                   </div>
                 )}
                 
+                {/* Campos de Pago */}
+                <div className="grid grid-cols-3 gap-3 pt-2 border-t border-gold/20">
+                  <div>
+                    <Label className="text-pearl text-sm">Nombre Cliente</Label>
+                    <Input 
+                      placeholder="Nombre del cliente" 
+                      value={newSession.client_name} 
+                      onChange={(e) => setNewSession({...newSession, client_name: e.target.value})} 
+                      className="input-premium mt-1" 
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-pearl text-sm">Monto Total $</Label>
+                    <Input 
+                      type="number"
+                      placeholder="0.00" 
+                      value={newSession.total_price} 
+                      onChange={(e) => setNewSession({...newSession, total_price: e.target.value})} 
+                      className="input-premium mt-1" 
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-pearl text-sm">Anticipo $</Label>
+                    <Input 
+                      type="number"
+                      placeholder="0.00" 
+                      value={newSession.anticipo_amount} 
+                      onChange={(e) => setNewSession({...newSession, anticipo_amount: e.target.value})} 
+                      className="input-premium mt-1" 
+                    />
+                  </div>
+                </div>
+                
                 {/* Fila 3: VIP y Botón */}
                 <div className="flex items-center justify-between pt-2">
                   <div className="flex items-center gap-2">
