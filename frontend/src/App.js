@@ -732,29 +732,30 @@ const Cotizador = () => {
             </CardContent>
           </Card>
 
-          {/* ========== PASO 3: Servicio Principal (Opcional) ========== */}
+          {/* ========== PASO 3: SERVICIOS (Múltiples) ========== */}
           <Card className="card-premium">
             <CardHeader className="pb-3">
               <CardTitle className="text-pearl text-lg flex items-center gap-2">
                 <span className="bg-gold/80 text-night w-6 h-6 rounded-full flex items-center justify-center text-sm">3</span>
-                Servicio Principal
-                <Badge className="badge-gold text-xs">Opcional</Badge>
+                Servicios Adicionales
+                <Badge className="badge-gold text-xs">Selecciona MÚLTIPLES</Badge>
               </CardTitle>
-              <CardDescription className="text-pearl-muted">Selecciona un servicio (opcional si solo quieres PICPARTYLIVE)</CardDescription>
+              <CardDescription className="text-pearl-muted">Puedes seleccionar varios servicios simultáneamente</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Cabina de Fotos */}
               <div className="space-y-2">
                 <p className="text-gold font-semibold flex items-center gap-2">
                   <span className="text-xl">📸</span> Cabina de Fotos
+                  {services.cabina.selected && <Badge className="bg-green-600 text-white text-xs">Incluido</Badge>}
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                   {cabinaPrecios.map(({ horas, precio }) => (
                     <Button 
                       key={`cabina-${horas}`}
-                      variant={mainService === "cabina" && serviceHours === horas ? "default" : "outline"}
-                      className={`h-auto py-3 ${mainService === "cabina" && serviceHours === horas ? "btn-gold" : "btn-gold-outline"}`}
-                      onClick={() => selectService("cabina", horas)}
+                      variant={services.cabina.selected && services.cabina.hours === horas ? "default" : "outline"}
+                      className={`h-auto py-3 ${services.cabina.selected && services.cabina.hours === horas ? "btn-gold" : "btn-gold-outline"}`}
+                      onClick={() => toggleHourService("cabina", horas)}
                       data-testid={`cabina-${horas}h`}
                     >
                       <div className="text-center">
@@ -771,14 +772,15 @@ const Cotizador = () => {
               <div className="space-y-2 pt-4 border-t border-gold/20">
                 <p className="text-gold font-semibold flex items-center gap-2">
                   <span className="text-xl">🎥</span> Video 360°
+                  {services.video360.selected && <Badge className="bg-green-600 text-white text-xs">Incluido</Badge>}
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                   {video360Precios.map(({ horas, precio }) => (
                     <Button 
                       key={`360-${horas}`}
-                      variant={mainService === "video360" && serviceHours === horas ? "default" : "outline"}
-                      className={`h-auto py-3 ${mainService === "video360" && serviceHours === horas ? "btn-gold" : "btn-gold-outline"}`}
-                      onClick={() => selectService("video360", horas)}
+                      variant={services.video360.selected && services.video360.hours === horas ? "default" : "outline"}
+                      className={`h-auto py-3 ${services.video360.selected && services.video360.hours === horas ? "btn-gold" : "btn-gold-outline"}`}
+                      onClick={() => toggleHourService("video360", horas)}
                       data-testid={`video360-${horas}h`}
                     >
                       <div className="text-center">
@@ -791,17 +793,30 @@ const Cotizador = () => {
                 </div>
               </div>
 
-              {/* Quitar servicio */}
-              {mainService && (
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className="text-pearl-muted text-xs"
-                  onClick={() => { setMainService(""); setServiceHours(0); }}
-                >
-                  Quitar servicio principal
-                </Button>
-              )}
+              {/* Key Moments */}
+              <div className="space-y-2 pt-4 border-t border-gold/20">
+                <p className="text-gold font-semibold flex items-center gap-2">
+                  <span className="text-xl">📷</span> Key Moments (Fotografía)
+                  {services.keyMoments.selected && <Badge className="bg-green-600 text-white text-xs">Incluido</Badge>}
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  {keyMomentsPrecios.map(({ piezas, precio }) => (
+                    <Button 
+                      key={`km-${piezas}`}
+                      variant={services.keyMoments.selected && services.keyMoments.pieces === piezas ? "default" : "outline"}
+                      className={`h-auto py-3 ${services.keyMoments.selected && services.keyMoments.pieces === piezas ? "btn-gold" : "btn-gold-outline"}`}
+                      onClick={() => toggleKeyMoments(piezas)}
+                      data-testid={`keymoments-${piezas}`}
+                    >
+                      <div className="text-center">
+                        <div className="font-bold">{piezas} pzas</div>
+                        <div className="text-lg font-black">{formatCurrency(precio)}</div>
+                        <div className="text-[10px] opacity-70">NETO</div>
+                      </div>
+                    </Button>
+                  ))}
+                </div>
+              </div>
             </CardContent>
           </Card>
 
@@ -813,8 +828,8 @@ const Cotizador = () => {
             <CardContent className="space-y-4">
               {/* Desglose */}
               <div className="space-y-2 text-pearl-muted">
-                {/* PICPARTYLIVE primero en el resumen */}
-                {includeLive && (
+                {/* PICPARTYLIVE */}
+                {services.picpartyLive.selected && (
                   <div className="flex justify-between items-center py-2 border-b border-gold/20">
                     <span className="text-gold">
                       PICPARTYLIVE 
