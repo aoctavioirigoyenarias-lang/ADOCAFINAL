@@ -4268,6 +4268,172 @@ const AdminPanel = () => {
             </Card>
           </TabsContent>
 
+          {/* ============ PESTAÑA PROVEEDORES (Solo Admin) ============ */}
+          {userRole === "admin" && (
+            <TabsContent value="proveedores" className="space-y-4 mt-4">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h2 className="text-pearl text-xl font-bold">Gestión de Proveedores</h2>
+                  <p className="text-pearl-muted text-sm">Alta, edición y asignación de proveedores para servicios</p>
+                </div>
+                <Button onClick={() => { setShowProveedorForm(true); setEditingProveedor(null); setProveedorForm({ nombre_empresa: "", contacto: "", telefono: "", servicios: [], costo_cabina: "", costo_video360: "", costo_key_moments: "", notas: "" }); }} className="btn-gold">
+                  + Nuevo Proveedor
+                </Button>
+              </div>
+
+              {/* Formulario de Proveedor */}
+              {showProveedorForm && (
+                <Card className="card-premium border-gold/50">
+                  <CardHeader>
+                    <CardTitle className="text-gold">{editingProveedor ? "Editar Proveedor" : "Nuevo Proveedor"}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <Label className="text-pearl">Nombre Empresa *</Label>
+                        <Input value={proveedorForm.nombre_empresa} onChange={(e) => setProveedorForm({...proveedorForm, nombre_empresa: e.target.value})} className="input-premium" placeholder="Ej: Foto Eventos MX" />
+                      </div>
+                      <div>
+                        <Label className="text-pearl">Contacto *</Label>
+                        <Input value={proveedorForm.contacto} onChange={(e) => setProveedorForm({...proveedorForm, contacto: e.target.value})} className="input-premium" placeholder="Nombre del contacto" />
+                      </div>
+                      <div>
+                        <Label className="text-pearl">Teléfono *</Label>
+                        <Input value={proveedorForm.telefono} onChange={(e) => setProveedorForm({...proveedorForm, telefono: e.target.value})} className="input-premium" placeholder="614 123 4567" />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label className="text-pearl mb-2 block">Servicios que ofrece:</Label>
+                      <div className="flex flex-wrap gap-3">
+                        {["cabina", "video360", "key_moments"].map(servicio => (
+                          <label key={servicio} className="flex items-center gap-2 cursor-pointer">
+                            <Checkbox 
+                              checked={proveedorForm.servicios.includes(servicio)}
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  setProveedorForm({...proveedorForm, servicios: [...proveedorForm.servicios, servicio]});
+                                } else {
+                                  setProveedorForm({...proveedorForm, servicios: proveedorForm.servicios.filter(s => s !== servicio)});
+                                }
+                              }}
+                            />
+                            <span className="text-pearl">{servicio === "cabina" ? "Cabina de Fotos" : servicio === "video360" ? "Video 360" : "Key Moments"}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <Label className="text-pearl">Costo Cabina ($)</Label>
+                        <Input type="number" value={proveedorForm.costo_cabina} onChange={(e) => setProveedorForm({...proveedorForm, costo_cabina: e.target.value})} className="input-premium" placeholder="0" />
+                      </div>
+                      <div>
+                        <Label className="text-pearl">Costo Video 360 ($)</Label>
+                        <Input type="number" value={proveedorForm.costo_video360} onChange={(e) => setProveedorForm({...proveedorForm, costo_video360: e.target.value})} className="input-premium" placeholder="0" />
+                      </div>
+                      <div>
+                        <Label className="text-pearl">Costo Key Moments ($)</Label>
+                        <Input type="number" value={proveedorForm.costo_key_moments} onChange={(e) => setProveedorForm({...proveedorForm, costo_key_moments: e.target.value})} className="input-premium" placeholder="0" />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-pearl">Notas</Label>
+                      <Textarea value={proveedorForm.notas} onChange={(e) => setProveedorForm({...proveedorForm, notas: e.target.value})} className="input-premium" placeholder="Observaciones, horarios, condiciones..." />
+                    </div>
+
+                    <div className="flex gap-3 justify-end">
+                      <Button variant="outline" onClick={() => { setShowProveedorForm(false); setEditingProveedor(null); }}>Cancelar</Button>
+                      <Button className="btn-gold" onClick={async () => {
+                        try {
+                          const data = {
+                            nombre_empresa: proveedorForm.nombre_empresa,
+                            contacto: proveedorForm.contacto,
+                            telefono: proveedorForm.telefono,
+                            servicios: proveedorForm.servicios,
+                            costo_cabina: proveedorForm.costo_cabina ? parseFloat(proveedorForm.costo_cabina) : null,
+                            costo_video360: proveedorForm.costo_video360 ? parseFloat(proveedorForm.costo_video360) : null,
+                            costo_key_moments: proveedorForm.costo_key_moments ? parseFloat(proveedorForm.costo_key_moments) : null,
+                            notas: proveedorForm.notas
+                          };
+                          if (editingProveedor) {
+                            await axios.put(`${API}/proveedores/${editingProveedor}`, data);
+                            toast.success("Proveedor actualizado");
+                          } else {
+                            await axios.post(`${API}/proveedores`, data);
+                            toast.success("Proveedor creado");
+                          }
+                          setShowProveedorForm(false);
+                          setEditingProveedor(null);
+                          fetchData();
+                        } catch (e) {
+                          toast.error("Error guardando proveedor");
+                        }
+                      }}>
+                        {editingProveedor ? "Guardar Cambios" : "Crear Proveedor"}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Lista de Proveedores */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {proveedores.map(prov => (
+                  <Card key={prov.id} className="card-premium hover:border-gold/50 transition-all">
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start mb-3">
+                        <h3 className="text-gold font-bold text-lg">{prov.nombre_empresa}</h3>
+                        <div className="flex gap-1">
+                          <Button size="sm" variant="outline" onClick={() => {
+                            setEditingProveedor(prov.id);
+                            setProveedorForm({
+                              nombre_empresa: prov.nombre_empresa,
+                              contacto: prov.contacto,
+                              telefono: prov.telefono,
+                              servicios: prov.servicios || [],
+                              costo_cabina: prov.costo_cabina || "",
+                              costo_video360: prov.costo_video360 || "",
+                              costo_key_moments: prov.costo_key_moments || "",
+                              notas: prov.notas || ""
+                            });
+                            setShowProveedorForm(true);
+                          }}>Editar</Button>
+                          <Button size="sm" variant="destructive" onClick={async () => {
+                            if (confirm("¿Eliminar este proveedor?")) {
+                              await axios.delete(`${API}/proveedores/${prov.id}`);
+                              toast.success("Proveedor eliminado");
+                              fetchData();
+                            }
+                          }}>X</Button>
+                        </div>
+                      </div>
+                      <p className="text-pearl text-sm"><strong>Contacto:</strong> {prov.contacto}</p>
+                      <p className="text-pearl text-sm"><strong>Tel:</strong> {prov.telefono}</p>
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {prov.servicios?.map(s => (
+                          <Badge key={s} className="badge-gold text-xs">{s}</Badge>
+                        ))}
+                      </div>
+                      {(prov.costo_cabina || prov.costo_video360 || prov.costo_key_moments) && (
+                        <div className="mt-2 pt-2 border-t border-gold/20 text-xs text-pearl-muted">
+                          {prov.costo_cabina && <span className="mr-2">Cabina: ${prov.costo_cabina}</span>}
+                          {prov.costo_video360 && <span className="mr-2">360: ${prov.costo_video360}</span>}
+                          {prov.costo_key_moments && <span>KM: ${prov.costo_key_moments}</span>}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+                {proveedores.length === 0 && (
+                  <p className="text-pearl-muted col-span-full text-center py-8">No hay proveedores registrados</p>
+                )}
+              </div>
+            </TabsContent>
+          )}
+
           {/* ============ PESTAÑA GALERÍA PRO ============ */}
           <TabsContent value="events" className="space-y-4 mt-4">
             <Card className="card-premium border-gold/30">
