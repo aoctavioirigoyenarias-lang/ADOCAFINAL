@@ -2584,6 +2584,13 @@ const AdminPanel = () => {
     code: ""
   });
   
+  // Estado para Ticket de Venta
+  const [ticketVentaModal, setTicketVentaModal] = useState({ open: false, session: null });
+  const [ticketVentaForm, setTicketVentaForm] = useState({
+    precioTipo: "normal",  // normal, promo, combo
+    anticipo: 0
+  });
+  
   // Estado para edición de eventos de Galería Pro
   const [editingEventId, setEditingEventId] = useState(null);
   const [editEventForm, setEditEventForm] = useState({
