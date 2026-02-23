@@ -2395,14 +2395,17 @@ const PicPartyLive = () => {
 };
 
 // ============ ADMIN PANEL ============
-const ADMIN_USER = "OCTAVIO";
-const ADMIN_PASS = "CHELO1980";
-const STAFF_USER = "STAFF";
-const STAFF_PASS = "PICPARTY2026";
+// Sistema de Roles: ADMIN (full access), VENTAS (contratos + reportes), STAFF (solo galería)
+const USERS = {
+  OCTAVIO: { password: "CHELO1980", role: "admin", name: "Octavio" },
+  ANABEL: { password: "VENTAS2026", role: "ventas", name: "Anabel" },
+  JOE: { password: "STAFF2026", role: "staff", name: "Joe" }
+};
 
 const AdminPanel = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState(null); // "admin" o "staff"
+  const [userRole, setUserRole] = useState(null); // "admin", "ventas" o "staff"
+  const [userName, setUserName] = useState("");
   const [loginUser, setLoginUser] = useState("");
   const [loginPass, setLoginPass] = useState("");
   const [events, setEvents] = useState([]);
@@ -2410,12 +2413,20 @@ const AdminPanel = () => {
   const [selectedEventCode, setSelectedEventCode] = useState(null);
   const [eventPhotos, setEventPhotos] = useState([]);
   const [contracts, setContracts] = useState([]);
+  const [proveedores, setProveedores] = useState([]);
   const [preferences, setPreferences] = useState({ show_net_price: true });
   const [loading, setLoading] = useState(true);
   const [photosCounts, setPhotosCounts] = useState({}); // Contador de fotos por evento
   const [newEvent, setNewEvent] = useState({ name: "", date: "", time: "", description: "", fotoshare_url: "", video360_url: "", location: "", has_photos: true, has_video360: false, color: "" });
   // Links de Fotoshare para Staff
   const [fotoshareLinks, setFotoshareLinks] = useState({ fotos: "", videos: "" });
+  // Proveedores
+  const [showProveedorForm, setShowProveedorForm] = useState(false);
+  const [editingProveedor, setEditingProveedor] = useState(null);
+  const [proveedorForm, setProveedorForm] = useState({
+    nombre_empresa: "", contacto: "", telefono: "", servicios: [],
+    costo_cabina: "", costo_video360: "", costo_key_moments: "", notas: ""
+  });
   const [newSession, setNewSession] = useState({ 
     event_name: "", 
     event_type: "boda",
