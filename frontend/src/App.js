@@ -3106,10 +3106,11 @@ const AdminPanel = () => {
     y += 10;
     
     // === DATOS DEL CLIENTE ===
+    const boxHeight = contract.salon ? 26 : 20; // Más alto si tiene salón
     pdf.setFillColor(245, 245, 245);
-    pdf.rect(margin, y, pageWidth - (margin * 2), 20, 'F');
+    pdf.rect(margin, y, pageWidth - (margin * 2), boxHeight, 'F');
     pdf.setDrawColor(200, 200, 200);
-    pdf.rect(margin, y, pageWidth - (margin * 2), 20, 'S');
+    pdf.rect(margin, y, pageWidth - (margin * 2), boxHeight, 'S');
     
     pdf.setFontSize(9);
     pdf.setTextColor(40, 40, 40);
@@ -3138,7 +3139,15 @@ const AdminPanel = () => {
       pdf.text(contract.service_time, pageWidth / 2 + 40, y + 12);
     }
     
-    y += 28;
+    // Salón / Lugar del Evento (si existe)
+    if (contract.salon) {
+      pdf.setFont(undefined, 'bold');
+      pdf.text("Salon:", margin + 3, y + 24);
+      pdf.setFont(undefined, 'normal');
+      pdf.text(contract.salon, margin + 25, y + 24);
+    }
+    
+    y += boxHeight + 8;
     
     // === 6 CLÁUSULAS LEGALES (EXACTAS DEL PDF ORIGINAL) ===
     const lineHeight = 4;
