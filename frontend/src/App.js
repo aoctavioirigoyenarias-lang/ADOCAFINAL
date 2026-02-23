@@ -2433,8 +2433,12 @@ const AdminPanel = () => {
     event_type_custom: "",
     event_date: "",
     client_phone: "",
+    client_name: "",
     is_vip: false, 
-    vip_pass: "" 
+    vip_pass: "",
+    total_price: "",
+    anticipo_amount: "",
+    payment_status: "pendiente"
   });
   
   // Generar código numérico único de 4 dígitos
