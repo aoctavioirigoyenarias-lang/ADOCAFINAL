@@ -687,52 +687,6 @@ const Cotizador = () => {
               )}
             </CardContent>
           </Card>
-              
-              {/* Precio dinámico */}
-              {includeLive && (
-                <div className="p-4 bg-night/50 rounded-lg border border-gold/20">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="text-pearl font-semibold">
-                        {mainService ? "¡COMBO ACTIVO!" : "PICPARTYLIVE Solo"}
-                      </p>
-                      <p className="text-pearl-muted text-sm">
-                        {mainService 
-                          ? "Al agregar Cabina o Video 360° abajo" 
-                          : "Agrega un servicio abajo para precio especial"}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-3xl font-black text-gold">
-                        {formatCurrency(getLivePrice())}
-                      </span>
-                      <span className="text-pearl-muted text-xs block">NETO</span>
-                    </div>
-                  </div>
-                  
-                  {/* BANNER DE AHORRO */}
-                  {mainService && (
-                    <div className="mt-3 p-3 bg-gold/10 border border-gold/30 rounded-lg animate-pulse">
-                      <p className="text-gold text-center font-bold text-lg">
-                        ¡ESTÁS GANANDO $800 DE DESCUENTO!
-                      </p>
-                      <p className="text-gold/80 text-center text-xs">
-                        Precio normal $1,500 → Tu precio $700
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-              
-              {!includeLive && (
-                <p className="text-pearl-muted text-sm text-center">
-                  Precio: <strong className="text-gold">$1,000 NETO</strong> solo, 
-                  o <strong className="text-gold">$700 NETO</strong> con Cabina/360
-                </p>
-              )}
-            </CardContent>
-          </Card>
-
           {/* ========== PASO 2: Datos del Cliente ========== */}
           <Card className="card-premium">
             <CardHeader className="pb-3">
