@@ -3944,6 +3944,12 @@ const AdminPanel = () => {
                     </div>
                   </div>
 
+                  {/* Salón */}
+                  <div>
+                    <Label className="text-pearl">Salón / Lugar del Evento</Label>
+                    <Input placeholder="Ej: Salón Imperial, Quinta Los Pinos..." value={contractForm.salon} onChange={(e) => setContractForm({...contractForm, salon: e.target.value})} className="input-premium" />
+                  </div>
+
                   {/* Fecha y Horarios */}
                   <div className="grid grid-cols-3 gap-3">
                     <div>
