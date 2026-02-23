@@ -3154,7 +3154,11 @@ const AdminPanel = () => {
       pdf.setTextColor(60, 60, 60);
       pdf.setFont(undefined, 'bold');
       pdf.text("SALDO PENDIENTE:", 25, y);
-      pdf.setTextColor(saldoPendiente > 0 ? [200, 50, 50] : [34, 139, 34]);
+      if (saldoPendiente > 0) {
+        pdf.setTextColor(200, 50, 50);  // Rojo para saldo pendiente
+      } else {
+        pdf.setTextColor(34, 139, 34);  // Verde para liquidado
+      }
       pdf.text(`$${saldoPendiente.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN`, pageWidth - 25, y, { align: 'right' });
       
       y += 25;
@@ -3162,10 +3166,15 @@ const AdminPanel = () => {
       // === SELLO DE ESTADO ===
       const isLiquidado = saldoPendiente <= 0 || session.payment_status === 'liquidado';
       const selloText = isLiquidado ? "LIQUIDADO" : "APARTADO";
-      const selloColor = isLiquidado ? [34, 139, 34] : [212, 175, 55];
       
       // Recuadro del sello
-      pdf.setDrawColor(...selloColor);
+      if (isLiquidado) {
+        pdf.setDrawColor(34, 139, 34);  // Verde
+        pdf.setTextColor(34, 139, 34);
+      } else {
+        pdf.setDrawColor(212, 175, 55);  // Dorado
+        pdf.setTextColor(212, 175, 55);
+      }
       pdf.setLineWidth(3);
       pdf.roundedRect(pageWidth / 2 - 45, y, 90, 30, 5, 5, 'S');
       
