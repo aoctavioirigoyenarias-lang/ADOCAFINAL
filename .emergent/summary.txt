@@ -1,139 +1,152 @@
 <analysis>**original_problem_statement:**
-The user's goal is to finalize PICPARTYLIVE, an advanced administrative tool for their live event photo-sharing business. The core of the application is a sophisticated contract and quote generation system with role-based access for different user types (Admin/Ventas vs. Staff).
+The user's goal is to finalize PICPARTYLIVE, an advanced administrative tool for their live event photo-sharing business. The application requires a sophisticated contract and quote generation system with role-based access, PDF generation, and specific UI/UX features.
 
 **Consolidated Product Requirements (based on latest user prompts):**
-1.  **Visual Identity**: A Premium dark theme with a Morado Noche () background and Dorado Elegante (gold) accents.
-2.  **Role-Based Access Control**:
-    *   **Admin/Ventas ()**: Full access to create/edit contracts, view a Reporte de Pagos dashboard, and generate all PDF documents (contracts, quotes, receipts).
-    *   **Staff ()**: A restricted view limited to a Galería de Imágenes por Evento. Staff can select an event, download associated image templates (PNG/JPG) from Cloudinary, and paste two specific  links (, ) for that event. They have no access to financial data or contract creation.
-3.  **Admin Contract Management**:
-    *   A simplified creation form with only 'Nombre Cliente', 'Teléfono', and 'Fecha' (using a visual calendar). 'Salón', 'Nombre Evento', and 'Email' fields are permanently removed.
-    *   **Service Catalog**: Only four services are available: Cabina de Fotos, Video 360, Key Moments, and PicPartyLive.
-    *   **Dynamic Pricing**: 'Total' is auto-calculated from selected services but can be manually overridden. A 'Descuento o Promoción' field is included. The  is calculated in real-time (). A  message appears if the balance is zero.
+1.  **Role-Based Access Control**: A three-tier system for  (full access),  (sales-focused access), and  (restricted to viewing assigned events and updating photo/video links).
+2.  **Supplier Management**: A complete CRUD module for managing third-party suppliers, accessible only to the ADMIN.
+3.  **Contract Form Updates**: The main contract form must include a 'Salón' (Venue) field. All date fields across the application must use a visual, clickable DatePicker component that defaults to the year 2026.
 4.  **PDF Generation**:
-    *   **2-Page Contract**: A clone of a user-provided PDF ('Contrato_MARU'), featuring legal clauses, a service table, and a detailed payment summary.
-    *   **Virtual Receipt (Ticket)**: Generated from the Reporte de Pagos for fully paid events. It must include the PIC PARTY logo, the customer's data, the user's fiscal information (RFC: , Name: ), and the two  links under the title Tus Fotos y Videos aquí.
-5.  **Public Homepage**: The main event gallery must only display the **Top 3 most recent events**.
-6.  **Media Handling**: The application is optimized for **images only (PNG/JPG)**. All video/audio upload functionality is removed.
+    *   **Logo**: The official PIC PARTY logo image must be correctly displayed on all generated PDFs (Contracts, Quotes, Receipts). This is a critical, recurring issue. A text fallback should be used if the image fails to load.
+    *   **PicPartyLive QR PDF**: This specific PDF needs to be enhanced to include event details, fiscal information, legal notes, and a button to download the QR code as a JPG.
+5.  **PicPartyLive Feature**: Implement a folder/chapter system (e.g., Preparativos, Fiesta) to allow guests to categorize their photo uploads for a specific event.
+6.  **Data Sorting**: All contract lists must be sorted chronologically by the event date, with the most recent event appearing first.
 
 **User's preferred language**: Spanish. The next agent MUST respond in Spanish.
 
 **what currently exists?**
-A full-stack application with a monolithic React frontend () and FastAPI backend (). The premium dark theme and core contract management functionalities (creation, editing, dynamic pricing, PDF generation) are implemented. A Reporte de Pagos tab provides a financial overview. The application has been modified to support role-based access, but the UI separation and specific features for the 'STAFF' role are still under development.
+A full-stack application with a monolithic React frontend () and a FastAPI backend (). A three-tier role system (ADMIN, VENTAS, STAFF) has been implemented, and the UI adapts based on the logged-in user. A supplier management section has been added to the admin panel. All date inputs have been replaced with a visual DatePicker component. The backend has been updated to support supplier management.
 
 **Last working item**:
--   **Last item agent was working**: Implementing the distinct, restricted user experience for the  role. This involved adding the user, creating a conditional UI structure in  to show a different view for , and starting the implementation of the components for that view (gallery, link inputs). The agent was also in the process of updating the PDF receipt generation to include the new Fotoshare links and fiscal data.
+-   **Last item agent was working**: Adding the 'Salón' (Venue) field to the contract creation form in  and ensuring it is included in the generated contract PDF. This was in response to multiple repeated requests from the user.
 -   **Status**: IN PROGRESS
 -   **Agent Testing Done**: N
 -   **Which testing method agent to use?** Manual testing. The agent must:
-    1.  Log in as  to verify the UI is restricted to the event gallery and link input fields.
-    2.  As , select an event, and test the functionality for pasting links.
-    3.  Log in as  (admin), create a contract, mark it as fully paid, and generate the final PDF receipt to confirm it correctly includes the fiscal data and the  links entered by the  user.
+    1.  Log in as ADMIN ().
+    2.  Navigate to Contratos and open the creation form.
+    3.  Verify the 'Salón' input field is present.
+    4.  Create a contract with the 'Salón' field populated.
+    5.  Download the contract PDF and confirm the 'Salón' information is displayed correctly.
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   Issue 1: Complete Staff Role Implementation & Final PDF Adjustments (Priority: P0)
+-   Issue 1: Add 'Salón' field to contracts and PDFs (Priority: P0)
+-   Issue 2: Fix logo rendering in all PDFs (Priority: P0, recurring)
+-   Issue 3: Enhance PicPartyLive QR PDF with required data (Priority: P1)
+-   Issue 4: Implement folder/chapter system for PicPartyLive (Priority: P1)
 
 **Issues Detail**:
--   **Issue 1**:
-    -   **Description**: The application needs to enforce a strict separation between / and  user roles. The  view is incomplete, and the backend needs to be updated to store the new  links. The PDF receipt logic must be finalized to pull this new data and include the user's fiscal information.
-    -   **Attempted fixes**: The agent added the  user and began creating a conditional rendering flow in . The backend models and PDF functions have not yet been fully updated.
+-   **Issue 1: Add 'Salón' field to contracts and PDFs**
+    -   **Description**: The contract creation form is missing the 'Salón' (Venue) field. This needs to be added to the frontend form, the backend model/endpoint, and the PDF generation logic. The user has requested this multiple times.
+    -   **Attempted fixes**: The agent located the relevant code sections in  but has not yet performed the necessary edits.
     -   **Next debug checklist**:
-        1.  **Backend ()**:
-            *   Add  and  to the  Pydantic model.
-            *   Update the  endpoint to allow saving these new link fields.
-        2.  **Frontend ()**:
-            *   Finalize the conditional rendering to show a dedicated  component when .
-            *   Complete the  component: It must contain the event selector, a gallery view, and the two new input fields for  links with a save button that calls the updated  endpoint.
-            *   Modify the  function to fetch the contract's  and .
-            *   In the same function, add the fiscal data (RFC: , Name: ) and the fetched links to the generated PDF.
-    -   **Why fix this issue and what will be achieved with the fix?**: This is the user's final core requirement, which will create clear operational roles, streamline the event media sharing process, and complete the financial reporting loop.
+        1.  **Backend ()**: Ensure the  model includes an optional  field. Verify the  and  endpoints can process this field.
+        2.  **Frontend ()**: In the contract form JSX, add a new  and  for 'Salón' between 'Nombre del Evento' and 'Fecha'. Update the  state object to include .
+        3.  **Frontend ()**: In the  function, add a line to draw the 'Salón' field and its value onto the PDF document.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is a core business requirement for capturing essential event details.
     -   **Status**: IN PROGRESS
-    -   **Is recurring issue?**: N
+    -   **Is recurring issue?**: Y (User has repeated the request)
     -   **Should Test frontend/backend/both after fix?**: Both
     -   **Blocked on other issue**: None
 
+-   **Issue 2: Fix logo rendering in all PDFs**
+    -   **Description**: The official PIC PARTY logo image fails to render on generated PDFs (Contracts, Quotes), often showing fallback text or nothing at all. This is likely due to CORS issues with  loading external images.
+    -   **Attempted fixes**: The agent attempted to create a base64 string of the logo and embed it directly into the code to bypass CORS. However, the implementation was incomplete or faulty.
+    -   **Next debug checklist**:
+        1.  Create a stable, correct base64 data URL for the user-provided logo ().
+        2.  Store this base64 string in a constant in .
+        3.  Modify all PDF generation functions (, , ) to use  instead of fetching a URL.
+        4.  Implement a  block around the  call. In the  block, render PIC PARTY text in a gold color as a fallback.
+    -   **Why fix this issue and what will be achieved with the fix?**: It is critical for brand consistency and professionalism on all client-facing documents.
+    -   **Status**: IN PROGRESS
+    -   **Is recurring issue?**: Y
+    -   **Should Test frontend/backend/both after fix?**: Frontend
+    -   **Blocked on other issue**: None
+
 **In progress Task List**:
--   **Task 1**: Finalize Role-Based UI.
-    -   **Where to resume**: , completing the conditional rendering logic and building the dedicated  component.
-    -   **What will be achieved with this?**: A secure, role-based interface where Staff users have limited, specific functionality.
+-   **Task 1: Complete Urgent User Requests**
+    -   **Where to resume**: Start with Issue 1 by modifying  to add the 'Salón' field. Immediately after, address the recurring logo issue (Issue 2).
+    -   **What will be achieved with this?**: Resolves the user's most pressing and repeated requests, stabilizing the core contract feature.
     -   **Status**: IN PROGRESS
     -   **Should Test frontend/backend/both after fix?**: Both
     -   **Blocked on something**: None
 
 **Upcoming and Future Tasks**
+-   **Upcoming Tasks**:
+    -   **(P1) Enhance PicPartyLive QR PDF**: Modify the PDF generation function to add the event name, date, a large QR code, fiscal data (Adán Octavio Irigoyen Arias, RFC: IIAA8004021A9), and legal notes. Add a button to download the result as a JPG.
+    -   **(P1) Implement PicPartyLive Folder/Chapter System**: Add UI for clients to create custom folders within a PicPartyLive event. Update the guest upload interface to allow selecting a folder. This will require backend changes to associate images with folders.
 -   **Future Tasks**:
-    -   **(P2) Refactor Monolithic Codebase**: The  and  files are critically large and complex, posing a significant maintenance risk. They must be broken down into smaller, manageable modules (e.g., components, routes, services).
+    -   **(P2) Refactor Monolithic Codebase**:  and  are critically large. They must be broken down into smaller components, routes, and services to improve maintainability.
     -   **(P2) Enhance Projector Route**: Fully develop the  projector view route.
 
 **Completed work in this session**
--   **Contract Creation Unlocked**: Fixed a critical bug that blocked saving new contracts by removing faulty frontend validation and making the  field optional on the backend.
--   **Corrected Pricing Logic**: Fixed the  calculation formula to  and removed a hardcoded default value that was causing errors.
--   **UI Cleanup & Feature Addition**:
-    -   Added a Descuento o Promoción field to the contract form and PDF.
-    -   Removed extraneous 'Vigencia' and 'Flete' text from the admin form.
-    -   Implemented the Reporte Pagos tab with a detailed financial overview table.
--   **Homepage Gallery Update**: Modified the homepage to display only the Top 3 most recent events.
--   **Role-Based Access (Initiated)**: Created the  user and laid the groundwork for a separate UI view.
+-   **3-Tier Role System**: Successfully implemented , , and  roles with distinct permissions and UI visibility.
+-   **Supplier Management Module**: Added backend endpoints and a complete frontend interface for managing suppliers.
+-   **DatePicker Implementation**: Replaced all 7 text-based date inputs with a visual DatePicker component, fixing its default year to 2026.
+-   **Chronological Sorting**: Implemented correct descending date sorting for contract lists.
+-   **Backend Updates**: Integrated user-provided code for new features into  and resolved file corruption issues.
 
 **Earlier issues found/mentioned but not fixed**
--   **PDF Logo Regression**: The user reported in  that the PIC PARTY logo disappeared from the PDF again after a previous fix. This needs to be re-verified and permanently fixed during the final PDF adjustments.
--   **Technical Debt**: The monolithic architecture of  and  remains unaddressed and is the largest underlying issue.
+-   The two main upcoming tasks (Enhance QR PDF, Implement Folder System) were requested by the user but have not been started.
 
 **Known issue recurrence from previous fork**
--   N/A
+-   **Logo in PDFs**: This is a persistent issue that has carried over and recurred multiple times despite attempted fixes. The root cause (likely CORS) has not been definitively solved.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Frontend**: React, React Router, Tailwind CSS, Axios, **jsPDF** (for complex document generation).
+-   **Frontend**: React, React Router, Tailwind CSS, Axios, **jsPDF**.
 -   **Backend**: FastAPI, Python, Pydantic.
 -   **Database**: MongoDB.
--   **File Storage**: Cloudinary.
--   **Authentication**: Custom JWT with roles (, ).
+-   **Authentication**: Custom JWT with roles (, , ).
 
 **key DB schema**
--   : Schema has been expanded to include  (Number),  (Number), and will require  (String, optional) and  (String, optional). The  field is now optional.
+-   : Requires a new optional  field.
+-   : New collection for supplier data.
+-   : New collection linking staff to contracts.
 
 **changes in tech stack**
 -   None.
 
 **All files of reference**
--   : **CRITICAL FILE.** The entire frontend application resides here. You will need to modify it to complete the role-based views and update the PDF generation logic.
--   : **CRITICAL FILE.** Contains all backend logic. You will need to update the  model and the corresponding  endpoint.
+-   : **CRITICAL FILE.** The entire frontend application resides here. It needs modification for the 'Salón' field, the PDF logo fix, and all upcoming features.
+-   : **CRITICAL FILE.** Contains all backend logic. Needs verification for the  field in the  model.
 
 **Areas that need refactoring**:
--   ** & **: Both files are urgently in need of refactoring. Their monolithic nature makes them extremely difficult to maintain and prone to regressions. This is the most significant technical debt in the project.
+-    & : Both files are urgently in need of refactoring. Their monolithic nature makes them difficult to maintain and prone to regressions.
 
 **key api endpoints**
--   : Logic has been updated to handle the  role.
--   : This endpoint must be updated to accept and save the new  and  fields.
+-   : Needs to handle the new  field.
+-   : Needs to handle the new  field.
+-    (GET, POST, PUT, DELETE): New CRUD endpoints for suppliers.
 
 **Critical Info for New Agent**
--   Your primary and only focus is to complete the user's final request: implement the restricted  view and finalize the PDF receipt with the required  links and fiscal data.
--   The user has expressed significant frustration with regressions. **Do not modify** any existing, functional logic (pricing, contract editing, etc.) unless absolutely necessary to complete the current task.
--   **Verify the PDF logo.** There is a known regression where the logo disappears. Ensure it is present on all generated PDFs (Contract, Quote, Receipt) in the final implementation.
--   The codebase is fragile due to its monolithic structure. Make targeted, precise changes.
+-   Your first priority is to add the **'Salón' field** to the contract form and PDF. The user has repeated this request many times.
+-   Your second priority is to permanently fix the **logo in all PDFs**. This is a major recurring issue and a source of user frustration. The base64 embedding approach is the most likely to succeed.
+-   The user makes very specific, sequential requests. Address them in the order provided.
+-   The codebase is fragile due to its monolithic structure. Make targeted, precise changes and test thoroughly.
 
 **documents and test reports created in this job**
 -   
+-   
 
 **Last 10 User Messages and any pending HUMAN messages**
--   : The user's final, definitive command to implement the  role, add fields for  links, enable template downloads, and add fiscal data to the PDF receipt. (IN PROGRESS)
--   : User requests optimization to handle only images (PNG/JPG) and simplify the staff's media workflow. (IN PROGRESS)
--   : The agent confirmed a critical fix, successfully creating a contract after being blocked. (COMPLETED)
--   : User issued a rescue prompt for a critical deployment error where the 'Crear Contrato' button was blocked and the PDF logo was missing. (COMPLETED)
--   : User's closing prompt, requesting a discount field, a visual grid calendar, and a Top 3 event gallery. (COMPLETED)
--   : User's prompt for a new Reporte de Pagos tab and a virtual receipt PDF. (COMPLETED)
--   : User's final check before a session close, verifying the auto-sum logic. (COMPLETED)
--   : User's frustrated master prompt to fix a series of regressions related to form fields and the calendar. (COMPLETED)
--   : User's final blocking order to freeze code and only address a missing logo and navigation button. (COMPLETED)
--   : User's request to enable editing of existing contracts, specifically for prices. (COMPLETED)
+-   : User repeats the request to add the 'salon' field in . (PENDING)
+-   : A series of messages where the user repeats the request to add the 'Salón' field to the contract form and PDF. (PENDING)
+-   : User provides a new logo and asks for it to be applied via base64, while also requesting the 'Salón' field. (IN PROGRESS)
+-   : User provides a logo image to be used as base64 in all PDFs. (IN PROGRESS)
+-   : User provides a list of 4 urgent corrections: fix PDF logo, enhance QR PDF, add 'Salón' field, and add PicPartyLive folders. (IN PROGRESS)
+-   : Agent confirms completion of previous multi-step request (DatePicker, Roles, Proveedores). (COMPLETED)
+-   : User provides a multi-step request to fix the DatePicker, add supplier features, and implement 3-tier roles. (COMPLETED)
+-   : Agent confirms backend restart. (COMPLETED)
+-   : User asks to restart the backend. (COMPLETED)
+-   : User reports the backend is down. (COMPLETED)
 
 **Project Health Check:**
--   **Broken**: The role-based access control is partially implemented. The  user's experience is not functional.
--   **Mocked**: The UI for adding  links may exist, but it is not connected to the backend, and the PDF generation does not yet include this data.
+-   **Broken**:
+    -   PDF logo generation is unreliable and frequently fails.
+    -   The contract form is missing the mandatory 'Salón' field.
+-   **Mocked**: N/A
 
 **3rd Party Integrations**
 -   **Cloudinary**: For image storage and retrieval.
@@ -141,15 +154,18 @@ A full-stack application with a monolithic React frontend () and FastAPI backend
 -   **jsPDF**: For all frontend PDF generation.
 
 **Testing status**
--   **Testing agent used after significant changes**: NO
+-   **Testing agent used after significant changes**: YES (once, but further changes have been made)
 -   **Troubleshoot agent used after agent stuck in loop**: NO
 -   **Test files created**: None.
--   **Known regressions**: The logo on the PDF has disappeared in the past after other changes were made. This should be carefully checked.
+-   **Known regressions**: The logo on generated PDFs is a severe and persistent regression.
 
 **Credentials to test flow:**
--   **Admin URL**: 
--   **Admin User**:  / 
--   **Staff User**:  / 
+-   **ADMIN**:  / 
+-   **VENTAS**:  / 
+-   **STAFF**:  / 
 
 **What agent forgot to execute**
--   The previous agent did not consistently perform regression testing, leading to previously fixed issues (like the PDF logo) re-emerging. The next agent must ensure that all core functionalities remain intact after implementing the final set of changes.</analysis>
+-   The agent has not yet started two of the four urgent tasks from the user's request in Msg 356:
+    1.  Enhance the PicPartyLive QR code PDF.
+    2.  Implement the folder/chapter system in PicPartyLive.
+-   The agent got stuck on the 'Salón' field request, failing to implement the change despite repeated user prompts.</analysis>
