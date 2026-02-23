@@ -8,8 +8,21 @@ PICPARTYLIVE es una plataforma de galería de fotos en vivo para eventos, que pe
 - **Backend**: FastAPI, Python, Pydantic
 - **Database**: MongoDB
 - **File Storage**: Cloudinary (Cloud: dpvliv2wl)
-- **Authentication**: JWT (Admin)
-- **PDF Generation**: jsPDF
+- **Authentication**: JWT (Admin con roles: ADMIN, VENTAS, STAFF)
+- **PDF Generation**: jsPDF (con logo base64 embebido)
+
+## Última Actualización: Febrero 2026
+
+### Cambios Recientes (Sesión Actual)
+1. **Campo "Salón" agregado a Contratos** (P0 - Completado)
+   - Campo "Salón / Lugar del Evento" visible en formulario de creación/edición
+   - Campo incluido en el PDF del contrato (sección datos del cliente)
+   - Backend ya soportaba el campo `salon: Optional[str]`
+
+2. **Logo Base64 en todos los PDFs** (P0 - Completado)
+   - Constante `PICPARTY_LOGO_BASE64` agregada con imagen optimizada (~59KB)
+   - Logo ahora se renderiza correctamente sin problemas de CORS
+   - Implementado en: Contratos PDF, Cotizaciones, Recibos, QR PDF
 
 ## Paleta de Colores (Premium Theme - Actualizada)
 - **Morado Noche** (`#1A0B2E`): Fondo principal obligatorio
