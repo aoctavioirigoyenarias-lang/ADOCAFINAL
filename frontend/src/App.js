@@ -2737,21 +2737,14 @@ const AdminPanel = () => {
       try {
         const logoImg = new Image();
         logoImg.crossOrigin = "anonymous";
-        logoImg.src = PICPARTY_LOGO;
-        await new Promise((resolve, reject) => { 
-          logoImg.onload = resolve;
-          logoImg.onerror = reject;
-          setTimeout(resolve, 3000); 
-        });
-        if (logoImg.complete && logoImg.naturalWidth > 0) {
-          // Logo fijo 40mm ancho, proporción mantenida
-          pdf.addImage(logoImg, 'PNG', 15, 10, 40, 40);
-        }
+        // Usar logo base64 directamente para evitar problemas de CORS
+        pdf.addImage(PICPARTY_LOGO_BASE64, 'PNG', 15, 10, 40, 40);
       } catch(e) {
+        // Fallback: texto si falla el logo
         pdf.setFontSize(20);
-        pdf.setTextColor(30, 30, 30);
+        pdf.setTextColor(212, 175, 55); // Color dorado
         pdf.setFont(undefined, 'bold');
-        pdf.text("PICPARTY", 15, 35);
+        pdf.text("PIC PARTY", 15, 35);
       }
       
       // === ENCABEZADO - Línea decorativa gris claro ===
