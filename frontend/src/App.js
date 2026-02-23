@@ -4187,9 +4187,14 @@ const AdminPanel = () => {
                       <div className="text-right">
                         <p className="text-gold font-bold text-2xl">${contract.net_price?.toLocaleString()}</p>
                         <p className="text-pearl-muted text-sm">Precio Neto</p>
-                        <div className="flex gap-2 mt-2">
+                        <div className="flex gap-2 mt-2 flex-wrap justify-end">
                           <Button size="sm" className="btn-gold-outline" onClick={() => startEditContract(contract)}>Editar</Button>
                           <Button size="sm" className="btn-gold" onClick={() => printContractPDF(contract)}>PDF</Button>
+                          {userRole === "admin" && (
+                            <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white" onClick={() => printProveedorPDF(contract)}>
+                              Proveedor
+                            </Button>
+                          )}
                           <Button size="sm" variant="destructive" onClick={() => deleteContract(contract.id)}>Eliminar</Button>
                         </div>
                       </div>
