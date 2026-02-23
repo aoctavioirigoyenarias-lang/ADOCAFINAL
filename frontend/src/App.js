@@ -5398,6 +5398,72 @@ const AdminPanel = () => {
                       </p>
                     </div>
                     
+                    {/* Campos de Pago */}
+                    <div className="border-t border-gold/20 pt-4 space-y-3">
+                      <Label className="text-gold text-sm font-bold">Datos de Pago (para Ticket)</Label>
+                      
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label className="text-pearl text-xs">Nombre Cliente</Label>
+                          <Input 
+                            value={editForm.client_name}
+                            onChange={(e) => setEditForm({...editForm, client_name: e.target.value})}
+                            className="input-premium mt-1"
+                            placeholder="Nombre"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-pearl text-xs">Teléfono</Label>
+                          <Input 
+                            value={editForm.client_phone}
+                            onChange={(e) => setEditForm({...editForm, client_phone: e.target.value})}
+                            className="input-premium mt-1"
+                            placeholder="Teléfono"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label className="text-pearl text-xs">Monto Total $</Label>
+                          <Input 
+                            type="number"
+                            value={editForm.total_price}
+                            onChange={(e) => setEditForm({...editForm, total_price: e.target.value})}
+                            className="input-premium mt-1"
+                            placeholder="0.00"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-pearl text-xs">Anticipo Recibido $</Label>
+                          <Input 
+                            type="number"
+                            value={editForm.anticipo_amount}
+                            onChange={(e) => setEditForm({...editForm, anticipo_amount: e.target.value})}
+                            className="input-premium mt-1"
+                            placeholder="0.00"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <Label className="text-pearl text-xs">Estado de Pago</Label>
+                        <Select 
+                          value={editForm.payment_status} 
+                          onValueChange={(v) => setEditForm({...editForm, payment_status: v})}
+                        >
+                          <SelectTrigger className="bg-night border-gold/30 text-pearl mt-1">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="pendiente">Pendiente</SelectItem>
+                            <SelectItem value="apartado">Apartado (con anticipo)</SelectItem>
+                            <SelectItem value="liquidado">Liquidado (pagado total)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    
                     {/* Botones */}
                     <div className="flex gap-3 pt-4">
                       <Button 
