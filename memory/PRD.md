@@ -47,6 +47,17 @@ PICPARTYLIVE es una plataforma de galería de fotos en vivo para eventos, que pe
    - El DatePicker visual con calendario navegable ya estaba funcionando correctamente
    - Muestra mes/año actual (febrero 2026) con flechas de navegación
 
+7. **Ticket de Venta para PicPartyLive** (Nueva funcionalidad - Completada)
+   - Nuevo botón "Ticket Venta" (morado) en cada sesión Live
+   - Modal con selector de precio NETO:
+     * Normal: $1,500 MXN
+     * Promo Expo Boda: $1,000 MXN
+     * Combo con otro servicio: $700 MXN
+   - Campo para ingresar anticipo recibido
+   - Preview en tiempo real de: Precio, Anticipo, Saldo, Estado (APARTADO/LIQUIDADO)
+   - PDF incluye: Logo PicParty, datos del proveedor (RFC completo), datos del cliente
+   - Sello grande APARTADO (dorado) o LIQUIDADO (verde) según estado de pago
+
 ## Paleta de Colores (Premium Theme - Actualizada)
 - **Morado Noche** (`#1A0B2E`): Fondo principal obligatorio
 - **Púrpura Premium** (`#2D1B4E`): Fondos secundarios
