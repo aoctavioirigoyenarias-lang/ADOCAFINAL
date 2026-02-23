@@ -297,12 +297,13 @@ const Cotizador = () => {
   const [quote, setQuote] = useState(null);
   const [folio, setFolio] = useState(null);
   
-  // ADD-ON PICPARTYLIVE - AHORA ES PRIORIDAD 1
-  const [includeLive, setIncludeLive] = useState(false);
-  
-  // Servicio principal seleccionado (AHORA PUNTO 2)
-  const [mainService, setMainService] = useState(""); // "cabina" o "video360"
-  const [serviceHours, setServiceHours] = useState(0);
+  // SERVICIOS MÚLTIPLES - Cada uno con su propia selección
+  const [services, setServices] = useState({
+    cabina: { selected: false, hours: 0 },
+    video360: { selected: false, hours: 0 },
+    keyMoments: { selected: false, pieces: 0 },
+    picpartyLive: { selected: false }
+  });
   
   // PRECIOS REALES - Cabina de Fotos
   const cabinaPrecios = [
@@ -319,6 +320,14 @@ const Cotizador = () => {
     { horas: 4, precio: 4499 },
     { horas: 5, precio: 4999 },
   ];
+  
+  // PRECIOS REALES - Key Moments (por piezas)
+  const keyMomentsPrecios = [
+    { piezas: 80, precio: 2999 },
+    { piezas: 100, precio: 3250 },
+    { piezas: 140, precio: 3499 },
+    { piezas: 200, precio: 4499 },
+  ];
 
   // Generar folio único
   const generateFolio = () => {
@@ -327,11 +336,24 @@ const Cotizador = () => {
     return `COT-${timestamp}-${random}`;
   };
 
-  // Obtener precio del servicio principal
-  const getServicePrice = () => {
-    if (!mainService || !serviceHours) return 0;
-    const precios = mainService === "cabina" ? cabinaPrecios : video360Precios;
-    const found = precios.find(p => p.horas === serviceHours);
+  // Obtener precio de cabina
+  const getCabinaPrice = () => {
+    if (!services.cabina.selected || !services.cabina.hours) return 0;
+    const found = cabinaPrecios.find(p => p.horas === services.cabina.hours);
+    return found ? found.precio : 0;
+  };
+
+  // Obtener precio de video 360
+  const getVideo360Price = () => {
+    if (!services.video360.selected || !services.video360.hours) return 0;
+    const found = video360Precios.find(p => p.horas === services.video360.hours);
+    return found ? found.precio : 0;
+  };
+
+  // Obtener precio de Key Moments
+  const getKeyMomentsPrice = () => {
+    if (!services.keyMoments.selected || !services.keyMoments.pieces) return 0;
+    const found = keyMomentsPrecios.find(p => p.piezas === services.keyMoments.pieces);
     return found ? found.precio : 0;
   };
 
@@ -339,16 +361,54 @@ const Cotizador = () => {
   // Si tiene Cabina o Video 360 = $700 NETO
   // Si solo PICPARTYLIVE = $1,000 NETO
   const getLivePrice = () => {
-    if (!includeLive) return 0;
-    return mainService ? 700 : 1000;
+    if (!services.picpartyLive.selected) return 0;
+    const hasOtherService = services.cabina.selected || services.video360.selected || services.keyMoments.selected;
+    return hasOtherService ? 700 : 1000;
   };
 
   // Calcular ahorro cuando hay combo
   const getAhorro = () => {
-    if (includeLive && mainService) {
-      return 1500 - 700; // Precio normal - precio combo = $800
+    const hasOtherService = services.cabina.selected || services.video360.selected || services.keyMoments.selected;
+    if (services.picpartyLive.selected && hasOtherService) {
+      return 1000 - 700; // $300 de ahorro
     }
     return 0;
+  };
+  
+  // Verificar si hay algún servicio seleccionado
+  const hasAnyService = () => {
+    return services.cabina.selected || services.video360.selected || 
+           services.keyMoments.selected || services.picpartyLive.selected;
+  };
+
+  // Seleccionar/deseleccionar servicio de horas
+  const toggleHourService = (type, hours) => {
+    setServices(prev => ({
+      ...prev,
+      [type]: {
+        selected: !(prev[type].selected && prev[type].hours === hours),
+        hours: prev[type].selected && prev[type].hours === hours ? 0 : hours
+      }
+    }));
+  };
+
+  // Seleccionar/deseleccionar Key Moments
+  const toggleKeyMoments = (pieces) => {
+    setServices(prev => ({
+      ...prev,
+      keyMoments: {
+        selected: !(prev.keyMoments.selected && prev.keyMoments.pieces === pieces),
+        pieces: prev.keyMoments.selected && prev.keyMoments.pieces === pieces ? 0 : pieces
+      }
+    }));
+  };
+
+  // Toggle PicPartyLive
+  const togglePicPartyLive = () => {
+    setServices(prev => ({
+      ...prev,
+      picpartyLive: { selected: !prev.picpartyLive.selected }
+    }));
   };
 
   // Calcular cotización
@@ -360,21 +420,17 @@ const Cotizador = () => {
     }
     
     // Validar que haya seleccionado al menos un servicio
-    if (!mainService && !includeLive) {
+    if (!hasAnyService()) {
       toast.error("Selecciona al menos un servicio");
       return;
     }
     
-    // Si seleccionó servicio principal, validar horas
-    if (mainService && !serviceHours) {
-      toast.error("Selecciona las horas del servicio");
-      return;
-    }
-    
-    // Calcular precios con nueva lógica
-    const servicePrice = getServicePrice();
+    // Calcular precios
+    const cabinaPrice = getCabinaPrice();
+    const video360Price = getVideo360Price();
+    const keyMomentsPrice = getKeyMomentsPrice();
     const livePrice = getLivePrice();
-    const subtotal = servicePrice + livePrice;
+    const subtotal = cabinaPrice + video360Price + keyMomentsPrice + livePrice;
     
     const descuentoAmount = subtotal * (clientData.descuento / 100);
     const total = subtotal - descuentoAmount;
@@ -382,21 +438,21 @@ const Cotizador = () => {
     const newFolio = generateFolio();
     setFolio(newFolio);
     setQuote({ 
-      servicePrice,
+      cabinaPrice,
+      video360Price,
+      keyMomentsPrice,
       livePrice,
       subtotal, 
       descuento: descuentoAmount, 
       total, 
       descuentoPct: clientData.descuento,
-      mainService,
-      serviceHours,
-      livePackage: livePrice
+      services: { ...services }
     });
     
     toast.success(`✅ Cotización generada - Folio: ${newFolio}`);
     
     // Guardar en backend
-    saveQuoteToBackend(newFolio, servicePrice, livePrice, subtotal, descuentoAmount, total);
+    saveQuoteToBackend(newFolio, cabinaPrice + video360Price + keyMomentsPrice, livePrice, subtotal, descuentoAmount, total);
   };
 
   const saveQuoteToBackend = async (newFolio, servicePrice, livePrice, subtotal, descuentoAmount, total) => {
