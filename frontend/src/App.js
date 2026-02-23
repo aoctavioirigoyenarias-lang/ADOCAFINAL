@@ -3778,12 +3778,14 @@ const AdminPanel = () => {
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <img src={PICPARTY_LOGO} alt="PicParty" className="h-10 w-10" />
-            <span className="text-xl font-bold text-gold">Admin</span>
-            <Badge className="badge-gold">Sesión activa</Badge>
+            <span className="text-xl font-bold text-gold">{userName || "Admin"}</span>
+            <Badge className={userRole === "admin" ? "bg-red-500/20 text-red-300 border-red-500/30" : userRole === "ventas" ? "bg-blue-500/20 text-blue-300 border-blue-500/30" : "bg-purple-500/20 text-purple-300 border-purple-500/30"}>
+              {userRole?.toUpperCase()}
+            </Badge>
           </div>
           <div className="flex gap-2">
             <Link to="/"><Button className="btn-gold-outline">← Inicio</Button></Link>
-            <Button variant="destructive" onClick={() => { sessionStorage.removeItem("adminAuth"); setIsAuthenticated(false); }}>Salir</Button>
+            <Button variant="destructive" onClick={() => { sessionStorage.clear(); setIsAuthenticated(false); }}>Salir</Button>
           </div>
         </div>
       </header>
@@ -3793,9 +3795,10 @@ const AdminPanel = () => {
           <TabsList className="bg-night border border-gold/20">
             <TabsTrigger value="contracts" className="data-[state=active]:bg-gold data-[state=active]:text-night">Contratos ({contracts.length})</TabsTrigger>
             <TabsTrigger value="reporte" className="data-[state=active]:bg-gold data-[state=active]:text-night">Reporte Pagos</TabsTrigger>
+            {userRole === "admin" && <TabsTrigger value="proveedores" className="data-[state=active]:bg-gold data-[state=active]:text-night">Proveedores ({proveedores.length})</TabsTrigger>}
             <TabsTrigger value="events" className="data-[state=active]:bg-gold data-[state=active]:text-night">Galería Pro ({events.length})</TabsTrigger>
             <TabsTrigger value="live" className="data-[state=active]:bg-gold data-[state=active]:text-night">PICPARTYLIVE ({liveSessions.length})</TabsTrigger>
-            <TabsTrigger value="cloudinary" className="data-[state=active]:bg-gold data-[state=active]:text-night">Cloudinary</TabsTrigger>
+            {userRole === "admin" && <TabsTrigger value="cloudinary" className="data-[state=active]:bg-gold data-[state=active]:text-night">Cloudinary</TabsTrigger>}
           </TabsList>
 
           {/* ============ PESTAÑA DE CONTRATOS ============ */}
