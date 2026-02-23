@@ -2850,14 +2850,13 @@ const AdminPanel = () => {
         pdf.text("PIC PARTY", 15, 35);
       }
       
-      // === DATOS FISCALES - Esquina superior derecha ===
+      // === DATOS DE CONTACTO - Esquina superior derecha (sin RFC) ===
       pdf.setFontSize(8);
       pdf.setTextColor(100, 100, 100);
       pdf.setFont(undefined, 'normal');
       pdf.text("Adán Octavio Irigoyen Arias", pageWidth - 15, 15, { align: 'right' });
-      pdf.text("RFC: IIAA8004021A9", pageWidth - 15, 20, { align: 'right' });
-      pdf.text("Tel: 614 272 5008", pageWidth - 15, 25, { align: 'right' });
-      pdf.text("octavio@adoca.net", pageWidth - 15, 30, { align: 'right' });
+      pdf.text("Tel: 614 272 5008", pageWidth - 15, 20, { align: 'right' });
+      pdf.text("octavio@adoca.net", pageWidth - 15, 25, { align: 'right' });
       
       // === ENCABEZADO - Línea decorativa gris claro ===
       pdf.setDrawColor(200, 200, 200);
