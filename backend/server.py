@@ -544,6 +544,49 @@ async def delete_contract(contract_id: str):
         raise HTTPException(status_code=404, detail="Contrato no encontrado")
     return {"message": "Contrato eliminado"}
 
+# ============ PROVEEDORES ============
+
+@api_router.get("/proveedores")
+async def get_proveedores():
+    proveedores = await db.proveedores.find({"activo": True}, {"_id": 0}).sort("nombre_empresa", 1).to_list(100)
+    return proveedores
+
+@api_router.post("/proveedores")
+async def create_proveedor(data: ProveedorCreate):
+    proveedor = Proveedor(**data.model_dump())
+    doc = proveedor.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.proveedores.insert_one(doc)
+    return {"id": proveedor.id, "message": "Proveedor creado"}
+
+@api_router.put("/proveedores/{proveedor_id}")
+async def update_proveedor(proveedor_id: str, data: ProveedorCreate):
+    result = await db.proveedores.update_one({"id": proveedor_id}, {"$set": data.model_dump()})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Proveedor no encontrado")
+    return {"message": "Proveedor actualizado"}
+
+@api_router.delete("/proveedores/{proveedor_id}")
+async def delete_proveedor(proveedor_id: str):
+    await db.proveedores.update_one({"id": proveedor_id}, {"$set": {"activo": False}})
+    return {"message": "Proveedor eliminado"}
+
+# ============ STAFF ASSIGNMENTS ============
+
+@api_router.post("/staff/assign")
+async def assign_staff_event(assignment: StaffAssignment):
+    await db.staff_assignments.update_one(
+        {"staff_key": assignment.staff_key},
+        {"$set": assignment.model_dump()},
+        upsert=True
+    )
+    return {"message": "Asignación guardada"}
+
+@api_router.get("/staff/evento-asignado/{staff_key}")
+async def get_staff_assignment(staff_key: str):
+    assignment = await db.staff_assignments.find_one({"staff_key": staff_key}, {"_id": 0})
+    return assignment or {}
+
 # ============ LIVE SESSIONS ============
 # ⚠️  FIX CRÍTICO: Las rutas específicas DEBEN ir ANTES de las rutas con {parámetro}
 # FastAPI resuelve rutas de arriba a abajo. Si /{session_id} va primero,
