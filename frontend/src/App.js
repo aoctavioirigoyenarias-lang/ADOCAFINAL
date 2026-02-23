@@ -5651,6 +5651,127 @@ const AdminPanel = () => {
                 })
             )}
 
+            {/* ============ MODAL DE TICKET DE VENTA ============ */}
+            {ticketVentaModal.open && ticketVentaModal.session && (
+              <div className="fixed inset-0 bg-night/90 flex items-center justify-center z-50">
+                <Card className="card-premium border-gold/50 w-full max-w-md mx-4">
+                  <CardHeader>
+                    <CardTitle className="text-gold flex items-center gap-2">
+                      Ticket de Venta - PicPartyLive
+                    </CardTitle>
+                    <CardDescription className="text-pearl-muted">
+                      Selecciona el precio y anticipo para generar el ticket
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Datos del evento */}
+                    <div className="p-3 bg-night/50 rounded-lg border border-gold/20">
+                      <p className="text-pearl font-semibold">{ticketVentaModal.session.event_name}</p>
+                      <p className="text-pearl-muted text-sm">Código: {ticketVentaModal.session.code}</p>
+                    </div>
+                    
+                    {/* Selector de Precio */}
+                    <div className="space-y-2">
+                      <Label className="text-gold font-bold">Precio NETO</Label>
+                      <div className="grid grid-cols-1 gap-2">
+                        <Button
+                          variant={ticketVentaForm.precioTipo === "normal" ? "default" : "outline"}
+                          className={`h-auto py-3 justify-between ${ticketVentaForm.precioTipo === "normal" ? "btn-gold" : "btn-gold-outline"}`}
+                          onClick={() => setTicketVentaForm({...ticketVentaForm, precioTipo: "normal"})}
+                        >
+                          <span>Normal</span>
+                          <span className="font-bold">$1,500 MXN</span>
+                        </Button>
+                        <Button
+                          variant={ticketVentaForm.precioTipo === "promo" ? "default" : "outline"}
+                          className={`h-auto py-3 justify-between ${ticketVentaForm.precioTipo === "promo" ? "btn-gold" : "btn-gold-outline"}`}
+                          onClick={() => setTicketVentaForm({...ticketVentaForm, precioTipo: "promo"})}
+                        >
+                          <span>Promo Expo Boda</span>
+                          <span className="font-bold">$1,000 MXN</span>
+                        </Button>
+                        <Button
+                          variant={ticketVentaForm.precioTipo === "combo" ? "default" : "outline"}
+                          className={`h-auto py-3 justify-between ${ticketVentaForm.precioTipo === "combo" ? "btn-gold" : "btn-gold-outline"}`}
+                          onClick={() => setTicketVentaForm({...ticketVentaForm, precioTipo: "combo"})}
+                        >
+                          <span>Combo con otro servicio</span>
+                          <span className="font-bold">$700 MXN</span>
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    {/* Anticipo */}
+                    <div className="space-y-2">
+                      <Label className="text-pearl">Anticipo Recibido ($)</Label>
+                      <Input 
+                        type="number"
+                        placeholder="0"
+                        value={ticketVentaForm.anticipo}
+                        onChange={(e) => setTicketVentaForm({...ticketVentaForm, anticipo: e.target.value})}
+                        className="input-premium"
+                      />
+                    </div>
+                    
+                    {/* Preview de saldo */}
+                    <div className="p-3 bg-night/50 rounded-lg border border-gold/20">
+                      <div className="flex justify-between items-center">
+                        <span className="text-pearl-muted">Precio:</span>
+                        <span className="text-pearl font-bold">
+                          ${PRECIOS_PICPARTYLIVE[ticketVentaForm.precioTipo].precio.toLocaleString()} MXN
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-pearl-muted">Anticipo:</span>
+                        <span className="text-green-500 font-bold">
+                          -${(parseFloat(ticketVentaForm.anticipo) || 0).toLocaleString()} MXN
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center pt-2 border-t border-gold/20 mt-2">
+                        <span className="text-gold font-bold">Saldo:</span>
+                        <span className={`text-xl font-bold ${
+                          (PRECIOS_PICPARTYLIVE[ticketVentaForm.precioTipo].precio - (parseFloat(ticketVentaForm.anticipo) || 0)) <= 0 
+                            ? "text-green-500" 
+                            : "text-gold"
+                        }`}>
+                          ${(PRECIOS_PICPARTYLIVE[ticketVentaForm.precioTipo].precio - (parseFloat(ticketVentaForm.anticipo) || 0)).toLocaleString()} MXN
+                        </span>
+                      </div>
+                      <div className="text-center mt-2">
+                        <Badge className={
+                          (PRECIOS_PICPARTYLIVE[ticketVentaForm.precioTipo].precio - (parseFloat(ticketVentaForm.anticipo) || 0)) <= 0 
+                            ? "bg-green-600" 
+                            : "bg-gold text-night"
+                        }>
+                          {(PRECIOS_PICPARTYLIVE[ticketVentaForm.precioTipo].precio - (parseFloat(ticketVentaForm.anticipo) || 0)) <= 0 
+                            ? "LIQUIDADO" 
+                            : "APARTADO"
+                          }
+                        </Badge>
+                      </div>
+                    </div>
+                    
+                    {/* Botones */}
+                    <div className="flex gap-3 pt-2">
+                      <Button 
+                        variant="outline" 
+                        className="flex-1 btn-gold-outline"
+                        onClick={() => setTicketVentaModal({ open: false, session: null })}
+                      >
+                        Cancelar
+                      </Button>
+                      <Button 
+                        className="flex-1 btn-gold"
+                        onClick={generateTicketVenta}
+                      >
+                        Generar PDF
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
             {/* ============ MODAL DE EDICIÓN ============ */}
             {editingSession && (
               <div className="fixed inset-0 bg-night/90 flex items-center justify-center z-50">
