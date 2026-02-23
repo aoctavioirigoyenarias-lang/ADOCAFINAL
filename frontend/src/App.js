@@ -5606,6 +5606,14 @@ const AdminPanel = () => {
                             </Button>
                             <Button 
                               size="sm" 
+                              className="bg-purple-600 hover:bg-purple-700 text-white" 
+                              onClick={() => openTicketVentaModal(session)}
+                              data-testid={`ticket-venta-${session.code}`}
+                            >
+                              Ticket Venta
+                            </Button>
+                            <Button 
+                              size="sm" 
                               className="btn-gold-outline"
                               onClick={() => openEditModal(session)}
                               data-testid={`edit-${session.code}`}
