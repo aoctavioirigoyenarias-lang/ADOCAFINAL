@@ -2,94 +2,99 @@
 The user's goal is to finalize PICPARTYLIVE, an advanced administrative tool for their live event photo-sharing business. The application requires a sophisticated contract and quote generation system with role-based access, PDF generation, and specific UI/UX features.
 
 **Consolidated Product Requirements (based on latest user prompts):**
-1.  **Role-Based Access Control**: A three-tier system for  (full access),  (sales-focused access), and  (restricted to viewing assigned events and updating photo/video links).
-2.  **Supplier Management**: A complete CRUD module for managing third-party suppliers, accessible only to the ADMIN.
-3.  **Contract Form Updates**: The main contract form must include a 'Salón' (Venue) field. All date fields across the application must use a visual, clickable DatePicker component that defaults to the year 2026.
-4.  **PDF Generation**:
-    *   **Logo**: The official PIC PARTY logo image must be correctly displayed on all generated PDFs (Contracts, Quotes, Receipts). This is a critical, recurring issue. A text fallback should be used if the image fails to load.
-    *   **PicPartyLive QR PDF**: This specific PDF needs to be enhanced to include event details, fiscal information, legal notes, and a button to download the QR code as a JPG.
-5.  **PicPartyLive Feature**: Implement a folder/chapter system (e.g., Preparativos, Fiesta) to allow guests to categorize their photo uploads for a specific event.
-6.  **Data Sorting**: All contract lists must be sorted chronologically by the event date, with the most recent event appearing first.
+1.  **Role-Based Access Control**: A three-tier system for  (full access),  (sales-focused access), and  (restricted access). The login for  and  roles is currently broken.
+2.  **Contract & Quote System**:
+    *   The main contract form must include a 'Salón' (Venue) field, use a visual DatePicker, and display the company logo correctly on the generated PDF. (These items have been implemented but the user has reported them again, suggesting a need for verification).
+    *   The Cotizador (Quote Generator) must allow selecting multiple services simultaneously.
+    *   The pricing logic for the PicPartyLive service within the Cotizador must be corrected to use fixed-tier pricing (,500 normal, ,000 promo, 00 combo) instead of a flat discount.
+3.  **PicPartyLive Feature**:
+    *   Enhance the PicPartyLive QR PDF to include specific contact information and notes. Add a button to download the content as a JPG.
+    *   Add Ticket de Pago and Ticket de Venta PDF generation for each PicPartyLive session, with specific fields for pricing, payments, and client data.
+    *   Implement a folder/chapter system (e.g., Preparativos, Fiesta) for guest photo uploads.
 
 **User's preferred language**: Spanish. The next agent MUST respond in Spanish.
 
 **what currently exists?**
-A full-stack application with a monolithic React frontend () and a FastAPI backend (). A three-tier role system (ADMIN, VENTAS, STAFF) has been implemented, and the UI adapts based on the logged-in user. A supplier management section has been added to the admin panel. All date inputs have been replaced with a visual DatePicker component. The backend has been updated to support supplier management.
+A full-stack application with a monolithic React frontend () and a FastAPI backend (). The application supports three user roles (ADMIN, VENTAS, STAFF), though non-ADMIN logins are currently failing. The Cotizador has been updated to support multi-service selection. The contract creation flow includes a Salón field and a working DatePicker. All PDF generation functions now use a base64-encoded logo to prevent rendering issues. New Ticket de Pago and Ticket de Venta features have been added to the PicPartyLive section, complete with UI forms, backend model updates, and PDF generation logic.
 
 **Last working item**:
--   **Last item agent was working**: Adding the 'Salón' (Venue) field to the contract creation form in  and ensuring it is included in the generated contract PDF. This was in response to multiple repeated requests from the user.
--   **Status**: IN PROGRESS
--   **Agent Testing Done**: N
--   **Which testing method agent to use?** Manual testing. The agent must:
-    1.  Log in as ADMIN ().
-    2.  Navigate to Contratos and open the creation form.
-    3.  Verify the 'Salón' input field is present.
-    4.  Create a contract with the 'Salón' field populated.
-    5.  Download the contract PDF and confirm the 'Salón' information is displayed correctly.
+-   **Last item agent was working**: The agent had just finished implementing a series of features and bug fixes. However, the user's last message () was a repetition of three previously resolved requests: adding a DatePicker, ensuring the logo appears on PDFs, and adding the 'Salón' field. This indicates user confusion or a potential context loop. The agent was starting to re-investigate these already-completed items.
+-   **Status**: USER VERIFICATION PENDING
+-   **Agent Testing Done**: Y (Agent had previously verified these fixes with screenshots).
+-   **Which testing method agent to use?** Manual testing. The agent must NOT re-implement anything. Instead, take new screenshots demonstrating that the 'Salón' field, DatePicker, and PDF logo are all functioning correctly. This evidence should be presented to the user to break the confusion loop.
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   Issue 1: Add 'Salón' field to contracts and PDFs (Priority: P0)
--   Issue 2: Fix logo rendering in all PDFs (Priority: P0, recurring)
--   Issue 3: Enhance PicPartyLive QR PDF with required data (Priority: P1)
--   Issue 4: Implement folder/chapter system for PicPartyLive (Priority: P1)
+-   Issue 1: Non-ADMIN user logins are failing (Priority: P0)
+-   Issue 2: Resolve user confusion about previously completed tasks (DatePicker, PDF Logo, Salón field) (Priority: P0)
+-   Issue 3: Cotizador price logic for PicPartyLive is incorrect (Priority: P1)
 
 **Issues Detail**:
--   **Issue 1: Add 'Salón' field to contracts and PDFs**
-    -   **Description**: The contract creation form is missing the 'Salón' (Venue) field. This needs to be added to the frontend form, the backend model/endpoint, and the PDF generation logic. The user has requested this multiple times.
-    -   **Attempted fixes**: The agent located the relevant code sections in  but has not yet performed the necessary edits.
+-   **Issue 1: Non-ADMIN user logins are failing**
+    -   **Description**: The user reported that logins for  (VENTAS) and  (STAFF) are failing with incorrect credentials errors.
+    -   **Attempted fixes**: None. The agent was diverted by the user's repeated requests before addressing this.
     -   **Next debug checklist**:
-        1.  **Backend ()**: Ensure the  model includes an optional  field. Verify the  and  endpoints can process this field.
-        2.  **Frontend ()**: In the contract form JSX, add a new  and  for 'Salón' between 'Nombre del Evento' and 'Fecha'. Update the  state object to include .
-        3.  **Frontend ()**: In the  function, add a line to draw the 'Salón' field and its value onto the PDF document.
-    -   **Why fix this issue and what will be achieved with the fix?**: This is a core business requirement for capturing essential event details.
-    -   **Status**: IN PROGRESS
-    -   **Is recurring issue?**: Y (User has repeated the request)
-    -   **Should Test frontend/backend/both after fix?**: Both
+        1.  View  and inspect the  dictionary to confirm the exact username/password combinations.
+        2.  Analyze the  endpoint logic. Check for case-sensitivity issues or incorrect password comparison.
+        3.  Use  to attempt a login for both  and  to reproduce the error and inspect the direct backend response.
+    -   **Why fix this issue and what will be achieved with the fix?**: The role-based access control is a core feature of the application. It is unusable without working logins for all roles.
+    -   **Status**: NOT STARTED
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: Backend
     -   **Blocked on other issue**: None
 
--   **Issue 2: Fix logo rendering in all PDFs**
-    -   **Description**: The official PIC PARTY logo image fails to render on generated PDFs (Contracts, Quotes), often showing fallback text or nothing at all. This is likely due to CORS issues with  loading external images.
-    -   **Attempted fixes**: The agent attempted to create a base64 string of the logo and embed it directly into the code to bypass CORS. However, the implementation was incomplete or faulty.
+-   **Issue 2: Resolve user confusion about previously completed tasks**
+    -   **Description**: The user is repeatedly asking for features (DatePicker, PDF Logo, 'Salón' field) that have already been implemented and verified by the agent in this session.
+    -   **Attempted fixes**: The agent was about to re-investigate the code.
     -   **Next debug checklist**:
-        1.  Create a stable, correct base64 data URL for the user-provided logo ().
-        2.  Store this base64 string in a constant in .
-        3.  Modify all PDF generation functions (, , ) to use  instead of fetching a URL.
-        4.  Implement a  block around the  call. In the  block, render PIC PARTY text in a gold color as a fallback.
-    -   **Why fix this issue and what will be achieved with the fix?**: It is critical for brand consistency and professionalism on all client-facing documents.
+        1.  Do NOT modify any code.
+        2.  Log in as ADMIN (/).
+        3.  Take a screenshot of the contract creation form, clearly showing the 'Salón' field and the clickable DatePicker field.
+        4.  Create a test contract and generate the PDF. Capture the success toast/message.
+        5.  Present this evidence to the user in Spanish to confirm the features are working as requested and ask to proceed with the *actual* pending bugs.
+    -   **Why fix this issue and what will be achieved with the fix?**: To break a potential-wasted work loop and align with the user on the true state of the project, allowing progress on actual pending issues.
     -   **Status**: IN PROGRESS
-    -   **Is recurring issue?**: Y
+    -   **Is recurring issue?**: Y (in this session)
+    -   **Should Test frontend/backend/both after fix?**: Frontend (Verification only)
+    -   **Blocked on other issue**: None
+
+-   **Issue 3: Cotizador price logic for PicPartyLive is incorrect**
+    -   **Description**: The user clarified that the PicPartyLive price is not a discount, but tiered: 00 when combined with other services, ,000 for Promo Expo Boda, and ,500 as a standalone service.
+    -   **Attempted fixes**: None.
+    -   **Next debug checklist**:
+        1.  View  and locate the  component.
+        2.  Find the state management and calculation logic (, , etc.).
+        3.  Modify the logic to implement the three-tier pricing rule for PicPartyLive based on whether other services are selected or a promo is active.
+    -   **Why fix this issue and what will be achieved with the fix?**: The quote generator produces incorrect pricing, which is a critical business logic error.
+    -   **Status**: NOT STARTED
+    -   **Is recurring issue?**: N
     -   **Should Test frontend/backend/both after fix?**: Frontend
     -   **Blocked on other issue**: None
 
 **In progress Task List**:
--   **Task 1: Complete Urgent User Requests**
-    -   **Where to resume**: Start with Issue 1 by modifying  to add the 'Salón' field. Immediately after, address the recurring logo issue (Issue 2).
-    -   **What will be achieved with this?**: Resolves the user's most pressing and repeated requests, stabilizing the core contract feature.
-    -   **Status**: IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?**: Both
-    -   **Blocked on something**: None
+-   None.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks**:
-    -   **(P1) Enhance PicPartyLive QR PDF**: Modify the PDF generation function to add the event name, date, a large QR code, fiscal data (Adán Octavio Irigoyen Arias, RFC: IIAA8004021A9), and legal notes. Add a button to download the result as a JPG.
-    -   **(P1) Implement PicPartyLive Folder/Chapter System**: Add UI for clients to create custom folders within a PicPartyLive event. Update the guest upload interface to allow selecting a folder. This will require backend changes to associate images with folders.
+    -   **(P1) Implement PicPartyLive Folder/Chapter System**: Add UI for clients to create custom folders within an event and allow guests to select a folder during upload. This requires backend changes.
 -   **Future Tasks**:
-    -   **(P2) Refactor Monolithic Codebase**:  and  are critically large. They must be broken down into smaller components, routes, and services to improve maintainability.
+    -   **(P2) Refactor Monolithic Codebase**:  and  are critically large and must be broken down into smaller, maintainable components/modules.
     -   **(P2) Enhance Projector Route**: Fully develop the  projector view route.
 
 **Completed work in this session**
--   **3-Tier Role System**: Successfully implemented , , and  roles with distinct permissions and UI visibility.
--   **Supplier Management Module**: Added backend endpoints and a complete frontend interface for managing suppliers.
--   **DatePicker Implementation**: Replaced all 7 text-based date inputs with a visual DatePicker component, fixing its default year to 2026.
--   **Chronological Sorting**: Implemented correct descending date sorting for contract lists.
--   **Backend Updates**: Integrated user-provided code for new features into  and resolved file corruption issues.
+-   **'Salón' Field Implementation**: Added the field to the contract form, backend model, and PDF output.
+-   **PDF Logo Fix**: Successfully embedded a base64 version of the logo in all PDF generation functions (, , etc.), resolving a persistent rendering issue.
+-   **Cotizador Multi-Select**: Refactored the quote generator to allow selecting multiple services simultaneously.
+-   **PicPartyLive Ticket de Pago**: Implemented a feature to generate a payment receipt PDF from the live session view.
+-   **PicPartyLive Ticket de Venta**: Implemented a feature with a modal to generate a sales ticket PDF with selectable pricing tiers.
+-   **DatePicker Verification**: Confirmed the visual DatePicker component is working correctly.
+-   **PicPartyLive QR PDF Enhancement**: Added contact info and legal notes to the QR PDF and JPG generation.
 
 **Earlier issues found/mentioned but not fixed**
--   The two main upcoming tasks (Enhance QR PDF, Implement Folder System) were requested by the user but have not been started.
+-   The issues regarding failing non-ADMIN logins and incorrect Cotizador pricing were reported by the user but have not yet been addressed.
 
 **Known issue recurrence from previous fork**
--   **Logo in PDFs**: This is a persistent issue that has carried over and recurred multiple times despite attempted fixes. The root cause (likely CORS) has not been definitively solved.
+-   **Logo in PDFs**: This was a major recurring issue that was definitively fixed in this session using the base64 embedding method. The user's recent mention of it is likely due to confusion, not a technical regression.
 
 **Code Architecture**
 
@@ -101,71 +106,70 @@ A full-stack application with a monolithic React frontend () and a FastAPI backe
 -   **Authentication**: Custom JWT with roles (, , ).
 
 **key DB schema**
--   : Requires a new optional  field.
--   : New collection for supplier data.
--   : New collection linking staff to contracts.
+-   : Contains .
+-   : Collection for supplier data.
+-   : Now includes optional , , and  fields for ticket generation.
+-   : Contains user credentials and roles.
 
 **changes in tech stack**
 -   None.
 
 **All files of reference**
--   : **CRITICAL FILE.** The entire frontend application resides here. It needs modification for the 'Salón' field, the PDF logo fix, and all upcoming features.
--   : **CRITICAL FILE.** Contains all backend logic. Needs verification for the  field in the  model.
+-   : **CRITICAL FILE.** The entire frontend application. Contains logic for all UI, state management, and PDF generation.
+-   : **CRITICAL FILE.** The entire backend application. Contains all API endpoints, data models, and authentication logic.
 
 **Areas that need refactoring**:
--    & : Both files are urgently in need of refactoring. Their monolithic nature makes them difficult to maintain and prone to regressions.
+-    & : Both files are urgently in need of refactoring into a proper component/route structure to improve maintainability.
 
 **key api endpoints**
--   : Needs to handle the new  field.
--   : Needs to handle the new  field.
--    (GET, POST, PUT, DELETE): New CRUD endpoints for suppliers.
+-   : Authentication endpoint. Needs debugging for non-ADMIN roles.
+-   : Handles contract creation with the  field.
+-   : Handles live session creation with new payment fields.
+-   : Handles updates to live sessions with new payment fields.
 
 **Critical Info for New Agent**
--   Your first priority is to add the **'Salón' field** to the contract form and PDF. The user has repeated this request many times.
--   Your second priority is to permanently fix the **logo in all PDFs**. This is a major recurring issue and a source of user frustration. The base64 embedding approach is the most likely to succeed.
--   The user makes very specific, sequential requests. Address them in the order provided.
--   The codebase is fragile due to its monolithic structure. Make targeted, precise changes and test thoroughly.
+-   **DO NOT RE-IMPLEMENT COMPLETED WORK.** The user's latest request is a repeat of tasks already finished in this session (DatePicker, PDF logo, 'Salón' field). Your first action should be to verify these features are working with screenshots and communicate this to the user to break the loop.
+-   **Address the REAL bugs next.** The highest priorities are fixing the broken logins for  and  roles (Issue #1) and correcting the pricing logic in the Cotizador (Issue #3).
+-   The codebase is monolithic and fragile. Make small, targeted changes and test them.
 
 **documents and test reports created in this job**
--   
--   
+-    (updated by the agent)
 
 **Last 10 User Messages and any pending HUMAN messages**
--   : User repeats the request to add the 'salon' field in . (PENDING)
--   : A series of messages where the user repeats the request to add the 'Salón' field to the contract form and PDF. (PENDING)
--   : User provides a new logo and asks for it to be applied via base64, while also requesting the 'Salón' field. (IN PROGRESS)
--   : User provides a logo image to be used as base64 in all PDFs. (IN PROGRESS)
--   : User provides a list of 4 urgent corrections: fix PDF logo, enhance QR PDF, add 'Salón' field, and add PicPartyLive folders. (IN PROGRESS)
--   : Agent confirms completion of previous multi-step request (DatePicker, Roles, Proveedores). (COMPLETED)
--   : User provides a multi-step request to fix the DatePicker, add supplier features, and implement 3-tier roles. (COMPLETED)
--   : Agent confirms backend restart. (COMPLETED)
--   : User asks to restart the backend. (COMPLETED)
--   : User reports the backend is down. (COMPLETED)
+-   : User repeats 3 previously fixed issues: DatePicker, PDF Logo, and Salón field. (PENDING - VERIFICATION NEEDED)
+-   : User reports 3 bugs, some of which were already fixed. (PENDING)
+-   : User reports bugs: incorrect Cotizador pricing and failing logins for ANABEL and JOE. (PENDING - NOT STARTED)
+-   : User reports bugs with Cotizador pricing and user logins. (PENDING)
+-   : User requests and agent implements the Ticket de Venta feature with a price selector modal. (COMPLETED)
+-   : User requests a Ticket de Venta feature. (COMPLETED)
+-   : User reports bugs with Cotizador (multi-select) and DatePicker. Agent fixes the Cotizador and verifies the DatePicker is working. (COMPLETED)
+-   : User reports two bugs: Cotizador only allows one service, and DatePicker doesn't work. (COMPLETED)
+-   : User requests changes to the QR PDF and a new Ticket de Pago feature, which the agent implements. (COMPLETED)
+-   : User requests to remove RFC from QR PDF and add a new Ticket de Pago feature. (COMPLETED)
 
 **Project Health Check:**
 -   **Broken**:
-    -   PDF logo generation is unreliable and frequently fails.
-    -   The contract form is missing the mandatory 'Salón' field.
+    -   Login for  and  roles is non-functional.
+    -   The pricing logic in the  for the PicPartyLive service is incorrect.
 -   **Mocked**: N/A
 
 **3rd Party Integrations**
--   **Cloudinary**: For image storage and retrieval.
+-   **Cloudinary**: For image storage.
 -   **MongoDB**: Primary database.
 -   **jsPDF**: For all frontend PDF generation.
 
 **Testing status**
--   **Testing agent used after significant changes**: YES (once, but further changes have been made)
+-   **Testing agent used after significant changes**: NO
 -   **Troubleshoot agent used after agent stuck in loop**: NO
 -   **Test files created**: None.
--   **Known regressions**: The logo on generated PDFs is a severe and persistent regression.
+-   **Known regressions**: None technically, but the user repeatedly reports already-fixed issues, which is a process regression.
 
 **Credentials to test flow:**
--   **ADMIN**:  / 
--   **VENTAS**:  / 
--   **STAFF**:  / 
+-   **ADMIN**:  /  (Working)
+-   **VENTAS**:  /  (Broken)
+-   **STAFF**:  /  (Broken)
 
 **What agent forgot to execute**
--   The agent has not yet started two of the four urgent tasks from the user's request in Msg 356:
-    1.  Enhance the PicPartyLive QR code PDF.
-    2.  Implement the folder/chapter system in PicPartyLive.
--   The agent got stuck on the 'Salón' field request, failing to implement the change despite repeated user prompts.</analysis>
+-   The agent did not fix the failing non-ADMIN logins reported by the user.
+-   The agent did not fix the incorrect pricing logic in the Cotizador.
+-   The agent did not start work on the upcoming PicPartyLive folder system or the  route enhancement.</analysis>

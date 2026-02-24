@@ -296,7 +296,7 @@ class AdocaAPITester:
 
 def main():
     # Get backend URL from environment
-    backend_url = "https://event-photo-admin.preview.emergentagent.com"
+    backend_url = "https://picparty-admin.preview.emergentagent.com"
     
     print("🚀 Starting adoca.net Backend API Tests")
     print(f"Backend URL: {backend_url}")
