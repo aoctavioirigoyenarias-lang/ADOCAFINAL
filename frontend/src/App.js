@@ -357,20 +357,46 @@ const Cotizador = () => {
     return found ? found.precio : 0;
   };
 
-  // LÓGICA DE PRECIO PICPARTYLIVE AUTOMÁTICA
-  // Si tiene Cabina o Video 360 = $700 NETO
-  // Si solo PICPARTYLIVE = $1,000 NETO
+  // LÓGICA DE PRECIO PICPARTYLIVE AUTOMÁTICA - 3 NIVELES
+  // $1,500 NETO = Precio Normal (solo PicPartyLive sin promo)
+  // $1,000 NETO = Promo Expo Boda 
+  // $700 NETO = Combo con otro servicio (Cabina, Video360 o Key Moments)
   const getLivePrice = () => {
     if (!services.picpartyLive.selected) return 0;
     const hasOtherService = services.cabina.selected || services.video360.selected || services.keyMoments.selected;
-    return hasOtherService ? 700 : 1000;
+    
+    if (hasOtherService) {
+      return 700; // Combo: mejor precio
+    } else if (services.picpartyLive.isPromo) {
+      return 1000; // Promo Expo Boda
+    } else {
+      return 1500; // Precio normal
+    }
   };
 
-  // Calcular ahorro cuando hay combo
-  const getAhorro = () => {
+  // Obtener tipo de precio para mostrar en cotización
+  const getLivePriceType = () => {
+    if (!services.picpartyLive.selected) return null;
     const hasOtherService = services.cabina.selected || services.video360.selected || services.keyMoments.selected;
-    if (services.picpartyLive.selected && hasOtherService) {
-      return 1000 - 700; // $300 de ahorro
+    
+    if (hasOtherService) {
+      return "combo";
+    } else if (services.picpartyLive.isPromo) {
+      return "promo";
+    } else {
+      return "normal";
+    }
+  };
+
+  // Calcular ahorro cuando hay combo o promo
+  const getAhorro = () => {
+    if (!services.picpartyLive.selected) return 0;
+    const hasOtherService = services.cabina.selected || services.video360.selected || services.keyMoments.selected;
+    
+    if (hasOtherService) {
+      return 1500 - 700; // $800 de ahorro con combo
+    } else if (services.picpartyLive.isPromo) {
+      return 1500 - 1000; // $500 de ahorro con promo
     }
     return 0;
   };
