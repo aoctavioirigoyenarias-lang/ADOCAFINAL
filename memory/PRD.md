@@ -11,9 +11,28 @@ PICPARTYLIVE es una plataforma de galería de fotos en vivo para eventos, que pe
 - **Authentication**: JWT (Admin con roles: ADMIN, VENTAS, STAFF)
 - **PDF Generation**: jsPDF (con logo base64 embebido)
 
-## Última Actualización: Febrero 2026
+## Última Actualización: Febrero 24, 2026
 
-### Cambios Recientes (Sesión Actual)
+### Cambios Recientes (Sesión Actual - Feb 24)
+1. **Login de Usuarios VENTAS y STAFF** (Bug Fix - Verificado OK)
+   - ANABEL/VENTAS2026 funciona correctamente
+   - JOE/STAFF2026 funciona correctamente
+   - El problema reportado por el usuario probablemente fue un error tipográfico
+
+2. **Lógica de Precios PicPartyLive en Cotizador** (Bug Fix - Completado)
+   - Nuevo sistema de 3 niveles de precios:
+     * $1,500 NETO = Precio Normal (solo PicPartyLive sin promo)
+     * $1,000 NETO = Promo Expo Boda (checkbox activable)
+     * $700 NETO = Combo con otro servicio (Cabina, Video360 o Key Moments)
+   - Banner de ahorro actualizado: muestra $500 o $800 según el nivel
+   - Checkbox "Promo Expo Boda" solo visible cuando no hay combo
+   - PDF de cotización actualizado para mostrar el tipo de precio correcto
+
+3. **Campo "Salón" y DatePicker en Contratos** (Verificado OK)
+   - Campo "Salón / Lugar del Evento" presente y funcional
+   - DatePicker visual con calendario navegable funcionando
+
+### Cambios Previos (Sesiones Anteriores)
 1. **Campo "Salón" agregado a Contratos** (P0 - Completado)
    - Campo "Salón / Lugar del Evento" visible en formulario de creación/edición
    - Campo incluido en el PDF del contrato (sección datos del cliente)
