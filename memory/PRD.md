@@ -93,8 +93,9 @@ PICPARTYLIVE es una plataforma de galería de fotos en vivo para eventos, que pe
 - `/admin` - Panel de administración (protegido)
 
 ## Credenciales de Admin
-- **Admin**: Usuario: `OCTAVIO` / Password: `CHELO1980`
-- **Staff**: Usuario: `STAFF` / Password: `PICPARTY2026`
+- **ADMIN**: Usuario: `OCTAVIO` / Password: `CHELO1980`
+- **VENTAS**: Usuario: `ANABEL` / Password: `VENTAS2026`
+- **STAFF**: Usuario: `JOE` / Password: `STAFF2026`
 
 ## Funcionalidades Implementadas
 
