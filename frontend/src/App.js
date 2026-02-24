@@ -687,18 +687,42 @@ const Cotizador = () => {
                 </Button>
               </div>
               
+              {/* Opción Promo Expo Boda - solo visible cuando NO hay combo */}
+              {services.picpartyLive.selected && !(services.cabina.selected || services.video360.selected || services.keyMoments.selected) && (
+                <div className="flex items-center gap-3 p-3 bg-night/50 rounded-lg border border-gold/20">
+                  <input 
+                    type="checkbox" 
+                    id="promoExpoBoda"
+                    checked={services.picpartyLive.isPromo}
+                    onChange={togglePromoExpoBoda}
+                    className="w-5 h-5 accent-gold cursor-pointer"
+                    data-testid="promo-expo-checkbox"
+                  />
+                  <label htmlFor="promoExpoBoda" className="text-pearl cursor-pointer flex-1">
+                    <span className="font-semibold">Promo Expo Boda</span>
+                    <span className="text-pearl-muted text-sm block">Descuento especial: $1,500 → $1,000</span>
+                  </label>
+                </div>
+              )}
+              
               {/* Precio dinámico */}
               {services.picpartyLive.selected && (
                 <div className="p-4 bg-night/50 rounded-lg border border-gold/20">
                   <div className="flex justify-between items-center">
                     <div>
                       <p className="text-pearl font-semibold">
-                        {(services.cabina.selected || services.video360.selected || services.keyMoments.selected) ? "¡COMBO ACTIVO!" : "PICPARTYLIVE Solo"}
+                        {(services.cabina.selected || services.video360.selected || services.keyMoments.selected) 
+                          ? "¡COMBO ACTIVO!" 
+                          : services.picpartyLive.isPromo 
+                            ? "PROMO EXPO BODA" 
+                            : "PICPARTYLIVE Normal"}
                       </p>
                       <p className="text-pearl-muted text-sm">
                         {(services.cabina.selected || services.video360.selected || services.keyMoments.selected) 
-                          ? "Precio especial por combo" 
-                          : "Agrega otro servicio para precio especial"}
+                          ? "Mejor precio por combo" 
+                          : services.picpartyLive.isPromo
+                            ? "Precio promocional aplicado"
+                            : "Agrega otro servicio o activa promo"}
                       </p>
                     </div>
                     <div className="text-right">
@@ -716,7 +740,7 @@ const Cotizador = () => {
                         ¡ESTÁS GANANDO ${getAhorro()} DE DESCUENTO!
                       </p>
                       <p className="text-gold/80 text-center text-xs">
-                        Precio normal $1,000 → Tu precio $700
+                        Precio normal $1,500 → Tu precio {formatCurrency(getLivePrice())}
                       </p>
                     </div>
                   )}
@@ -725,8 +749,9 @@ const Cotizador = () => {
               
               {!services.picpartyLive.selected && (
                 <p className="text-pearl-muted text-sm text-center">
-                  Precio: <strong className="text-gold">$1,000 NETO</strong> solo, 
-                  o <strong className="text-gold">$700 NETO</strong> con otro servicio
+                  Precio: <strong className="text-gold">$1,500 NETO</strong> normal, 
+                  <strong className="text-gold"> $1,000 NETO</strong> promo, 
+                  o <strong className="text-gold">$700 NETO</strong> combo
                 </p>
               )}
             </CardContent>
