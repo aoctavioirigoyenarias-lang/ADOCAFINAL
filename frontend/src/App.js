@@ -433,7 +433,21 @@ const Cotizador = () => {
   const togglePicPartyLive = () => {
     setServices(prev => ({
       ...prev,
-      picpartyLive: { selected: !prev.picpartyLive.selected }
+      picpartyLive: { 
+        selected: !prev.picpartyLive.selected,
+        isPromo: prev.picpartyLive.isPromo 
+      }
+    }));
+  };
+
+  // Toggle Promo Expo Boda
+  const togglePromoExpoBoda = () => {
+    setServices(prev => ({
+      ...prev,
+      picpartyLive: {
+        ...prev.picpartyLive,
+        isPromo: !prev.picpartyLive.isPromo
+      }
     }));
   };
 
