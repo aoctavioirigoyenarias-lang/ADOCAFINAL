@@ -496,6 +496,10 @@ const Cotizador = () => {
   };
 
   const saveQuoteToBackend = async (newFolio, servicePrice, livePrice, subtotal, descuentoAmount, total) => {
+    const priceType = getLivePriceType();
+    const picpartyliveLabel = priceType === "combo" ? "Combo $700" : 
+                              priceType === "promo" ? "Promo $1,000" : 
+                              priceType === "normal" ? "Normal $1,500" : "No";
     try {
       await axios.post(`${API}/quotes`, {
         folio: newFolio,
@@ -503,10 +507,10 @@ const Cotizador = () => {
         telefono: clientData.telefono,
         salon: clientData.salon || null,
         fecha_evento: clientData.fecha || null,
-        servicio_principal: mainService || null,
-        horas: serviceHours || null,
+        servicio_principal: services.cabina.selected ? "Cabina" : services.video360.selected ? "Video360" : services.keyMoments.selected ? "Key Moments" : null,
+        horas: services.cabina.hours || services.video360.hours || null,
         precio_servicio: servicePrice,
-        picpartylive: includeLive ? (mainService ? "Combo $700" : "Solo $1,000") : "No",
+        picpartylive: picpartyliveLabel,
         picpartylive_precio: livePrice,
         descuento_pct: clientData.descuento,
         descuento_monto: descuentoAmount,
