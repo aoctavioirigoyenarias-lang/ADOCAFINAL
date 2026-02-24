@@ -302,7 +302,7 @@ const Cotizador = () => {
     cabina: { selected: false, hours: 0 },
     video360: { selected: false, hours: 0 },
     keyMoments: { selected: false, pieces: 0 },
-    picpartyLive: { selected: false }
+    picpartyLive: { selected: false, isPromo: false } // isPromo = Promo Expo Boda
   });
   
   // PRECIOS REALES - Cabina de Fotos
