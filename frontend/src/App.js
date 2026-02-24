@@ -598,7 +598,7 @@ const Cotizador = () => {
     
     // PICPARTYLIVE
     if (quote.livePrice > 0) {
-      const pkgLabel = quote.livePackage === 700 ? "Super Precio (con servicio)" : quote.livePackage === 1000 ? "Promo Expo" : "Regular";
+      const pkgLabel = quote.livePrice === 700 ? "Combo (con servicio)" : quote.livePrice === 1000 ? "Promo Expo Boda" : "Normal";
       pdf.text(`PICPARTYLIVE - ${pkgLabel}`, 25, y);
       pdf.text(formatCurrency(quote.livePrice), pageWidth - 45, y, { align: 'right' });
       y += 7;
