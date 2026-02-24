@@ -59,7 +59,7 @@ PICPARTYLIVE es una plataforma de galería de fotos en vivo para eventos, que pe
    - Ahora permite seleccionar múltiples servicios simultáneamente
    - Cabina + Video 360 + Key Moments + PicPartyLive en cualquier combinación
    - Cada servicio tiene su propia selección independiente
-   - PicPartyLive da descuento de $300 cuando se combina con otro servicio
+   - PicPartyLive con 3 niveles: Normal $1,500, Promo $1,000, Combo $700
    - Key Moments agregado al cotizador con 4 opciones (80, 100, 140, 200 piezas)
 
 6. **DatePicker en Contratos** (Verificado - Ya Funcionaba)
