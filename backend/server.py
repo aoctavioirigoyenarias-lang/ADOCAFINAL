@@ -629,12 +629,15 @@ async def create_live_session_with_cloudinary(
     event_type_custom: str = None,
     event_date: str = None,
     client_phone: str = None,
+    client_name: str = None,
+    total_price: float = None,
+    anticipo_amount: float = None,
     is_vip: bool = False,
     vip_pass: str = None,
     is_demo: str = None
 ):
     """Crear sesión Live con carpeta Cloudinary automática"""
-    logger.info(f"Creando sesión: code={code}, event={event_name}, date={event_date}, phone={client_phone}")
+    logger.info(f"Creando sesión: code={code}, event={event_name}, date={event_date}, phone={client_phone}, client={client_name}")
 
     # Verificar si el código ya existe
     existing = await db.live_sessions.find_one({"code": code})
