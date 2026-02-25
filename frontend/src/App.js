@@ -2945,6 +2945,7 @@ const AdminPanel = () => {
         params.append("anticipo_amount", editForm.anticipo_amount);
       }
       if (editForm.payment_status) params.append("payment_status", editForm.payment_status);
+      if (editForm.cloudinary_folder) params.append("cloudinary_folder", editForm.cloudinary_folder);
       
       await axios.put(`${API}/live/sessions/${editingSession.id}?${params.toString()}`);
       toast.success("✅ Evento actualizado correctamente");
