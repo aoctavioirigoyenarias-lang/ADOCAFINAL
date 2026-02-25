@@ -3444,9 +3444,17 @@ const AdminPanel = () => {
     combo: { precio: 700, label: "Combo con otro servicio" }
   };
   
-  // Abrir modal de Ticket de Venta
+  // Abrir modal de Ticket de Venta - Pre-cargar datos de la sesión
   const openTicketVentaModal = (session) => {
-    setTicketVentaForm({ precioTipo: "normal", anticipo: 0 });
+    // Determinar tipo de precio basado en el total_price guardado
+    let precioTipo = "normal";
+    if (session.total_price === 1000) precioTipo = "promo";
+    else if (session.total_price === 700) precioTipo = "combo";
+    
+    setTicketVentaForm({ 
+      precioTipo: precioTipo, 
+      anticipo: session.anticipo_amount || 0 
+    });
     setTicketVentaModal({ open: true, session });
   };
   
