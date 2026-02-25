@@ -2909,7 +2909,8 @@ const AdminPanel = () => {
       client_phone: session.client_phone || "",
       total_price: session.total_price || "",
       anticipo_amount: session.anticipo_amount || "",
-      payment_status: session.payment_status || "pendiente"
+      payment_status: session.payment_status || "pendiente",
+      cloudinary_folder: session.cloudinary_folder || ""
     });
     setEditingSession(session);
   };
@@ -2917,7 +2918,8 @@ const AdminPanel = () => {
   const closeEditModal = () => {
     setEditingSession(null);
     setEditForm({ event_name: "", event_type: "", event_type_custom: "", event_date: "", code: "", 
-      client_name: "", client_phone: "", total_price: "", anticipo_amount: "", payment_status: "pendiente" });
+      client_name: "", client_phone: "", total_price: "", anticipo_amount: "", payment_status: "pendiente",
+      cloudinary_folder: "" });
   };
 
   const saveSessionEdit = async () => {
