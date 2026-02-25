@@ -2805,12 +2805,16 @@ const AdminPanel = () => {
   // Actualizar conteo de fotos cada 10 segundos (real-time)
   useEffect(() => {
     if (isAuthenticated && liveSessions.length > 0) {
+      // Cargar inmediatamente
+      fetchPhotosCounts(liveSessions);
+      
+      // Luego actualizar cada 10 segundos
       const interval = setInterval(() => {
         fetchPhotosCounts(liveSessions);
-      }, 10000); // Cada 10 segundos
+      }, 10000);
       return () => clearInterval(interval);
     }
-  }, [isAuthenticated, liveSessions]);
+  }, [isAuthenticated, liveSessions.length]); // Depender de length para re-ejecutar cuando cambian las sesiones
 
   const createEvent = async () => {
     if (!newEvent.name || !newEvent.date) { toast.error("Nombre y fecha requeridos"); return; }
