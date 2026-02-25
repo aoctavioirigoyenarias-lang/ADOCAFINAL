@@ -5805,6 +5805,29 @@ const AdminPanel = () => {
                                 )}
                               </div>
                               
+                              {/* Botón Subir Fotos */}
+                              <div className="mt-2">
+                                <Button 
+                                  size="sm" 
+                                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-8"
+                                  onClick={() => triggerUploadPhotos(session)}
+                                  disabled={uploadingSession === session.code || !session.cloudinary_folder}
+                                  data-testid={`upload-photos-${session.code}`}
+                                >
+                                  {uploadingSession === session.code ? (
+                                    <>
+                                      <span className="animate-spin mr-2">⏳</span>
+                                      Subiendo {uploadProgress.current}/{uploadProgress.total}...
+                                    </>
+                                  ) : (
+                                    <>📤 Subir Fotos (selección múltiple)</>
+                                  )}
+                                </Button>
+                                {!session.cloudinary_folder && (
+                                  <p className="text-red-400 text-[10px] mt-1">Configura la ruta Cloudinary primero</p>
+                                )}
+                              </div>
+                              
                               {/* Botones de compartir */}
                               <div className="flex gap-2 mt-2">
                                 <Button 
