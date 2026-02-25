@@ -12,6 +12,7 @@ from datetime import datetime, timezone, timedelta
 import asyncio
 import cloudinary
 import cloudinary.api
+import cloudinary.uploader
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
