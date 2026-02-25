@@ -3957,7 +3957,7 @@ const AdminPanel = () => {
     y += lineHeight;
     pdf.setFont(undefined, 'normal');
     pdf.setTextColor(50, 50, 50);
-    const cl3 = 'El cliente es responsable de cualquier dano causado al equipo durante el evento por invitados o condiciones del lugar. En caso de dano, el cliente cubrira el costo de reparacion o reposicion.';
+    const cl3 = 'El cliente es responsable de cualquier perjuicio causado al equipo durante el evento por invitados o condiciones del lugar. En caso de perjuicio, el cliente cubrira el costo de reparacion o reposicion.';
     const lines3 = pdf.splitTextToSize(cl3, textWidth);
     pdf.text(lines3, margin, y);
     y += lines3.length * lineHeight + 5;
