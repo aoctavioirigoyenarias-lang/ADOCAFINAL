@@ -5798,7 +5798,9 @@ const AdminPanel = () => {
                                       try {
                                         toast.info("Sincronizando fotos...");
                                         const res = await axios.post(`${API}/live/sync-cloudinary/${session.code}?folder_path=${encodeURIComponent(folder)}`);
-                                        toast.success(`${res.data.imported} fotos importadas, ${res.data.skipped} ya existían`);
+                                        toast.success(`${res.data.imported} fotos importadas, ${res.data.skipped} ya existían (Total: ${res.data.total_found})`);
+                                        // Actualizar contador inmediatamente
+                                        fetchPhotosCounts([session]);
                                         fetchData();
                                       } catch (e) {
                                         toast.error("Error: " + (e.response?.data?.detail || "No se pudo sincronizar"));
