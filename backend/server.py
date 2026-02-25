@@ -718,6 +718,9 @@ async def update_live_session(
     event_type_custom: str = None,
     event_date: str = None,
     client_phone: str = None,
+    client_name: str = None,
+    total_price: float = None,
+    anticipo_amount: float = None,
     code: str = None
 ):
     """Actualizar datos de una sesión Live existente"""
@@ -736,6 +739,18 @@ async def update_live_session(
         update_data["event_date"] = event_date
     if client_phone is not None:
         update_data["client_phone"] = client_phone
+    if client_name is not None:
+        update_data["client_name"] = client_name
+    if total_price is not None:
+        update_data["total_price"] = total_price
+    if anticipo_amount is not None:
+        update_data["anticipo_amount"] = anticipo_amount
+        # Actualizar estado de pago automáticamente
+        price = total_price if total_price is not None else session.get("total_price", 0)
+        if price and anticipo_amount >= price:
+            update_data["payment_status"] = "liquidado"
+        elif anticipo_amount > 0:
+            update_data["payment_status"] = "apartado"
     if code is not None:
         existing = await db.live_sessions.find_one({"code": code, "id": {"$ne": session_id}})
         if existing:
