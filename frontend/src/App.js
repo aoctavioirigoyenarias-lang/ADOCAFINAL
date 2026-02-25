@@ -2099,17 +2099,36 @@ const PicPartyLive = () => {
                   <span className="text-white/80 text-sm">📸 {galleryPhotos.length} fotos</span>
                 </div>
 
-                {/* EFECTO SLIDESHOW - Optimizado con fade suave */}
+                {/* EFECTO SLIDESHOW - Crossfade suave + Ken Burns */}
                 {projectionEffect === "slideshow" && galleryPhotos.length > 0 && (
-                  <div className="w-full h-full flex items-center justify-center p-8 bg-black relative">
-                    {/* Imagen actual con fade */}
+                  <div className="w-full h-full flex items-center justify-center bg-black relative overflow-hidden">
+                    {/* Imagen anterior (para crossfade) */}
+                    {prevSlideIndex !== null && galleryPhotos[prevSlideIndex] && (
+                      <img 
+                        src={galleryPhotos[prevSlideIndex]?.cloudinary_url}
+                        alt=""
+                        className="absolute max-w-[90%] max-h-[90%] object-contain rounded-lg shadow-2xl"
+                        style={{ 
+                          opacity: 0,
+                          transition: 'opacity 1.2s ease-in-out',
+                          zIndex: 1
+                        }}
+                      />
+                    )}
+                    {/* Imagen actual con Ken Burns */}
                     <img 
+                      key={currentSlideIndex}
                       src={galleryPhotos[currentSlideIndex]?.cloudinary_url}
                       alt="Foto del evento"
-                      className="max-w-full max-h-full object-contain rounded-lg shadow-2xl absolute"
+                      className={`max-w-[90%] max-h-[90%] object-contain rounded-lg shadow-2xl slideshow-ken-burns ${
+                        kenBurnsEffect === 0 ? 'ken-burns-zoom-in' :
+                        kenBurnsEffect === 1 ? 'ken-burns-zoom-out' :
+                        kenBurnsEffect === 2 ? 'ken-burns-pan-left' :
+                        'ken-burns-pan-right'
+                      }`}
                       style={{ 
-                        transition: 'opacity 0.5s ease-in-out',
-                        opacity: fadeState === 'visible' ? 1 : 0
+                        opacity: 1,
+                        zIndex: 2
                       }}
                     />
                     {/* Pre-carga de siguiente imagen (invisible) */}
@@ -2122,7 +2141,7 @@ const PicPartyLive = () => {
                       />
                     )}
                     {/* Contador de slides */}
-                    <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-black/60 px-4 py-2 rounded-full">
+                    <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-black/60 px-4 py-2 rounded-full z-10">
                       <span className="text-white/80 text-sm">
                         {currentSlideIndex + 1} / {galleryPhotos.length}
                       </span>
