@@ -632,13 +632,24 @@ const Cotizador = () => {
     pdf.text("TOTAL NETO:", 25, y + 3);
     pdf.text(formatCurrency(quote.total), pageWidth - 45, y + 3, { align: 'right' });
     
-    // Footer
-    y = 250;
+    // Footer con 4 notas legales
+    y = 235;
+    pdf.setFontSize(8);
+    pdf.setTextColor(100, 100, 100);
+    pdf.setFont(undefined, 'italic');
+    pdf.text("* Vigencia: 15 dias naturales a partir de la emision.", 20, y);
+    y += 5;
+    pdf.text("* Flete/Costos adicionales: Sujetos a cambios fuera de Chihuahua.", 20, y);
+    y += 5;
+    pdf.text("* Sujeto a cambios sin previo aviso.", 20, y);
+    y += 5;
+    pdf.setFont(undefined, 'bold');
+    pdf.text("* Esta es una cotizacion, no es un contrato que avale cualquier acuerdo comercial.", 20, y);
+    y += 8;
+    pdf.setFont(undefined, 'normal');
     pdf.setFontSize(9);
     pdf.setTextColor(150, 150, 150);
-    pdf.setFont(undefined, 'normal');
-    pdf.text("* Todos los precios son NETOS. Cotizacion valida por 15 dias.", pageWidth / 2, y, { align: 'center' });
-    pdf.text("PicParty - Cabina Fotografica | adoca.net", pageWidth / 2, y + 5, { align: 'center' });
+    pdf.text("PicParty - Cabina Fotografica | adoca.net", pageWidth / 2, y, { align: 'center' });
     
     pdf.save(`Cotizacion_${folio}.pdf`);
     toast.success("PDF descargado correctamente");
