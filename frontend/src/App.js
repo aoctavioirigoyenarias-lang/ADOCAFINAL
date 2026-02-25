@@ -2972,7 +2972,7 @@ const AdminPanel = () => {
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
   const fileInputRef = React.useRef(null);
 
-  // Función para subir fotos a Cloudinary
+  // Función para subir fotos a Cloudinary (todas las seleccionadas)
   const handleUploadPhotos = async (session, files) => {
     if (!files || files.length === 0) return;
     
@@ -2984,16 +2984,20 @@ const AdminPanel = () => {
     setUploadingSession(session.code);
     setUploadProgress({ current: 0, total: files.length });
     
-    const BATCH_SIZE = 5; // Subir de 5 en 5 para no saturar
+    const BATCH_SIZE = 10; // Subir de 10 en 10
     let uploadedCount = 0;
     let failedCount = 0;
+    const filesArray = Array.from(files);
     
-    toast.info(`Subiendo ${files.length} fotos a ${session.cloudinary_folder}...`);
+    toast.info(`Iniciando subida de ${filesArray.length} fotos...`, { duration: 3000 });
 
-    for (let i = 0; i < files.length; i += BATCH_SIZE) {
-      const batch = Array.from(files).slice(i, i + BATCH_SIZE);
-      const formData = new FormData();
+    // Procesar TODOS los batches
+    for (let i = 0; i < filesArray.length; i += BATCH_SIZE) {
+      const batchStart = i;
+      const batchEnd = Math.min(i + BATCH_SIZE, filesArray.length);
+      const batch = filesArray.slice(batchStart, batchEnd);
       
+      const formData = new FormData();
       batch.forEach(file => {
         formData.append('files', file);
       });
@@ -3004,26 +3008,30 @@ const AdminPanel = () => {
           formData,
           {
             headers: { 'Content-Type': 'multipart/form-data' },
-            timeout: 120000 // 2 minutos por batch
+            timeout: 180000 // 3 minutos por batch
           }
         );
         
-        uploadedCount += response.data.uploaded;
-        failedCount += response.data.failed;
-        setUploadProgress({ current: Math.min(i + BATCH_SIZE, files.length), total: files.length });
+        uploadedCount += response.data.uploaded || 0;
+        failedCount += response.data.failed || 0;
         
       } catch (e) {
-        console.error("Error en batch:", e);
+        console.error(`Error en batch ${batchStart}-${batchEnd}:`, e);
         failedCount += batch.length;
       }
+      
+      // Actualizar progreso
+      setUploadProgress({ current: batchEnd, total: filesArray.length });
     }
 
     setUploadingSession(null);
     setUploadProgress({ current: 0, total: 0 });
     
     if (uploadedCount > 0) {
-      toast.success(`✅ ${uploadedCount} fotos subidas correctamente${failedCount > 0 ? `, ${failedCount} fallidas` : ''}`);
-      fetchData(); // Refrescar datos
+      toast.success(`✅ ${uploadedCount} fotos subidas${failedCount > 0 ? `, ${failedCount} fallidas` : ''}`, { duration: 5000 });
+      // Actualizar contador de fotos inmediatamente
+      fetchPhotosCounts([session]);
+      fetchData();
     } else {
       toast.error(`Error: No se pudo subir ninguna foto. ${failedCount} fallidas.`);
     }
