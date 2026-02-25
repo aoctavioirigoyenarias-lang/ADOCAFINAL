@@ -4290,7 +4290,18 @@ const AdminPanel = () => {
     pdf.setTextColor(100);
     pdf.text(`Generado: ${new Date().toLocaleString('es-MX')} | PIC PARTY`, pageWidth / 2, 270, { align: 'center' });
 
-    pdf.save(`Proveedor_${contract.client_name?.replace(/\s+/g, '_') || 'contrato'}.pdf`);
+    // Descarga compatible con móviles
+    const fileName = `Proveedor_${contract.client_name?.replace(/\s+/g, '_') || 'contrato'}.pdf`;
+    const pdfBlob = pdf.output('blob');
+    const blobUrl = URL.createObjectURL(pdfBlob);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = fileName;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(blobUrl);
     toast.success("Contrato Proveedor generado");
   };
 
