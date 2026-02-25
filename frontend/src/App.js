@@ -5556,6 +5556,18 @@ const AdminPanel = () => {
 
           {/* ============ PESTAÑA PICPARTYLIVE ============ */}
           <TabsContent value="live" className="space-y-4 mt-4">
+            {/* Input file oculto para subida de fotos */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={handleFileSelect}
+              data-session-code=""
+              data-session-folder=""
+            />
+            
             <Card className="card-premium border-gold/30">
               <CardContent className="p-4">
                 <p className="text-gold font-semibold">PICPARTYLIVE - Muro en Vivo</p>
