@@ -651,7 +651,18 @@ const Cotizador = () => {
     pdf.setTextColor(150, 150, 150);
     pdf.text("PicParty - Cabina Fotografica | adoca.net", pageWidth / 2, y, { align: 'center' });
     
-    pdf.save(`Cotizacion_${folio}.pdf`);
+    // Descarga compatible con móviles
+    const fileName = `Cotizacion_${folio}.pdf`;
+    const pdfBlob = pdf.output('blob');
+    const blobUrl = URL.createObjectURL(pdfBlob);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = fileName;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(blobUrl);
     toast.success("PDF descargado correctamente");
   };
 
