@@ -2782,19 +2782,21 @@ const AdminPanel = () => {
   
   // Obtener conteo de fotos por evento (para actualización en tiempo real)
   const fetchPhotosCounts = async (sessions) => {
+    if (!sessions || sessions.length === 0) return;
+    
     const counts = {};
     try {
       await Promise.all(
         sessions.map(async (session) => {
           try {
             const res = await axios.get(`${API}/live/photos/${session.code}`);
-            counts[session.code] = res.data?.length || 0;
+            counts[session.code] = Array.isArray(res.data) ? res.data.length : 0;
           } catch {
             counts[session.code] = 0;
           }
         })
       );
-      setPhotosCounts(counts);
+      setPhotosCounts(prevCounts => ({...prevCounts, ...counts}));
     } catch (e) {
       console.error("Error fetching photos counts:", e);
     }
