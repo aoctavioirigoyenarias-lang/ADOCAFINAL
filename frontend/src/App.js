@@ -2965,6 +2965,91 @@ const AdminPanel = () => {
     return found || { emoji: "📸", label: "Evento" };
   };
 
+  // Estado para subida de fotos
+  const [uploadingSession, setUploadingSession] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
+  const fileInputRef = React.useRef(null);
+
+  // Función para subir fotos a Cloudinary
+  const handleUploadPhotos = async (session, files) => {
+    if (!files || files.length === 0) return;
+    
+    if (!session.cloudinary_folder) {
+      toast.error("Esta sesión no tiene carpeta de Cloudinary configurada. Edita la sesión primero.");
+      return;
+    }
+
+    setUploadingSession(session.code);
+    setUploadProgress({ current: 0, total: files.length });
+    
+    const BATCH_SIZE = 5; // Subir de 5 en 5 para no saturar
+    let uploadedCount = 0;
+    let failedCount = 0;
+    
+    toast.info(`Subiendo ${files.length} fotos a ${session.cloudinary_folder}...`);
+
+    for (let i = 0; i < files.length; i += BATCH_SIZE) {
+      const batch = Array.from(files).slice(i, i + BATCH_SIZE);
+      const formData = new FormData();
+      
+      batch.forEach(file => {
+        formData.append('files', file);
+      });
+
+      try {
+        const response = await axios.post(
+          `${API}/live/upload-photos/${session.code}`,
+          formData,
+          {
+            headers: { 'Content-Type': 'multipart/form-data' },
+            timeout: 120000 // 2 minutos por batch
+          }
+        );
+        
+        uploadedCount += response.data.uploaded;
+        failedCount += response.data.failed;
+        setUploadProgress({ current: Math.min(i + BATCH_SIZE, files.length), total: files.length });
+        
+      } catch (e) {
+        console.error("Error en batch:", e);
+        failedCount += batch.length;
+      }
+    }
+
+    setUploadingSession(null);
+    setUploadProgress({ current: 0, total: 0 });
+    
+    if (uploadedCount > 0) {
+      toast.success(`✅ ${uploadedCount} fotos subidas correctamente${failedCount > 0 ? `, ${failedCount} fallidas` : ''}`);
+      fetchData(); // Refrescar datos
+    } else {
+      toast.error(`Error: No se pudo subir ninguna foto. ${failedCount} fallidas.`);
+    }
+  };
+
+  // Trigger file input para sesión específica
+  const triggerUploadPhotos = (session) => {
+    if (fileInputRef.current) {
+      fileInputRef.current.dataset.sessionCode = session.code;
+      fileInputRef.current.dataset.sessionFolder = session.cloudinary_folder || '';
+      fileInputRef.current.click();
+    }
+  };
+
+  // Handler cuando se seleccionan archivos
+  const handleFileSelect = (e) => {
+    const files = e.target.files;
+    const sessionCode = e.target.dataset.sessionCode;
+    const session = liveSessions.find(s => s.code === sessionCode);
+    
+    if (session && files.length > 0) {
+      handleUploadPhotos(session, files);
+    }
+    
+    // Limpiar input para permitir subir los mismos archivos de nuevo
+    e.target.value = '';
+  };
+
   // Función para descargar el QR como JPG (para WhatsApp)
   const downloadQRasJPG = async (session) => {
     toast.info("Generando imagen JPG para WhatsApp...");
