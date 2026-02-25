@@ -6078,6 +6078,20 @@ const AdminPanel = () => {
                       </div>
                     </div>
                     
+                    {/* Carpeta Cloudinary */}
+                    <div className="border-t border-gold/20 pt-4">
+                      <Label className="text-gold text-sm font-bold">Ruta Cloudinary</Label>
+                      <Input 
+                        value={editForm.cloudinary_folder}
+                        onChange={(e) => setEditForm({...editForm, cloudinary_folder: e.target.value})}
+                        className="input-premium mt-2"
+                        placeholder="ej: ADOCA/FEBRERO/28-02-26/BODA_NOMBRE"
+                      />
+                      <p className="text-pearl-muted/70 text-xs mt-1">
+                        Ruta completa de la carpeta en Cloudinary para sincronizar fotos
+                      </p>
+                    </div>
+                    
                     {/* Botones */}
                     <div className="flex gap-3 pt-4">
                       <Button 
