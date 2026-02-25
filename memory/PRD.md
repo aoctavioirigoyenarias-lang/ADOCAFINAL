@@ -32,6 +32,21 @@ PICPARTYLIVE es una plataforma de galería de fotos en vivo para eventos, que pe
    - Campo "Salón / Lugar del Evento" presente y funcional
    - DatePicker visual con calendario navegable funcionando
 
+4. **PDF del Contrato - Eliminación de Asteriscos** (Completado)
+   - Eliminadas las notas con asteriscos antes del área de firmas en el PDF del contrato
+
+5. **PDF de Cotización - 4 Notas Legales al Pie** (Completado)
+   - Agregadas 4 notas al pie del PDF:
+     * "Vigencia: 15 días naturales a partir de la emisión."
+     * "Flete/Costos adicionales: Sujetos a cambios fuera de Chihuahua."
+     * "Sujeto a cambios sin previo aviso."
+     * "Esta es una cotización, no es un contrato que avale cualquier acuerdo comercial."
+
+6. **Descarga de PDF Compatible con Móviles** (Completado)
+   - Método de descarga actualizado en todos los PDFs usando blob URL
+   - Compatible con navegadores móviles (Safari iOS, Chrome Android)
+   - Afecta: Cotización, Contrato, Proveedor, Recibo
+
 ### Cambios Previos (Sesiones Anteriores)
 1. **Campo "Salón" agregado a Contratos** (P0 - Completado)
    - Campo "Salón / Lugar del Evento" visible en formulario de creación/edición
