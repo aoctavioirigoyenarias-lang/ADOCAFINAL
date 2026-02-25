@@ -721,7 +721,8 @@ async def update_live_session(
     client_name: str = None,
     total_price: float = None,
     anticipo_amount: float = None,
-    code: str = None
+    code: str = None,
+    cloudinary_folder: str = None
 ):
     """Actualizar datos de una sesión Live existente"""
     session = await db.live_sessions.find_one({"id": session_id})
