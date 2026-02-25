@@ -281,6 +281,84 @@ code {
     to { opacity: 1; }
 }
 
+/* ============ KEN BURNS EFFECT - Zoom lento cinematográfico ============ */
+@keyframes kenBurnsZoomIn {
+    from { 
+        transform: scale(1);
+    }
+    to { 
+        transform: scale(1.15);
+    }
+}
+
+@keyframes kenBurnsZoomOut {
+    from { 
+        transform: scale(1.15);
+    }
+    to { 
+        transform: scale(1);
+    }
+}
+
+@keyframes kenBurnsPanLeft {
+    from { 
+        transform: scale(1.1) translateX(3%);
+    }
+    to { 
+        transform: scale(1.1) translateX(-3%);
+    }
+}
+
+@keyframes kenBurnsPanRight {
+    from { 
+        transform: scale(1.1) translateX(-3%);
+    }
+    to { 
+        transform: scale(1.1) translateX(3%);
+    }
+}
+
+.slideshow-ken-burns {
+    animation-duration: 6s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+}
+
+.ken-burns-zoom-in {
+    animation-name: kenBurnsZoomIn;
+}
+
+.ken-burns-zoom-out {
+    animation-name: kenBurnsZoomOut;
+}
+
+.ken-burns-pan-left {
+    animation-name: kenBurnsPanLeft;
+}
+
+.ken-burns-pan-right {
+    animation-name: kenBurnsPanRight;
+}
+
+/* Crossfade container para slideshow */
+.slideshow-crossfade {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.slideshow-crossfade img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    transition: opacity 1.2s ease-in-out;
+}
+
 @keyframes fadeInMosaic {
     from { 
         opacity: 0; 
