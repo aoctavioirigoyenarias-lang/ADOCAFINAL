@@ -4127,17 +4127,6 @@ const AdminPanel = () => {
       y += 16;
     }
     
-    // === NOTA DE PRECIOS Y VIGENCIA ===
-    y += 5;
-    pdf.setFontSize(8);
-    pdf.setTextColor(100, 100, 100);
-    pdf.setFont(undefined, 'italic');
-    pdf.text("* Precios con IVA incluido", margin, y);
-    y += 4;
-    pdf.text("* Vigencia: 15 dias naturales a partir de la emision.", margin, y);
-    y += 4;
-    pdf.text("* Flete/Costos adicionales: Sujetos a cambios fuera de Chihuahua.", margin, y);
-    
     // === ÁREA DE FIRMAS ===
     y = pageHeight - 55;
     pdf.setFillColor(245, 245, 245);
