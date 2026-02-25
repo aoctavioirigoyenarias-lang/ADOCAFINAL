@@ -916,7 +916,7 @@ async def delete_photo(photo_id: str):
 
 @api_router.post("/live/sync-cloudinary/{event_code}")
 async def sync_cloudinary_photos(event_code: str, folder_path: str = None):
-    """Sincronizar fotos de una carpeta de Cloudinary con la base de datos"""
+    """Sincronizar fotos de una carpeta de Cloudinary con la base de datos (busca recursivamente en subcarpetas)"""
     try:
         session = await db.live_sessions.find_one({"code": event_code})
         if not session:
@@ -926,21 +926,46 @@ async def sync_cloudinary_photos(event_code: str, folder_path: str = None):
         if not target_folder:
             raise HTTPException(status_code=400, detail="No se especificó carpeta de Cloudinary")
 
-        try:
-            result = cloudinary.api.resources(
-                type="upload",
-                prefix=target_folder,
-                max_results=500,
-                resource_type="image"
-            )
-        except Exception as e:
-            logger.error(f"Error consultando Cloudinary: {e}")
-            raise HTTPException(status_code=500, detail=f"Error consultando Cloudinary: {str(e)}")
+        all_resources = []
+        
+        # Función auxiliar para buscar recursivamente
+        async def fetch_resources_recursive(folder_prefix: str):
+            resources = []
+            try:
+                # Buscar imágenes en la carpeta actual
+                result = cloudinary.api.resources(
+                    type="upload",
+                    prefix=folder_prefix,
+                    max_results=500,
+                    resource_type="image"
+                )
+                resources.extend(result.get("resources", []))
+                logger.info(f"Encontradas {len(result.get('resources', []))} fotos en {folder_prefix}")
+                
+                # Buscar subcarpetas
+                try:
+                    subfolders_result = cloudinary.api.subfolders(folder_prefix)
+                    for subfolder in subfolders_result.get("folders", []):
+                        subfolder_path = subfolder["path"]
+                        logger.info(f"Buscando en subcarpeta: {subfolder_path}")
+                        sub_resources = await fetch_resources_recursive(subfolder_path)
+                        resources.extend(sub_resources)
+                except Exception as e:
+                    # Si no hay subcarpetas o error, continuar
+                    logger.debug(f"No se encontraron subcarpetas en {folder_prefix}: {e}")
+                    
+            except Exception as e:
+                logger.error(f"Error consultando Cloudinary en {folder_prefix}: {e}")
+            return resources
+
+        # Ejecutar búsqueda recursiva
+        all_resources = await fetch_resources_recursive(target_folder)
+        logger.info(f"Total de recursos encontrados recursivamente: {len(all_resources)}")
 
         imported_count = 0
         skipped_count = 0
 
-        for resource in result.get("resources", []):
+        for resource in all_resources:
             existing = await db.event_photos.find_one({"cloudinary_url": resource["secure_url"]})
             if existing:
                 skipped_count += 1
@@ -951,7 +976,7 @@ async def sync_cloudinary_photos(event_code: str, folder_path: str = None):
                 "event_code": event_code,
                 "cloudinary_url": resource["secure_url"],
                 "thumbnail_url": resource["secure_url"].replace("/upload/", "/upload/w_300,h_300,c_fill/"),
-                "cloudinary_folder": target_folder,
+                "cloudinary_folder": resource.get("folder", target_folder),
                 "public_id": resource.get("public_id"),
                 "reactions": {"👸": 0, "✨": 0, "👑": 0, "💃": 0, "📸": 0, "❤️": 0},
                 "likes": 0,
@@ -968,10 +993,11 @@ async def sync_cloudinary_photos(event_code: str, folder_path: str = None):
             )
 
         return {
-            "message": "Sincronización completada",
+            "message": "Sincronización completada (búsqueda recursiva)",
             "imported": imported_count,
             "skipped": skipped_count,
-            "folder": target_folder
+            "folder": target_folder,
+            "total_found": len(all_resources)
         }
     except HTTPException:
         raise
