@@ -1021,6 +1021,77 @@ async def list_cloudinary_folders(prefix: str = "ADOCA"):
         logger.error(f"Error listando carpetas: {e}")
         return {"folders": [], "error": str(e)}
 
+# ============ UPLOAD PHOTOS TO CLOUDINARY ============
+from fastapi import UploadFile, File
+from typing import List
+
+@api_router.post("/live/upload-photos/{event_code}")
+async def upload_photos_to_cloudinary(
+    event_code: str,
+    files: List[UploadFile] = File(...)
+):
+    """Subir múltiples fotos a la carpeta Cloudinary de una sesión"""
+    try:
+        session = await db.live_sessions.find_one({"code": event_code})
+        if not session:
+            raise HTTPException(status_code=404, detail="Sesión no encontrada")
+        
+        target_folder = session.get("cloudinary_folder")
+        if not target_folder:
+            raise HTTPException(status_code=400, detail="La sesión no tiene carpeta de Cloudinary configurada")
+        
+        uploaded_count = 0
+        failed_count = 0
+        uploaded_photos = []
+        
+        for file in files:
+            try:
+                # Leer contenido del archivo
+                contents = await file.read()
+                
+                # Subir a Cloudinary directamente a la carpeta de la sesión
+                result = cloudinary.uploader.upload(
+                    contents,
+                    folder=target_folder,
+                    resource_type="image",
+                    use_filename=True,
+                    unique_filename=True
+                )
+                
+                # Crear registro en la base de datos
+                photo_doc = {
+                    "id": str(uuid.uuid4()),
+                    "event_code": event_code,
+                    "cloudinary_url": result["secure_url"],
+                    "thumbnail_url": result["secure_url"].replace("/upload/", "/upload/w_300,h_300,c_fill/"),
+                    "cloudinary_folder": target_folder,
+                    "public_id": result.get("public_id"),
+                    "reactions": {"👸": 0, "✨": 0, "👑": 0, "💃": 0, "📸": 0, "❤️": 0},
+                    "likes": 0,
+                    "created_at": datetime.now(timezone.utc).isoformat()
+                }
+                
+                await db.event_photos.insert_one(photo_doc)
+                uploaded_photos.append(photo_doc)
+                uploaded_count += 1
+                
+            except Exception as e:
+                logger.error(f"Error subiendo {file.filename}: {e}")
+                failed_count += 1
+        
+        return {
+            "message": f"Subida completada: {uploaded_count} fotos subidas, {failed_count} fallidas",
+            "uploaded": uploaded_count,
+            "failed": failed_count,
+            "folder": target_folder
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error en subida de fotos: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # ============ SEED EVENTS ============
 
 @api_router.post("/seed-events")
