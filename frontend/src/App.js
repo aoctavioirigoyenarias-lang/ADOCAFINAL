@@ -2790,13 +2790,17 @@ const AdminPanel = () => {
         sessions.map(async (session) => {
           try {
             const res = await axios.get(`${API}/live/photos/${session.code}`);
-            counts[session.code] = Array.isArray(res.data) ? res.data.length : 0;
-          } catch {
+            const count = Array.isArray(res.data) ? res.data.length : 0;
+            counts[session.code] = count;
+            console.log(`[PhotoCount] ${session.code}: ${count} fotos`);
+          } catch (err) {
             counts[session.code] = 0;
+            console.error(`[PhotoCount] Error para ${session.code}:`, err);
           }
         })
       );
-      setPhotosCounts(prevCounts => ({...prevCounts, ...counts}));
+      console.log("[PhotoCount] Actualizando estado con:", counts);
+      setPhotosCounts(counts); // Reemplazar completamente para evitar merge issues
     } catch (e) {
       console.error("Error fetching photos counts:", e);
     }
