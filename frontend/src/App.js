@@ -1277,6 +1277,8 @@ const PicPartyLive = () => {
   const [projectionEffect, setProjectionEffect] = useState("slideshow"); // slideshow, mosaic, popup
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [prevSlideIndex, setPrevSlideIndex] = useState(null); // Para crossfade
+  const [kenBurnsEffect, setKenBurnsEffect] = useState(0); // 0-3 para rotar efectos
   const [newPhotoPopup, setNewPhotoPopup] = useState(null);
   const [downloadPassword, setDownloadPassword] = useState("");
   const [downloadError, setDownloadError] = useState("");
