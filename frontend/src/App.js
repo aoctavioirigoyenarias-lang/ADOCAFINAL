@@ -2099,28 +2099,36 @@ const PicPartyLive = () => {
                   <span className="text-white/80 text-sm">📸 {galleryPhotos.length} fotos</span>
                 </div>
 
-                {/* EFECTO SLIDESHOW - Crossfade suave + Ken Burns */}
+                {/* EFECTO SLIDESHOW - Elegante estilo boda con Ken Burns */}
                 {projectionEffect === "slideshow" && galleryPhotos.length > 0 && (
                   <div className="w-full h-full flex items-center justify-center bg-black relative overflow-hidden">
-                    {/* Imagen anterior (para crossfade) */}
+                    {/* Viñeta elegante para efecto cinematográfico */}
+                    <div className="absolute inset-0 pointer-events-none z-20"
+                      style={{
+                        background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%)'
+                      }}
+                    />
+                    
+                    {/* Imagen anterior (para crossfade suave 1.5s) */}
                     {prevSlideIndex !== null && galleryPhotos[prevSlideIndex] && (
                       <img 
                         src={galleryPhotos[prevSlideIndex]?.cloudinary_url}
                         alt=""
-                        className="absolute max-w-[90%] max-h-[90%] object-contain rounded-lg shadow-2xl"
+                        className="absolute max-w-[85%] max-h-[85%] object-contain rounded-sm shadow-2xl slideshow-crossfade-image"
                         style={{ 
                           opacity: 0,
-                          transition: 'opacity 1.2s ease-in-out',
-                          zIndex: 1
+                          zIndex: 1,
+                          filter: 'brightness(1.02) contrast(1.02)'
                         }}
                       />
                     )}
-                    {/* Imagen actual con Ken Burns */}
+                    
+                    {/* Imagen actual con Ken Burns (100% → 110% en 5s) */}
                     <img 
                       key={currentSlideIndex}
                       src={galleryPhotos[currentSlideIndex]?.cloudinary_url}
                       alt="Foto del evento"
-                      className={`max-w-[90%] max-h-[90%] object-contain rounded-lg shadow-2xl slideshow-ken-burns ${
+                      className={`max-w-[85%] max-h-[85%] object-contain rounded-sm shadow-2xl slideshow-ken-burns slideshow-crossfade-image ${
                         kenBurnsEffect === 0 ? 'ken-burns-zoom-in' :
                         kenBurnsEffect === 1 ? 'ken-burns-zoom-out' :
                         kenBurnsEffect === 2 ? 'ken-burns-pan-left' :
@@ -2128,9 +2136,11 @@ const PicPartyLive = () => {
                       }`}
                       style={{ 
                         opacity: 1,
-                        zIndex: 2
+                        zIndex: 2,
+                        filter: 'brightness(1.02) contrast(1.02)'
                       }}
                     />
+                    
                     {/* Pre-carga de siguiente imagen (invisible) */}
                     {galleryPhotos[nextSlideIndex] && (
                       <img 
@@ -2140,11 +2150,14 @@ const PicPartyLive = () => {
                         aria-hidden="true"
                       />
                     )}
-                    {/* Contador de slides */}
-                    <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-black/60 px-4 py-2 rounded-full z-10">
-                      <span className="text-white/80 text-sm">
-                        {currentSlideIndex + 1} / {galleryPhotos.length}
-                      </span>
+                    
+                    {/* Contador elegante estilo boda */}
+                    <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-30">
+                      <div className="bg-black/40 backdrop-blur-sm px-6 py-2 rounded-full border border-white/10">
+                        <span className="text-white/90 text-sm font-light tracking-wider">
+                          {currentSlideIndex + 1} de {galleryPhotos.length}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 )}
