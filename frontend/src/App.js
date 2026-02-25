@@ -1420,20 +1420,22 @@ const PicPartyLive = () => {
     }
   }, [galleryPhotos]);
 
-  // Slideshow automático con fade suave
+  // Slideshow automático con crossfade suave y Ken Burns
   useEffect(() => {
     if (viewMode === "projection" && projectionEffect === "slideshow" && galleryPhotos.length > 0) {
       const interval = setInterval(() => {
-        setFadeState('fading');
-        setTimeout(() => {
-          setCurrentSlideIndex(prev => {
-            const next = (prev + 1) % galleryPhotos.length;
-            setNextSlideIndex((next + 1) % galleryPhotos.length);
-            return next;
-          });
-          setFadeState('visible');
-        }, 500); // Tiempo del fade
-      }, 5000); // Cambiar cada 5 segundos
+        // Guardar el índice anterior para crossfade
+        setCurrentSlideIndex(prev => {
+          setPrevSlideIndex(prev);
+          const next = (prev + 1) % galleryPhotos.length;
+          setNextSlideIndex((next + 1) % galleryPhotos.length);
+          // Rotar el efecto Ken Burns (4 variantes)
+          setKenBurnsEffect(e => (e + 1) % 4);
+          return next;
+        });
+        // Limpiar imagen anterior después del crossfade
+        setTimeout(() => setPrevSlideIndex(null), 1500);
+      }, 6000); // 6 segundos para coincidir con duración Ken Burns
       return () => clearInterval(interval);
     }
   }, [viewMode, projectionEffect, galleryPhotos.length]);
