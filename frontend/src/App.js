@@ -4442,8 +4442,18 @@ const AdminPanel = () => {
     y += 3;
     pdf.text("(614) 272 5008 | WWW.PICPARTY.NET", pageWidth / 2, y, { align: 'center' });
     
-    // Guardar
-    pdf.save(`Recibo_${contract.client_name.replace(/\s+/g, '_')}.pdf`);
+    // Guardar (compatible con móviles)
+    const fileName = `Recibo_${contract.client_name.replace(/\s+/g, '_')}.pdf`;
+    const pdfBlob = pdf.output('blob');
+    const blobUrl = URL.createObjectURL(pdfBlob);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = fileName;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(blobUrl);
     toast.success("Recibo de pago generado");
   };
 
