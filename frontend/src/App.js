@@ -1420,7 +1420,7 @@ const PicPartyLive = () => {
     }
   }, [galleryPhotos]);
 
-  // Slideshow automático con crossfade suave y Ken Burns
+  // Slideshow automático con crossfade suave (1.5s) y Ken Burns (5s)
   useEffect(() => {
     if (viewMode === "projection" && projectionEffect === "slideshow" && galleryPhotos.length > 0) {
       const interval = setInterval(() => {
@@ -1433,9 +1433,9 @@ const PicPartyLive = () => {
           setKenBurnsEffect(e => (e + 1) % 4);
           return next;
         });
-        // Limpiar imagen anterior después del crossfade
-        setTimeout(() => setPrevSlideIndex(null), 1500);
-      }, 6000); // 6 segundos para coincidir con duración Ken Burns
+        // Limpiar imagen anterior después del crossfade (1.5s)
+        setTimeout(() => setPrevSlideIndex(null), 1600);
+      }, 5000); // 5 segundos = duración del Ken Burns
       return () => clearInterval(interval);
     }
   }, [viewMode, projectionEffect, galleryPhotos.length]);
