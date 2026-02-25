@@ -758,7 +758,11 @@ async def update_live_session(
             raise HTTPException(status_code=400, detail="Ese código ya está en uso")
         update_data["code"] = code
 
-    if event_name or event_date:
+    # Si se proporciona cloudinary_folder manualmente, usarlo directamente
+    if cloudinary_folder is not None:
+        update_data["cloudinary_folder"] = cloudinary_folder
+    elif event_name or event_date:
+        # Solo generar automáticamente si no se proporcionó manualmente
         new_name = event_name or session.get("event_name", "Evento")
         new_date = event_date or session.get("event_date", datetime.now().strftime("%Y-%m-%d"))
         try:
