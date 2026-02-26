@@ -2623,6 +2623,12 @@ const AdminPanel = () => {
   const [preferences, setPreferences] = useState({ show_net_price: true });
   const [loading, setLoading] = useState(true);
   const [photosCounts, setPhotosCounts] = useState({}); // Contador de fotos por evento
+  // Estados para capítulos
+  const [chapterModal, setChapterModal] = useState({ open: false, sessionId: null, sessionCode: null });
+  const [newChapterName, setNewChapterName] = useState("");
+  const [sessionChapters, setSessionChapters] = useState([]);
+  const [sessionPhotosForChapters, setSessionPhotosForChapters] = useState([]);
+  const [selectedPhotosForChapter, setSelectedPhotosForChapter] = useState([]);
   const [newEvent, setNewEvent] = useState({ name: "", date: "", time: "", description: "", fotoshare_url: "", video360_url: "", location: "", has_photos: true, has_video360: false, color: "" });
   // Links de Fotoshare para Staff
   const [fotoshareLinks, setFotoshareLinks] = useState({ fotos: "", videos: "" });
