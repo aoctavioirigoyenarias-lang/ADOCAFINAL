@@ -3073,6 +3073,124 @@ const AdminPanel = () => {
     e.target.value = '';
   };
 
+  // ============ VIGENCIA DE SESIONES (6 MESES) ============
+  const activarVigencia = async (session) => {
+    try {
+      const res = await axios.post(`${API}/live/sessions/${session.id}/activate-vigencia`);
+      toast.success(`✅ Vigencia activada: ${res.data.message}`);
+      fetchData();
+    } catch (e) {
+      toast.error(e.response?.data?.detail || "Error activando vigencia");
+    }
+  };
+
+  // Calcular días restantes de vigencia
+  const getDiasRestantes = (vigenciaFin) => {
+    if (!vigenciaFin) return null;
+    const fin = new Date(vigenciaFin);
+    const hoy = new Date();
+    const diff = Math.ceil((fin - hoy) / (1000 * 60 * 60 * 24));
+    return diff;
+  };
+
+  // Formatear fecha para mostrar
+  const formatFechaVigencia = (isoDate) => {
+    if (!isoDate) return "";
+    const date = new Date(isoDate);
+    return date.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' });
+  };
+
+  // ============ CAPÍTULOS/CARPETAS ============
+  const openChapterModal = async (session) => {
+    setChapterModal({ open: true, sessionId: session.id, sessionCode: session.code });
+    setNewChapterName("");
+    setSelectedPhotosForChapter([]);
+    
+    // Cargar capítulos y fotos
+    try {
+      const [chaptersRes, photosRes] = await Promise.all([
+        axios.get(`${API}/live/sessions/${session.id}/chapters`),
+        axios.get(`${API}/live/photos/${session.code}`)
+      ]);
+      setSessionChapters(chaptersRes.data.chapters || []);
+      setSessionPhotosForChapters(photosRes.data.photos || []);
+    } catch (e) {
+      console.error("Error cargando capítulos:", e);
+      setSessionChapters([]);
+      setSessionPhotosForChapters([]);
+    }
+  };
+
+  const closeChapterModal = () => {
+    setChapterModal({ open: false, sessionId: null, sessionCode: null });
+    setNewChapterName("");
+    setSessionChapters([]);
+    setSessionPhotosForChapters([]);
+    setSelectedPhotosForChapter([]);
+  };
+
+  const createChapter = async () => {
+    if (!newChapterName.trim()) {
+      toast.error("El nombre del capítulo es obligatorio");
+      return;
+    }
+    try {
+      const order = sessionChapters.length;
+      const res = await axios.post(
+        `${API}/live/sessions/${chapterModal.sessionId}/chapters?name=${encodeURIComponent(newChapterName)}&order=${order}`
+      );
+      toast.success("Capítulo creado");
+      setSessionChapters([...sessionChapters, res.data.chapter]);
+      setNewChapterName("");
+    } catch (e) {
+      toast.error("Error creando capítulo");
+    }
+  };
+
+  const deleteChapter = async (chapterId) => {
+    if (!confirm("¿Eliminar este capítulo? Las fotos quedarán sin capítulo asignado.")) return;
+    try {
+      await axios.delete(`${API}/live/sessions/${chapterModal.sessionId}/chapters/${chapterId}`);
+      setSessionChapters(sessionChapters.filter(ch => ch.id !== chapterId));
+      // Actualizar fotos para quitar el chapter_id
+      setSessionPhotosForChapters(sessionPhotosForChapters.map(p => 
+        p.chapter_id === chapterId ? {...p, chapter_id: null} : p
+      ));
+      toast.success("Capítulo eliminado");
+    } catch (e) {
+      toast.error("Error eliminando capítulo");
+    }
+  };
+
+  const assignPhotosToChapter = async (chapterId) => {
+    if (selectedPhotosForChapter.length === 0) {
+      toast.error("Selecciona al menos una foto");
+      return;
+    }
+    try {
+      await axios.post(`${API}/live/photos/bulk-assign-chapter`, {
+        photo_ids: selectedPhotosForChapter,
+        chapter_id: chapterId
+      });
+      // Actualizar estado local
+      setSessionPhotosForChapters(sessionPhotosForChapters.map(p => 
+        selectedPhotosForChapter.includes(p.id) ? {...p, chapter_id: chapterId} : p
+      ));
+      setSelectedPhotosForChapter([]);
+      toast.success(`${selectedPhotosForChapter.length} fotos asignadas al capítulo`);
+    } catch (e) {
+      toast.error("Error asignando fotos");
+    }
+  };
+
+  const togglePhotoSelection = (photoId) => {
+    setSelectedPhotosForChapter(prev => 
+      prev.includes(photoId) 
+        ? prev.filter(id => id !== photoId)
+        : [...prev, photoId]
+    );
+  };
+
   // Función para descargar el QR como JPG (para WhatsApp)
   const downloadQRasJPG = async (session) => {
     toast.info("Generando imagen JPG para WhatsApp...");
