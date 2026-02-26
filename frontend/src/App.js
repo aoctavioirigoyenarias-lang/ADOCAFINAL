@@ -6016,6 +6016,41 @@ const AdminPanel = () => {
                             >
                               JPG WhatsApp
                             </Button>
+                            {/* Botón Capítulos */}
+                            <Button 
+                              size="sm" 
+                              className="bg-indigo-600 hover:bg-indigo-700 text-white" 
+                              onClick={() => openChapterModal(session)}
+                              data-testid={`chapters-${session.code}`}
+                            >
+                              Capítulos
+                            </Button>
+                            {/* Botón Vigencia */}
+                            {!session.vigencia_activada ? (
+                              <Button 
+                                size="sm" 
+                                className="bg-teal-600 hover:bg-teal-700 text-white" 
+                                onClick={() => activarVigencia(session)}
+                                data-testid={`vigencia-${session.code}`}
+                              >
+                                Activar Vigencia
+                              </Button>
+                            ) : (
+                              <div className="text-xs text-center">
+                                {session.vigencia_expirada ? (
+                                  <Badge className="bg-red-600 text-white">EXPIRADA</Badge>
+                                ) : (
+                                  <div>
+                                    <Badge className="bg-teal-600 text-white mb-1">
+                                      {getDiasRestantes(session.vigencia_fin)} días
+                                    </Badge>
+                                    <p className="text-pearl-muted/70 text-[10px]">
+                                      Vence: {formatFechaVigencia(session.vigencia_fin)}
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+                            )}
                             <Button 
                               size="sm" 
                               className="bg-blue-600 hover:bg-blue-700 text-white" 
