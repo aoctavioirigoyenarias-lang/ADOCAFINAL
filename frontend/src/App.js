@@ -4218,7 +4218,7 @@ const AdminPanel = () => {
     pdf.setTextColor(50, 50, 50);
     const anticipoMonto = contract.anticipo_amount || 0;
     const saldoPendiente = (contract.net_price || 0) - anticipoMonto;
-    const cl2 = `Se requiere un anticipo de ${formatMXN(anticipoMonto)} para confirmar la fecha. El saldo restante (${formatMXN(saldoPendiente)}) debe liquidarse antes o el dia del evento. Sin anticipo, la fecha permanece disponible.`;
+    const cl2 = `Se requiere un anticipo de ${formatMXN(anticipoMonto)} para confirmar la fecha. El saldo restante (${formatMXN(saldoPendiente)}) debe liquidarse antes o el dia del evento.`;
     const lines2 = pdf.splitTextToSize(cl2, textWidth);
     pdf.text(lines2, margin, y);
     y += lines2.length * lineHeight + 5;
