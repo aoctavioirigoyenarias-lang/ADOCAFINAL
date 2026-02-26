@@ -1544,6 +1544,10 @@ const PicPartyLive = () => {
           setSession(response.data);
           saveSessionToStorage(response.data);
           fetchGalleryPhotos(savedSession.code);
+          // Cargar capítulos si existen
+          if (response.data.id) {
+            fetchPublicChapters(response.data.id);
+          }
           toast.success(`¡Bienvenido de nuevo a ${response.data.event_name}!`);
           
           // SMART VIEW: Si es móvil, ir directo a galería
