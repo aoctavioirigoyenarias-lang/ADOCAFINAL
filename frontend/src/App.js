@@ -1262,6 +1262,10 @@ const PicPartyLive = () => {
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const fileInputRef = useRef(null);
   
+  // Estados para capítulos en galería pública
+  const [publicChapters, setPublicChapters] = useState([]);
+  const [selectedChapter, setSelectedChapter] = useState("all"); // "all" o chapter_id
+  
   // === INSTAGRAM-STYLE STATES ===
   const [lightboxPhoto, setLightboxPhoto] = useState(null);
   const [lightboxIndex, setLightboxIndex] = useState(0);
