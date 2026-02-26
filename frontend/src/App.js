@@ -6227,6 +6227,122 @@ const AdminPanel = () => {
               </div>
             )}
 
+            {/* ============ MODAL DE CAPÍTULOS ============ */}
+            {chapterModal.open && (
+              <div className="fixed inset-0 bg-night/90 flex items-center justify-center z-50 p-4">
+                <Card className="card-premium border-gold/50 w-full max-w-4xl max-h-[90vh] overflow-hidden">
+                  <CardHeader className="border-b border-gold/20">
+                    <CardTitle className="text-gold flex items-center justify-between">
+                      <span>Gestionar Capítulos - {chapterModal.sessionCode}</span>
+                      <Button size="sm" variant="ghost" onClick={closeChapterModal} className="text-pearl-muted">✕</Button>
+                    </CardTitle>
+                    <CardDescription className="text-pearl-muted">
+                      Organiza las fotos en capítulos (ej: Preparativos, Ceremonia, Fiesta, Cabina)
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-4 overflow-y-auto max-h-[70vh]">
+                    {/* Crear nuevo capítulo */}
+                    <div className="flex gap-2 mb-4">
+                      <Input
+                        value={newChapterName}
+                        onChange={(e) => setNewChapterName(e.target.value)}
+                        placeholder="Nombre del capítulo (ej: Ceremonia)"
+                        className="input-premium flex-1"
+                        onKeyPress={(e) => e.key === 'Enter' && createChapter()}
+                      />
+                      <Button onClick={createChapter} className="btn-gold">
+                        + Crear
+                      </Button>
+                    </div>
+
+                    {/* Lista de capítulos */}
+                    <div className="space-y-4">
+                      {sessionChapters.length === 0 ? (
+                        <p className="text-pearl-muted text-center py-4">No hay capítulos. Crea el primero arriba.</p>
+                      ) : (
+                        sessionChapters.map(chapter => {
+                          const photosInChapter = sessionPhotosForChapters.filter(p => p.chapter_id === chapter.id);
+                          return (
+                            <div key={chapter.id} className="border border-gold/20 rounded-lg p-3">
+                              <div className="flex justify-between items-center mb-2">
+                                <h4 className="text-gold font-semibold">{chapter.name}</h4>
+                                <div className="flex gap-2 items-center">
+                                  <Badge className="bg-gold/20 text-gold">{photosInChapter.length} fotos</Badge>
+                                  {selectedPhotosForChapter.length > 0 && (
+                                    <Button 
+                                      size="sm" 
+                                      className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs"
+                                      onClick={() => assignPhotosToChapter(chapter.id)}
+                                    >
+                                      + Asignar {selectedPhotosForChapter.length} seleccionadas
+                                    </Button>
+                                  )}
+                                  <Button 
+                                    size="sm" 
+                                    variant="destructive" 
+                                    className="text-xs"
+                                    onClick={() => deleteChapter(chapter.id)}
+                                  >
+                                    Eliminar
+                                  </Button>
+                                </div>
+                              </div>
+                              {/* Miniaturas de fotos en este capítulo */}
+                              {photosInChapter.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mt-2">
+                                  {photosInChapter.slice(0, 8).map(photo => (
+                                    <img 
+                                      key={photo.id} 
+                                      src={photo.thumbnail_url || photo.cloudinary_url} 
+                                      alt="" 
+                                      className="w-12 h-12 object-cover rounded"
+                                    />
+                                  ))}
+                                  {photosInChapter.length > 8 && (
+                                    <div className="w-12 h-12 bg-night/50 rounded flex items-center justify-center text-pearl-muted text-xs">
+                                      +{photosInChapter.length - 8}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })
+                      )}
+
+                      {/* Fotos sin capítulo */}
+                      <div className="border border-pearl-muted/20 rounded-lg p-3 mt-4">
+                        <h4 className="text-pearl-muted font-semibold mb-2">
+                          Fotos sin capítulo ({sessionPhotosForChapters.filter(p => !p.chapter_id).length})
+                        </h4>
+                        <p className="text-pearl-muted/60 text-xs mb-2">Selecciona fotos y luego haz clic en "Asignar" en el capítulo deseado</p>
+                        <div className="flex flex-wrap gap-2 max-h-[200px] overflow-y-auto">
+                          {sessionPhotosForChapters.filter(p => !p.chapter_id).map(photo => (
+                            <div 
+                              key={photo.id} 
+                              className={`relative cursor-pointer ${selectedPhotosForChapter.includes(photo.id) ? 'ring-2 ring-gold' : ''}`}
+                              onClick={() => togglePhotoSelection(photo.id)}
+                            >
+                              <img 
+                                src={photo.thumbnail_url || photo.cloudinary_url} 
+                                alt="" 
+                                className="w-16 h-16 object-cover rounded"
+                              />
+                              {selectedPhotosForChapter.includes(photo.id) && (
+                                <div className="absolute inset-0 bg-gold/30 rounded flex items-center justify-center">
+                                  <span className="text-white text-lg">✓</span>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
             {/* ============ MODAL DE EDICIÓN ============ */}
             {editingSession && (
               <div className="fixed inset-0 bg-night/90 flex items-center justify-center z-50">
