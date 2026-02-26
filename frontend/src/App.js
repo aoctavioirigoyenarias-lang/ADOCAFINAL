@@ -4242,7 +4242,7 @@ const AdminPanel = () => {
     y += lineHeight;
     pdf.setFont(undefined, 'normal');
     pdf.setTextColor(50, 50, 50);
-    const cl4 = 'El cliente debe garantizar un espacio minimo de 3x3 metros con conexion electrica 110V estable a menos de 10 metros del area de servicio. EL PRESTADOR llegara 1 hora antes para montaje.';
+    const cl4 = 'El cliente debe garantizar un espacio minimo de 3x3 metros con conexion electrica 110V estable a menos de 10 metros del area de servicio. Por condiciones climaticas adversas fuera de nuestro control, si el servicio es en exterior, PicParty podra cancelar sin devolucion del anticipo. Si el lugar del evento no proporciona las facilidades minimas requeridas para operar, PicParty no se hace responsable por retrasos o cancelacion del servicio.';
     const lines4 = pdf.splitTextToSize(cl4, textWidth);
     pdf.text(lines4, margin, y);
     y += lines4.length * lineHeight + 5;
