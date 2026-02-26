@@ -116,6 +116,13 @@ class LiveSession(BaseModel):
     total_price: Optional[float] = None
     anticipo_amount: Optional[float] = None
     payment_status: str = "pendiente"  # pendiente, apartado, liquidado
+    # Campos para vigencia (6 meses)
+    vigencia_activada: bool = False
+    vigencia_inicio: Optional[str] = None  # Fecha ISO cuando se activó
+    vigencia_fin: Optional[str] = None  # Fecha ISO de expiración (6 meses después)
+    vigencia_expirada: bool = False
+    # Campos para capítulos/carpetas
+    chapters: List[dict] = []  # [{id, name, order, created_at}]
 
 class Contract(BaseModel):
     """Modelo de Contrato Empresarial"""
