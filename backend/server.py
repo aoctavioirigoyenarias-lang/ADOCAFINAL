@@ -826,6 +826,7 @@ class EventPhoto(BaseModel):
     thumbnail_url: Optional[str] = None
     uploader_id: Optional[str] = None
     cloudinary_folder: Optional[str] = None
+    chapter_id: Optional[str] = None  # ID del capítulo al que pertenece
     reactions: dict = Field(default_factory=lambda: {"👸": 0, "✨": 0, "👑": 0, "💃": 0, "📸": 0})
     likes: int = 0
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
