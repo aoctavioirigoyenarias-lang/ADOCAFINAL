@@ -2356,9 +2356,59 @@ const PicPartyLive = () => {
                     </CardContent>
                   </Card>
                 ) : (
-                  /* === INSTAGRAM-STYLE GRID === */
-                  <div className="grid grid-cols-3 gap-0.5 md:gap-1">
-                    {galleryPhotos.map((photo, idx) => {
+                  /* === GALERÍA CON FILTRO POR CAPÍTULOS === */
+                  <>
+                    {/* Pestañas de capítulos (solo si hay capítulos) */}
+                    {publicChapters.length > 0 && (
+                      <div className="flex overflow-x-auto gap-2 mb-4 pb-2 scrollbar-hide">
+                        <button
+                          className={`px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium transition-all ${
+                            selectedChapter === "all" 
+                              ? "bg-gold text-night" 
+                              : "bg-night/50 text-pearl-muted hover:bg-gold/20 hover:text-gold border border-gold/30"
+                          }`}
+                          onClick={() => setSelectedChapter("all")}
+                        >
+                          Todas ({galleryPhotos.length})
+                        </button>
+                        {publicChapters.map(chapter => {
+                          const count = galleryPhotos.filter(p => p.chapter_id === chapter.id).length;
+                          return (
+                            <button
+                              key={chapter.id}
+                              className={`px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium transition-all ${
+                                selectedChapter === chapter.id 
+                                  ? "bg-gold text-night" 
+                                  : "bg-night/50 text-pearl-muted hover:bg-gold/20 hover:text-gold border border-gold/30"
+                              }`}
+                              onClick={() => setSelectedChapter(chapter.id)}
+                            >
+                              {chapter.name} ({count})
+                            </button>
+                          );
+                        })}
+                        {/* Mostrar fotos sin capítulo si hay alguna */}
+                        {galleryPhotos.some(p => !p.chapter_id) && (
+                          <button
+                            className={`px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium transition-all ${
+                              selectedChapter === "uncategorized" 
+                                ? "bg-gold text-night" 
+                                : "bg-night/50 text-pearl-muted hover:bg-gold/20 hover:text-gold border border-gold/30"
+                            }`}
+                            onClick={() => setSelectedChapter("uncategorized")}
+                          >
+                            Otras ({galleryPhotos.filter(p => !p.chapter_id).length})
+                          </button>
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* INSTAGRAM-STYLE GRID */}
+                    <div className="grid grid-cols-3 gap-0.5 md:gap-1">
+                      {(selectedChapter === "uncategorized" 
+                        ? galleryPhotos.filter(p => !p.chapter_id)
+                        : filteredGalleryPhotos
+                      ).map((photo, idx) => {
                       const photoId = photo.id || photo._id;
                       const isLiked = likedPhotos.includes(photoId);
                       const showHeartAnim = likeAnimation === photoId;
