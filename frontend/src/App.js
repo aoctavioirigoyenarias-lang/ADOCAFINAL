@@ -1312,7 +1312,7 @@ const PicPartyLive = () => {
     return id;
   });
 
-  // Cargar fotos del muro colaborativo
+  // Cargar fotos del muro colaborativo y capítulos
   const fetchGalleryPhotos = async (eventCode) => {
     try {
       const response = await axios.get(`${API}/live/photos/${eventCode}`);
@@ -1321,6 +1321,22 @@ const PicPartyLive = () => {
       console.error("Error cargando galería:", e);
     }
   };
+
+  // Cargar capítulos de la sesión (para galería pública)
+  const fetchPublicChapters = async (sessionId) => {
+    try {
+      const response = await axios.get(`${API}/live/sessions/${sessionId}/chapters`);
+      setPublicChapters(response.data.chapters || []);
+    } catch (e) {
+      console.error("Error cargando capítulos:", e);
+      setPublicChapters([]);
+    }
+  };
+
+  // Fotos filtradas por capítulo seleccionado
+  const filteredGalleryPhotos = selectedChapter === "all" 
+    ? galleryPhotos 
+    : galleryPhotos.filter(photo => photo.chapter_id === selectedChapter);
 
   // === INSTAGRAM-STYLE FUNCTIONS ===
   
