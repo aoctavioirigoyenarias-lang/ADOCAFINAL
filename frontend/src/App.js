@@ -2454,15 +2454,23 @@ const PicPartyLive = () => {
                         </div>
                       );
                     })}
-                    {galleryPhotos.length === 0 && (
+                    {(selectedChapter === "uncategorized" 
+                      ? galleryPhotos.filter(p => !p.chapter_id)
+                      : filteredGalleryPhotos
+                    ).length === 0 && (
                       <div className="col-span-full text-center py-12">
                         <div className="w-16 h-16 mx-auto mb-3">
                           <img src={PICPARTY_LOGO} alt="PicParty" className="w-full h-full object-contain opacity-50" />
                         </div>
-                        <p className="text-pearl-muted">No hay fotos aún. Sé el primero en subir.</p>
+                        <p className="text-pearl-muted">
+                          {galleryPhotos.length === 0 
+                            ? "No hay fotos aún. Sé el primero en subir." 
+                            : "No hay fotos en esta sección."}
+                        </p>
                       </div>
                     )}
                   </div>
+                  </>
                 )}
               </div>
             )}
