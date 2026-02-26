@@ -801,6 +801,159 @@ async def delete_live_session(session_id: str):
         raise HTTPException(status_code=404, detail="Session not found")
     return {"message": "Session deleted"}
 
+# ============ VIGENCIA DE SESIONES (6 MESES) ============
+
+@api_router.post("/live/sessions/{session_id}/activate-vigencia")
+async def activate_vigencia(session_id: str):
+    """Activar vigencia de 6 meses para una sesión"""
+    session = await db.live_sessions.find_one({"id": session_id})
+    if not session:
+        raise HTTPException(status_code=404, detail="Sesión no encontrada")
+    
+    if session.get("vigencia_activada"):
+        raise HTTPException(status_code=400, detail="La vigencia ya está activada")
+    
+    from dateutil.relativedelta import relativedelta
+    inicio = datetime.now(timezone.utc)
+    fin = inicio + relativedelta(months=6)
+    
+    await db.live_sessions.update_one(
+        {"id": session_id},
+        {"$set": {
+            "vigencia_activada": True,
+            "vigencia_inicio": inicio.isoformat(),
+            "vigencia_fin": fin.isoformat(),
+            "vigencia_expirada": False
+        }}
+    )
+    
+    return {
+        "message": "Vigencia activada por 6 meses",
+        "vigencia_inicio": inicio.isoformat(),
+        "vigencia_fin": fin.isoformat()
+    }
+
+@api_router.post("/live/check-expired-sessions")
+async def check_expired_sessions():
+    """Verificar y marcar sesiones expiradas automáticamente"""
+    now = datetime.now(timezone.utc)
+    result = await db.live_sessions.update_many(
+        {
+            "vigencia_activada": True,
+            "vigencia_expirada": False,
+            "vigencia_fin": {"$lte": now.isoformat()}
+        },
+        {"$set": {"vigencia_expirada": True, "is_active": False}}
+    )
+    return {"expired_count": result.modified_count}
+
+# ============ CAPÍTULOS/CARPETAS DE SESIÓN ============
+
+@api_router.post("/live/sessions/{session_id}/chapters")
+async def create_chapter(session_id: str, name: str, order: int = 0):
+    """Crear un nuevo capítulo en una sesión"""
+    session = await db.live_sessions.find_one({"id": session_id})
+    if not session:
+        raise HTTPException(status_code=404, detail="Sesión no encontrada")
+    
+    chapter = {
+        "id": str(uuid.uuid4()),
+        "name": name,
+        "order": order,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.live_sessions.update_one(
+        {"id": session_id},
+        {"$push": {"chapters": chapter}}
+    )
+    
+    return {"message": "Capítulo creado", "chapter": chapter}
+
+@api_router.get("/live/sessions/{session_id}/chapters")
+async def get_chapters(session_id: str):
+    """Obtener todos los capítulos de una sesión"""
+    session = await db.live_sessions.find_one({"id": session_id}, {"_id": 0, "chapters": 1})
+    if not session:
+        raise HTTPException(status_code=404, detail="Sesión no encontrada")
+    
+    chapters = session.get("chapters", [])
+    # Ordenar por order
+    chapters.sort(key=lambda x: x.get("order", 0))
+    return {"chapters": chapters}
+
+@api_router.put("/live/sessions/{session_id}/chapters/{chapter_id}")
+async def update_chapter(session_id: str, chapter_id: str, name: str = None, order: int = None):
+    """Actualizar nombre u orden de un capítulo"""
+    session = await db.live_sessions.find_one({"id": session_id})
+    if not session:
+        raise HTTPException(status_code=404, detail="Sesión no encontrada")
+    
+    chapters = session.get("chapters", [])
+    updated = False
+    for ch in chapters:
+        if ch["id"] == chapter_id:
+            if name is not None:
+                ch["name"] = name
+            if order is not None:
+                ch["order"] = order
+            updated = True
+            break
+    
+    if not updated:
+        raise HTTPException(status_code=404, detail="Capítulo no encontrado")
+    
+    await db.live_sessions.update_one(
+        {"id": session_id},
+        {"$set": {"chapters": chapters}}
+    )
+    
+    return {"message": "Capítulo actualizado"}
+
+@api_router.delete("/live/sessions/{session_id}/chapters/{chapter_id}")
+async def delete_chapter(session_id: str, chapter_id: str):
+    """Eliminar un capítulo (las fotos quedan sin capítulo asignado)"""
+    session = await db.live_sessions.find_one({"id": session_id})
+    if not session:
+        raise HTTPException(status_code=404, detail="Sesión no encontrada")
+    
+    # Quitar chapter_id de las fotos
+    await db.event_photos.update_many(
+        {"event_code": session["code"], "chapter_id": chapter_id},
+        {"$set": {"chapter_id": None}}
+    )
+    
+    # Eliminar capítulo de la sesión
+    await db.live_sessions.update_one(
+        {"id": session_id},
+        {"$pull": {"chapters": {"id": chapter_id}}}
+    )
+    
+    return {"message": "Capítulo eliminado"}
+
+@api_router.post("/live/photos/{photo_id}/assign-chapter")
+async def assign_photo_to_chapter(photo_id: str, chapter_id: str = None):
+    """Asignar una foto a un capítulo (o quitar asignación si chapter_id es null)"""
+    result = await db.event_photos.update_one(
+        {"id": photo_id},
+        {"$set": {"chapter_id": chapter_id}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Foto no encontrada")
+    
+    return {"message": "Foto asignada a capítulo" if chapter_id else "Foto sin capítulo"}
+
+@api_router.post("/live/photos/bulk-assign-chapter")
+async def bulk_assign_photos_to_chapter(photo_ids: List[str], chapter_id: str = None):
+    """Asignar múltiples fotos a un capítulo"""
+    result = await db.event_photos.update_many(
+        {"id": {"$in": photo_ids}},
+        {"$set": {"chapter_id": chapter_id}}
+    )
+    
+    return {"message": f"{result.modified_count} fotos asignadas", "modified": result.modified_count}
+
 # ============ SCAN (acceso por código) ============
 
 @api_router.get("/live/scan/{code}")
