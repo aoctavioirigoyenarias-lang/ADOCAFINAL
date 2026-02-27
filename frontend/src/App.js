@@ -590,11 +590,27 @@ const Cotizador = () => {
     
     pdf.setFont(undefined, 'normal');
     
-    // Servicio principal
-    if (quote.mainService && quote.serviceHours) {
-      const serviceName = quote.mainService === "cabina" ? "Cabina de Fotos" : "Video 360";
-      pdf.text(`${serviceName} (${quote.serviceHours} horas)`, 25, y);
-      pdf.text(formatCurrency(quote.servicePrice), pageWidth - 45, y, { align: 'right' });
+    // Cabina de Fotos
+    if (quote.services?.cabina?.selected && quote.services.cabina.hours > 0) {
+      const precio = cabinaPrecios.find(p => p.horas === quote.services.cabina.hours)?.precio || 0;
+      pdf.text(`Cabina de Fotos (${quote.services.cabina.hours} horas)`, 25, y);
+      pdf.text(formatCurrency(precio), pageWidth - 45, y, { align: 'right' });
+      y += 7;
+    }
+    
+    // Video 360
+    if (quote.services?.video360?.selected && quote.services.video360.hours > 0) {
+      const precio = video360Precios.find(p => p.horas === quote.services.video360.hours)?.precio || 0;
+      pdf.text(`Video 360 (${quote.services.video360.hours} horas)`, 25, y);
+      pdf.text(formatCurrency(precio), pageWidth - 45, y, { align: 'right' });
+      y += 7;
+    }
+    
+    // Key Moments
+    if (quote.services?.keyMoments?.selected && quote.services.keyMoments.pieces > 0) {
+      const precio = keyMomentsPrecios.find(p => p.piezas === quote.services.keyMoments.pieces)?.precio || 0;
+      pdf.text(`Key Moments (${quote.services.keyMoments.pieces} piezas)`, 25, y);
+      pdf.text(formatCurrency(precio), pageWidth - 45, y, { align: 'right' });
       y += 7;
     }
     
