@@ -4277,9 +4277,9 @@ const AdminPanel = () => {
     y += boxHeight + 8;
     
     // === 6 CLÁUSULAS LEGALES (EXACTAS DEL PDF ORIGINAL) ===
-    const lineHeight = 4;
+    const lineHeight = 5; // Aumentado para fuente más grande
     const textWidth = pageWidth - (margin * 2);
-    pdf.setFontSize(8);
+    pdf.setFontSize(11); // Aumentado de 8 a 11 (≈13px) para mejor legibilidad
     
     // Cláusula 1 - OBJETO
     pdf.setFont(undefined, 'bold');
