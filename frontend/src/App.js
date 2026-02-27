@@ -331,9 +331,11 @@ const Cotizador = () => {
 
   // Generar folio único
   const generateFolio = () => {
-    const timestamp = Date.now().toString(36).toUpperCase();
-    const random = Math.random().toString(36).substring(2, 5).toUpperCase();
-    return `COT-${timestamp}-${random}`;
+    // Folio secuencial desde COT-1400
+    const lastFolio = parseInt(localStorage.getItem('lastQuoteFolio') || '1399', 10);
+    const newFolioNum = lastFolio + 1;
+    localStorage.setItem('lastQuoteFolio', newFolioNum.toString());
+    return `COT-${newFolioNum}`;
   };
 
   // Obtener precio de cabina
