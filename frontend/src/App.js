@@ -2870,6 +2870,159 @@ const AdminPanel = () => {
     }
   };
 
+  // ============ EXPORTAR EXCEL ============
+  const exportToExcel = () => {
+    toast.info("Generando Excel...");
+    
+    // Hoja 1: Contratos
+    const contractsData = contracts.map(c => {
+      const servicios = [];
+      if (c.cabina_hours) servicios.push(`Cabina ${c.cabina_hours}h`);
+      if (c.video360_hours) servicios.push(`Video360 ${c.video360_hours}h`);
+      if (c.key_moments) servicios.push(`Key Moments ${c.key_moments}`);
+      if (c.include_live) servicios.push("PicPartyLive");
+      
+      const total = c.total_bruto || c.total_neto || 0;
+      const anticipo = c.anticipo || 0;
+      const saldo = total - anticipo;
+      
+      return {
+        "Folio": c.folio || "",
+        "Cliente": c.client_name || "",
+        "Teléfono": c.client_phone || "",
+        "Salón": c.salon || "",
+        "Fecha Evento": c.event_date || "",
+        "Servicios": servicios.join(", ") || "Sin servicios",
+        "Total": total,
+        "Anticipo": anticipo,
+        "Saldo": saldo,
+        "Estado": saldo <= 0 ? "LIQUIDADO" : anticipo > 0 ? "APARTADO" : "PENDIENTE"
+      };
+    });
+    
+    // Hoja 2: PicPartyLive
+    const liveData = liveSessions.map(s => {
+      const diasRestantes = s.vigencia_fin ? getDiasRestantes(s.vigencia_fin) : null;
+      let estadoVigencia = "Sin activar";
+      if (s.vigencia_activada) {
+        estadoVigencia = s.vigencia_expirada ? "EXPIRADA" : `${diasRestantes} días`;
+      }
+      
+      return {
+        "Código": s.code || "",
+        "Nombre Evento": s.event_name || "",
+        "Fecha": s.event_date || "",
+        "Tipo": s.event_type || "",
+        "Fotos": photosCounts[s.code] || 0,
+        "Vigencia": estadoVigencia,
+        "Estado": s.is_active ? "ACTIVO" : "INACTIVO"
+      };
+    });
+    
+    // Hoja 3: Ingresos por mes
+    const ingresosPorMes = {};
+    
+    // Procesar contratos
+    contracts.forEach(c => {
+      const fecha = c.event_date || c.created_at?.substring(0, 10) || "";
+      const mes = fecha.substring(0, 7); // YYYY-MM
+      if (!mes) return;
+      
+      if (!ingresosPorMes[mes]) {
+        ingresosPorMes[mes] = {
+          mes: mes,
+          totalContratos: 0,
+          totalPicPartyLive: 0,
+          anticipoRecibido: 0,
+          saldoPendiente: 0
+        };
+      }
+      
+      const total = c.total_bruto || c.total_neto || 0;
+      const anticipo = c.anticipo || 0;
+      
+      ingresosPorMes[mes].totalContratos += total;
+      ingresosPorMes[mes].anticipoRecibido += anticipo;
+      ingresosPorMes[mes].saldoPendiente += (total - anticipo);
+    });
+    
+    // Procesar PicPartyLive
+    liveSessions.forEach(s => {
+      const fecha = s.event_date || "";
+      const mes = fecha.substring(0, 7);
+      if (!mes) return;
+      
+      if (!ingresosPorMes[mes]) {
+        ingresosPorMes[mes] = {
+          mes: mes,
+          totalContratos: 0,
+          totalPicPartyLive: 0,
+          anticipoRecibido: 0,
+          saldoPendiente: 0
+        };
+      }
+      
+      const precio = s.total_price || 0;
+      const anticipo = s.anticipo_amount || 0;
+      
+      ingresosPorMes[mes].totalPicPartyLive += precio;
+      ingresosPorMes[mes].anticipoRecibido += anticipo;
+      ingresosPorMes[mes].saldoPendiente += (precio - anticipo);
+    });
+    
+    const ingresosData = Object.values(ingresosPorMes)
+      .sort((a, b) => a.mes.localeCompare(b.mes))
+      .map(m => ({
+        "Mes": m.mes,
+        "Total Contratos": m.totalContratos,
+        "Total PicPartyLive": m.totalPicPartyLive,
+        "Anticipo Recibido": m.anticipoRecibido,
+        "Saldo Pendiente": m.saldoPendiente,
+        "Total General": m.totalContratos + m.totalPicPartyLive
+      }));
+    
+    // Agregar fila de totales
+    if (ingresosData.length > 0) {
+      ingresosData.push({
+        "Mes": "TOTAL",
+        "Total Contratos": ingresosData.reduce((sum, m) => sum + m["Total Contratos"], 0),
+        "Total PicPartyLive": ingresosData.reduce((sum, m) => sum + m["Total PicPartyLive"], 0),
+        "Anticipo Recibido": ingresosData.reduce((sum, m) => sum + m["Anticipo Recibido"], 0),
+        "Saldo Pendiente": ingresosData.reduce((sum, m) => sum + m["Saldo Pendiente"], 0),
+        "Total General": ingresosData.reduce((sum, m) => sum + m["Total General"], 0)
+      });
+    }
+    
+    // Crear workbook
+    const wb = XLSX.utils.book_new();
+    
+    // Agregar hojas
+    const ws1 = XLSX.utils.json_to_sheet(contractsData);
+    const ws2 = XLSX.utils.json_to_sheet(liveData);
+    const ws3 = XLSX.utils.json_to_sheet(ingresosData);
+    
+    // Ajustar anchos de columna
+    ws1['!cols'] = [
+      {wch: 15}, {wch: 25}, {wch: 15}, {wch: 25}, {wch: 12}, {wch: 35}, {wch: 12}, {wch: 12}, {wch: 12}, {wch: 12}
+    ];
+    ws2['!cols'] = [
+      {wch: 12}, {wch: 30}, {wch: 12}, {wch: 15}, {wch: 8}, {wch: 15}, {wch: 12}
+    ];
+    ws3['!cols'] = [
+      {wch: 12}, {wch: 18}, {wch: 18}, {wch: 18}, {wch: 18}, {wch: 18}
+    ];
+    
+    XLSX.utils.book_append_sheet(wb, ws1, "Contratos");
+    XLSX.utils.book_append_sheet(wb, ws2, "PicPartyLive");
+    XLSX.utils.book_append_sheet(wb, ws3, "Ingresos");
+    
+    // Descargar archivo
+    const fecha = new Date().toISOString().split('T')[0];
+    XLSX.writeFile(wb, `PicParty_Reporte_${fecha}.xlsx`);
+    
+    toast.success("Excel exportado correctamente");
+  };
+
   const fetchData = async () => {
     try {
       const [eventsRes, sessionsRes, prefsRes, contractsRes, proveedoresRes] = await Promise.all([
