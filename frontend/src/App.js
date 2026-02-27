@@ -4166,15 +4166,11 @@ const AdminPanel = () => {
     
     // ========== GENERAR FOLIO AUTOMÁTICO ==========
     const generateFolio = () => {
-      const year = new Date().getFullYear();
-      const initials = contract.client_name
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase())
-        .join('')
-        .substring(0, 2) || 'XX';
-      const randomNum = Math.floor(Math.random() * 90 + 10);
-      const randomChar = String.fromCharCode(65 + Math.floor(Math.random() * 26));
-      return `PIC-${year}-${initials}${randomNum}${randomChar}`;
+      // Folio secuencial desde PIC-344
+      const lastFolio = parseInt(localStorage.getItem('lastContractFolio') || '343', 10);
+      const newFolioNum = lastFolio + 1;
+      localStorage.setItem('lastContractFolio', newFolioNum.toString());
+      return `PIC-${newFolioNum}`;
     };
     const folio = generateFolio();
     
