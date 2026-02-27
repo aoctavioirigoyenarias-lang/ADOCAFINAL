@@ -5206,6 +5206,15 @@ const AdminPanel = () => {
             </Badge>
           </div>
           <div className="flex gap-2">
+            {userRole === "admin" && (
+              <Button 
+                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                onClick={exportToExcel}
+                data-testid="export-excel-btn"
+              >
+                📊 Exportar Excel
+              </Button>
+            )}
             <Link to="/"><Button className="btn-gold-outline">← Inicio</Button></Link>
             <Button variant="destructive" onClick={() => { sessionStorage.clear(); setIsAuthenticated(false); }}>Salir</Button>
           </div>
