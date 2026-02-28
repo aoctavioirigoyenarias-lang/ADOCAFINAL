@@ -570,53 +570,54 @@ const Cotizador = () => {
     pdf.text(`Folio: ${folio}`, pageWidth - margin, isHalfLetter ? 26 : 38, { align: 'right' });
     
     // Info del cliente
-    pdf.setFontSize(12);
+    pdf.setFontSize(isHalfLetter ? 9 : 12);
     pdf.setTextColor(50, 50, 50);
-    let y = 65;
+    let y = isHalfLetter ? 42 : 65;
     
-    pdf.setFontSize(14);
+    pdf.setFontSize(isHalfLetter ? 10 : 14);
     pdf.setFont(undefined, 'bold');
-    pdf.text("DATOS DEL CLIENTE", 20, y);
-    y += 8;
+    pdf.text("DATOS DEL CLIENTE", margin, y);
+    y += isHalfLetter ? 5 : 8;
     pdf.setFont(undefined, 'normal');
-    pdf.setFontSize(11);
-    pdf.text(`Nombre: ${clientData.nombre}`, 20, y); y += 6;
-    pdf.text(`Telefono: ${clientData.telefono}`, 20, y); y += 6;
-    if (clientData.salon) { pdf.text(`Salon: ${clientData.salon}`, 20, y); y += 6; }
-    if (clientData.fecha) { pdf.text(`Fecha del Evento: ${clientData.fecha}`, 20, y); y += 6; }
+    pdf.setFontSize(isHalfLetter ? 8 : 11);
+    pdf.text(`Nombre: ${clientData.nombre}`, margin, y); y += isHalfLetter ? 4 : 6;
+    pdf.text(`Telefono: ${clientData.telefono}`, margin, y); y += isHalfLetter ? 4 : 6;
+    if (clientData.salon) { pdf.text(`Salon: ${clientData.salon}`, margin, y); y += isHalfLetter ? 4 : 6; }
+    if (clientData.fecha) { pdf.text(`Fecha del Evento: ${clientData.fecha}`, margin, y); y += isHalfLetter ? 4 : 6; }
     
-    y += 10;
-    pdf.setFontSize(14);
+    y += isHalfLetter ? 6 : 10;
+    pdf.setFontSize(isHalfLetter ? 10 : 14);
     pdf.setFont(undefined, 'bold');
-    pdf.text("DETALLE DE SERVICIOS", 20, y);
-    y += 10;
+    pdf.text("DETALLE DE SERVICIOS", margin, y);
+    y += isHalfLetter ? 6 : 10;
     
     // Tabla de servicios - Cabecera gris claro 10%
     pdf.setFillColor(240, 240, 240);
-    pdf.rect(20, y - 5, pageWidth - 40, 8, 'F');
-    pdf.setFontSize(10);
+    pdf.rect(margin, y - (isHalfLetter ? 3 : 5), pageWidth - (margin * 2), isHalfLetter ? 5 : 8, 'F');
+    pdf.setFontSize(isHalfLetter ? 7 : 10);
     pdf.setFont(undefined, 'bold');
     pdf.setTextColor(50, 50, 50);
-    pdf.text("Concepto", 25, y);
-    pdf.text("Precio Neto", pageWidth - 45, y, { align: 'right' });
-    y += 10;
+    pdf.text("Concepto", margin + 5, y);
+    pdf.text("Precio Neto", pageWidth - margin - 5, y, { align: 'right' });
+    y += isHalfLetter ? 6 : 10;
     
     pdf.setFont(undefined, 'normal');
+    const lineSpacing = isHalfLetter ? 5 : 7;
     
     // Cabina de Fotos
     if (quote.services?.cabina?.selected && quote.services.cabina.hours > 0) {
       const precio = cabinaPrecios.find(p => p.horas === quote.services.cabina.hours)?.precio || 0;
-      pdf.text(`Cabina de Fotos (${quote.services.cabina.hours} horas)`, 25, y);
-      pdf.text(formatCurrency(precio), pageWidth - 45, y, { align: 'right' });
-      y += 7;
+      pdf.text(`Cabina de Fotos (${quote.services.cabina.hours} horas)`, margin + 5, y);
+      pdf.text(formatCurrency(precio), pageWidth - margin - 5, y, { align: 'right' });
+      y += lineSpacing;
     }
     
     // Video 360
     if (quote.services?.video360?.selected && quote.services.video360.hours > 0) {
       const precio = video360Precios.find(p => p.horas === quote.services.video360.hours)?.precio || 0;
-      pdf.text(`Video 360 (${quote.services.video360.hours} horas)`, 25, y);
-      pdf.text(formatCurrency(precio), pageWidth - 45, y, { align: 'right' });
-      y += 7;
+      pdf.text(`Video 360 (${quote.services.video360.hours} horas)`, margin + 5, y);
+      pdf.text(formatCurrency(precio), pageWidth - margin - 5, y, { align: 'right' });
+      y += lineSpacing;
     }
     
     // Key Moments
