@@ -623,68 +623,71 @@ const Cotizador = () => {
     // Key Moments
     if (quote.services?.keyMoments?.selected && quote.services.keyMoments.pieces > 0) {
       const precio = keyMomentsPrecios.find(p => p.piezas === quote.services.keyMoments.pieces)?.precio || 0;
-      pdf.text(`Key Moments (${quote.services.keyMoments.pieces} piezas)`, 25, y);
-      pdf.text(formatCurrency(precio), pageWidth - 45, y, { align: 'right' });
-      y += 7;
+      pdf.text(`Key Moments (${quote.services.keyMoments.pieces} piezas)`, margin + 5, y);
+      pdf.text(formatCurrency(precio), pageWidth - margin - 5, y, { align: 'right' });
+      y += lineSpacing;
     }
     
     // PICPARTYLIVE
     if (quote.livePrice > 0) {
       const pkgLabel = quote.livePrice === 700 ? "Combo (con servicio)" : quote.livePrice === 1000 ? "Promo Expo Boda" : "Normal";
-      pdf.text(`PICPARTYLIVE - ${pkgLabel}`, 25, y);
-      pdf.text(formatCurrency(quote.livePrice), pageWidth - 45, y, { align: 'right' });
-      y += 7;
+      pdf.text(`PICPARTYLIVE - ${pkgLabel}`, margin + 5, y);
+      pdf.text(formatCurrency(quote.livePrice), pageWidth - margin - 5, y, { align: 'right' });
+      y += lineSpacing;
     }
     
-    y += 5;
+    y += isHalfLetter ? 3 : 5;
     pdf.setDrawColor(180, 180, 180);
-    pdf.line(20, y, pageWidth - 20, y);
-    y += 8;
+    pdf.line(margin, y, pageWidth - margin, y);
+    y += isHalfLetter ? 5 : 8;
     
     // Subtotal
-    pdf.text("Subtotal:", 25, y);
-    pdf.text(formatCurrency(quote.subtotal), pageWidth - 45, y, { align: 'right' });
-    y += 7;
+    pdf.text("Subtotal:", margin + 5, y);
+    pdf.text(formatCurrency(quote.subtotal), pageWidth - margin - 5, y, { align: 'right' });
+    y += lineSpacing;
     
     // Descuento si aplica (gris oscuro, no naranja)
     if (quote.descuentoPct > 0) {
       pdf.setTextColor(100, 100, 100);
-      pdf.text(`Descuento (${quote.descuentoPct}%):`, 25, y);
-      pdf.text(`-${formatCurrency(quote.descuento)}`, pageWidth - 45, y, { align: 'right' });
-      y += 7;
+      pdf.text(`Descuento (${quote.descuentoPct}%):`, margin + 5, y);
+      pdf.text(`-${formatCurrency(quote.descuento)}`, pageWidth - margin - 5, y, { align: 'right' });
+      y += lineSpacing;
     }
     
     // Total Neto - Recuadro gris oscuro
-    y += 3;
+    y += isHalfLetter ? 2 : 3;
+    const totalBoxHeight = isHalfLetter ? 8 : 12;
     pdf.setFillColor(60, 60, 60);
-    pdf.rect(20, y - 5, pageWidth - 40, 12, 'F');
+    pdf.rect(margin, y - (isHalfLetter ? 3 : 5), pageWidth - (margin * 2), totalBoxHeight, 'F');
     pdf.setTextColor(255, 255, 255);
-    pdf.setFontSize(14);
+    pdf.setFontSize(isHalfLetter ? 10 : 14);
     pdf.setFont(undefined, 'bold');
-    pdf.text("TOTAL NETO:", 25, y + 3);
-    pdf.text(formatCurrency(quote.total), pageWidth - 45, y + 3, { align: 'right' });
+    pdf.text("TOTAL NETO:", margin + 5, y + (isHalfLetter ? 1 : 3));
+    pdf.text(formatCurrency(quote.total), pageWidth - margin - 5, y + (isHalfLetter ? 1 : 3), { align: 'right' });
     
     // Footer con 4 notas legales
-    y = 235;
-    pdf.setFontSize(8);
+    y = isHalfLetter ? pageHeight - 38 : 235;
+    pdf.setFontSize(isHalfLetter ? 6 : 8);
     pdf.setTextColor(100, 100, 100);
     pdf.setFont(undefined, 'italic');
-    pdf.text("* Vigencia: 15 dias naturales a partir de la emision.", 20, y);
-    y += 5;
-    pdf.text("* Flete/Costos adicionales: Sujetos a cambios fuera de Chihuahua.", 20, y);
-    y += 5;
-    pdf.text("* Sujeto a cambios sin previo aviso.", 20, y);
-    y += 5;
+    const footerSpacing = isHalfLetter ? 4 : 5;
+    pdf.text("* Vigencia: 15 dias naturales a partir de la emision.", margin, y);
+    y += footerSpacing;
+    pdf.text("* Flete/Costos adicionales: Sujetos a cambios fuera de Chihuahua.", margin, y);
+    y += footerSpacing;
+    pdf.text("* Sujeto a cambios sin previo aviso.", margin, y);
+    y += footerSpacing;
     pdf.setFont(undefined, 'bold');
-    pdf.text("* Esta es una cotizacion, no es un contrato que avale cualquier acuerdo comercial.", 20, y);
-    y += 8;
+    pdf.text("* Esta es una cotizacion, no es un contrato.", margin, y);
+    y += footerSpacing + 2;
     pdf.setFont(undefined, 'normal');
-    pdf.setFontSize(9);
+    pdf.setFontSize(isHalfLetter ? 7 : 9);
     pdf.setTextColor(150, 150, 150);
     pdf.text("PicParty - Cabina Fotografica | adoca.net", pageWidth / 2, y, { align: 'center' });
     
     // Descarga compatible con móviles
-    const fileName = `Cotizacion_${folio}.pdf`;
+    const formatSuffix = isHalfLetter ? "_mediaCarta" : "";
+    const fileName = `Cotizacion_${folio}${formatSuffix}.pdf`;
     const pdfBlob = pdf.output('blob');
     const blobUrl = URL.createObjectURL(pdfBlob);
     const link = document.createElement('a');
@@ -695,7 +698,7 @@ const Cotizador = () => {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(blobUrl);
-    toast.success("PDF descargado correctamente");
+    toast.success(`PDF ${isHalfLetter ? 'media carta' : 'carta completa'} descargado`);
   };
 
   return (
