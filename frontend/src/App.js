@@ -1027,6 +1027,27 @@ const Cotizador = () => {
                 </>
               )}
               
+              {/* Selector de formato PDF */}
+              {quote && (
+                <div className="flex items-center gap-3 pt-2">
+                  <Label className="text-pearl text-sm">Formato PDF:</Label>
+                  <div className="flex gap-2">
+                    <button
+                      className={`px-3 py-1.5 rounded text-sm transition-all ${pdfFormat === 'letter' ? 'bg-gold text-night font-bold' : 'bg-night/50 text-pearl-muted border border-gold/30 hover:bg-gold/20'}`}
+                      onClick={() => setPdfFormat('letter')}
+                    >
+                      Carta Completa
+                    </button>
+                    <button
+                      className={`px-3 py-1.5 rounded text-sm transition-all ${pdfFormat === 'half-letter' ? 'bg-gold text-night font-bold' : 'bg-night/50 text-pearl-muted border border-gold/30 hover:bg-gold/20'}`}
+                      onClick={() => setPdfFormat('half-letter')}
+                    >
+                      Media Carta
+                    </button>
+                  </div>
+                </div>
+              )}
+              
               {/* Botones */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-4">
                 <Button 
@@ -1044,7 +1065,7 @@ const Cotizador = () => {
                   disabled={!quote}
                   data-testid="descargar-pdf-btn"
                 >
-                  Descargar PDF
+                  Descargar PDF {pdfFormat === 'half-letter' ? '(Media Carta)' : ''}
                 </Button>
               </div>
               
