@@ -535,28 +535,39 @@ const Cotizador = () => {
     }
 
     toast.info("Generando PDF optimizado para impresión...");
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
+    
+    // Configurar formato según selección
+    const isHalfLetter = pdfFormat === "half-letter";
+    const pageFormat = isHalfLetter ? [139.7, 215.9] : 'letter'; // Media carta: 5.5x8.5 pulgadas en mm
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: pageFormat });
     const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    
+    // Escala para media carta (reducir todo ~60%)
+    const scale = isHalfLetter ? 0.65 : 1;
+    const margin = isHalfLetter ? 10 : 20;
     
     // === HEADER B&W - Gris claro 10% ===
+    const headerHeight = isHalfLetter ? 32 : 50;
     pdf.setFillColor(245, 245, 245);
-    pdf.rect(0, 0, pageWidth, 50, 'F');
+    pdf.rect(0, 0, pageWidth, headerHeight, 'F');
     
     // Logo imagen gráfica esquina izquierda
     try {
-      pdf.addImage(PICPARTY_LOGO_BASE64, 'PNG', 12, 5, 40, 40);
+      const logoSize = isHalfLetter ? 26 : 40;
+      pdf.addImage(PICPARTY_LOGO_BASE64, 'PNG', margin - 8, 3, logoSize, logoSize);
     } catch(e) {
       console.error("Error cargando logo cotización:", e);
     }
     
-    pdf.setFontSize(28);
+    pdf.setFontSize(isHalfLetter ? 18 : 28);
     pdf.setTextColor(30, 30, 30);
     pdf.setFont(undefined, 'bold');
-    pdf.text("COTIZACION", pageWidth - 20, 25, { align: 'right' });
-    pdf.setFontSize(12);
+    pdf.text("COTIZACION", pageWidth - margin, isHalfLetter ? 16 : 25, { align: 'right' });
+    pdf.setFontSize(isHalfLetter ? 9 : 12);
     pdf.setTextColor(80, 80, 80);
     pdf.setFont(undefined, 'normal');
-    pdf.text(`Folio: ${folio}`, pageWidth - 20, 38, { align: 'right' });
+    pdf.text(`Folio: ${folio}`, pageWidth - margin, isHalfLetter ? 26 : 38, { align: 'right' });
     
     // Info del cliente
     pdf.setFontSize(12);
