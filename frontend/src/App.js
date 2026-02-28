@@ -297,6 +297,7 @@ const Cotizador = () => {
   
   const [quote, setQuote] = useState(null);
   const [folio, setFolio] = useState(null);
+  const [pdfFormat, setPdfFormat] = useState("letter"); // "letter" o "half-letter"
   
   // SERVICIOS MÚLTIPLES - Cada uno con su propia selección
   const [services, setServices] = useState({
