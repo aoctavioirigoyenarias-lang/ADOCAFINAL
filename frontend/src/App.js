@@ -2146,13 +2146,13 @@ const PicPartyLive = () => {
                   <span className="text-white/80 text-sm">📸 {galleryPhotos.length} fotos</span>
                 </div>
 
-                {/* EFECTO SLIDESHOW - Elegante estilo boda con Ken Burns */}
+                {/* EFECTO SLIDESHOW - Pantalla completa estilo boda con Ken Burns */}
                 {projectionEffect === "slideshow" && galleryPhotos.length > 0 && (
-                  <div className="w-full h-full flex items-center justify-center bg-black relative overflow-hidden">
+                  <div className="w-full h-full bg-black relative overflow-hidden">
                     {/* Viñeta elegante para efecto cinematográfico */}
                     <div className="absolute inset-0 pointer-events-none z-20"
                       style={{
-                        background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%)'
+                        background: 'radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.5) 100%)'
                       }}
                     />
                     
@@ -2161,7 +2161,7 @@ const PicPartyLive = () => {
                       <img 
                         src={galleryPhotos[prevSlideIndex]?.cloudinary_url}
                         alt=""
-                        className="absolute max-w-[85%] max-h-[85%] object-contain rounded-sm shadow-2xl slideshow-crossfade-image"
+                        className="absolute inset-0 w-full h-full object-cover slideshow-crossfade-image"
                         style={{ 
                           opacity: 0,
                           zIndex: 1,
@@ -2170,12 +2170,12 @@ const PicPartyLive = () => {
                       />
                     )}
                     
-                    {/* Imagen actual con Ken Burns (100% → 110% en 5s) */}
+                    {/* Imagen actual con Ken Burns - PANTALLA COMPLETA */}
                     <img 
                       key={currentSlideIndex}
                       src={galleryPhotos[currentSlideIndex]?.cloudinary_url}
                       alt="Foto del evento"
-                      className={`max-w-[85%] max-h-[85%] object-contain rounded-sm shadow-2xl slideshow-ken-burns slideshow-crossfade-image ${
+                      className={`absolute inset-0 w-full h-full object-cover slideshow-ken-burns slideshow-crossfade-image ${
                         kenBurnsEffect === 0 ? 'ken-burns-zoom-in' :
                         kenBurnsEffect === 1 ? 'ken-burns-zoom-out' :
                         kenBurnsEffect === 2 ? 'ken-burns-pan-left' :
