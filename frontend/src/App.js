@@ -331,14 +331,17 @@ const Cotizador = () => {
     { piezas: 200, precio: 4499 },
   ];
 
-  // Generar folio único
-  const generateFolio = () => {
-    // Folio secuencial desde COT-1400
-    const lastFolio = parseInt(localStorage.getItem('lastQuoteFolio') || '1399', 10);
+  // Generar folio único secuencial
+  const generateFolio = useCallback(() => {
+    // Leer el último folio guardado (empezando desde 1399)
+    const stored = localStorage.getItem('lastQuoteFolio');
+    const lastFolio = stored ? parseInt(stored, 10) : 1399;
     const newFolioNum = lastFolio + 1;
+    // Guardar inmediatamente el nuevo número
     localStorage.setItem('lastQuoteFolio', newFolioNum.toString());
+    console.log(`[Folio] Generado: COT-${newFolioNum} (anterior: ${lastFolio})`);
     return `COT-${newFolioNum}`;
-  };
+  }, []);
 
   // Obtener precio de cabina
   const getCabinaPrice = () => {
